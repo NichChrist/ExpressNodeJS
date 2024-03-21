@@ -35,7 +35,6 @@ router.get('/', auth(), userController.list);
 router.get('/dropdown', auth(), userController.dropdown);
 router.get('/:id', auth(), userValidator.userGetByIdValidator, userController.getById);
 router.post('/', auth(), userValidator.userCreateValidator, userController.create);
-router.post('/user-product', userValidator.userCreateWithProductValidator, userController.createUserWithProduct);
 router.put('/:id', auth(), userValidator.userUpdateValidator, userController.updateById);
 router.delete('/:id', auth(), userValidator.userGetByIdValidator, userController.deleteById);
 router.post('/create-users', auth(), userValidator.userBulkCreateValidator, userController.createMultipleUser);

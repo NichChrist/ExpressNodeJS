@@ -23,11 +23,11 @@ export default class AuthService implements IAuthService {
         this.redisService = new RedisService();
     }
 
-    loginWithEmailPassword = async (email: string, password: string) => {
+    loginWithUsernamePassword = async (username: string, password: string) => {
         try {
             let message = responseMessageConstant.LOGIN_200_SUCCESS;
             
-            let user = await this.userDao.getByEmail(email);
+            let user = await this.userDao.getByUsername(username);
             if (user == null || !user.dataValues.is_active) {
                 return responseHandler.returnError(
                     httpStatus.BAD_REQUEST,

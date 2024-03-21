@@ -30,12 +30,12 @@ export default class UserDao extends SuperDao implements IUserDao {
         return User.destroy({ where: { id } });
     }
 
-    async getByEmail(email: string) {
-        return User.findOne({ where: { email } });
+    async getByUsername(username: string) {
+        return User.findOne({ where: { username } });
     }
 
-    async isEmailExists(email: string) {
-        return User.count({ where: { email } }).then((count) => {
+    async isUsernameExists(username: string) {
+        return User.count({ where: { username } }).then((count) => {
             if (count != 0) {
                 return true;
             }

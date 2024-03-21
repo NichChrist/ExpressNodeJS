@@ -100,22 +100,10 @@ export default class UserController {
         }
     };
 
-    createUserWithProduct = async (req: Request, res: Response) => {
-        try {
-            const user = await this.userService.createUserWithProduct(req);
-            
-            const { message, data } = user.response;
-            const code = user.statusCode;
-            res.status(code).send({ code, message, data });
-        } catch (e) {
-            logger.error(e);
-            res.status(httpStatus.BAD_GATEWAY).send(e);
-        }
-    };
 
-    checkEmail = async (req: Request, res: Response) => {
+    checkUsername = async (req: Request, res: Response) => {
         try {
-            const isExists = await this.userService.isEmailExists(req.body.email.toLowerCase());
+            const isExists = await this.userService.isUsernameExists(req.body.username.toLowerCase());
             res.status(isExists.statusCode).send(isExists.response);
         } catch (e) {
             logger.error(e);
@@ -125,9 +113,9 @@ export default class UserController {
 
     login = async (req: Request, res: Response) => {
         try {
-            const { email, password } = req.body;
-            const user = await this.authService.loginWithEmailPassword(
-                email.toLowerCase(),
+            const { username, password } = req.body;
+            const user = await this.authService.loginWithUsernamePassword(  
+                username.toLowerCase(),
                 password
             );
             const { message, data } = user.response;
@@ -168,19 +156,9 @@ export default class UserController {
             res.send(tokens);
         } catch (e) {
             logger.error(e);
-            res.status(httpStatus.BAD_GATEWAY).send(e);
+            return res.status(httpStatus.BAD_GATEWAY).send(e);
         }
     };
-
-    changePassword = async (req: Request, res: Response) => {
-        try {
-            const responseData = await this.userService.changePassword(req);
-            res.status(responseData.statusCode).send(responseData.response);
-        } catch (e) {
-            logger.error(e);
-            res.status(httpStatus.BAD_GATEWAY).send(e);
-        }
-    }
 
     createMultipleUser = async (req: Request, res: Response) => {
         try {

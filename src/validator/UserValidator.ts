@@ -9,10 +9,10 @@ import { responseMessageConstant } from '../config/constant';
 export default class UserValidator {
     async userCreateValidator(req: Request, res: Response, next: NextFunction) {
         // create schema object
-        const schema = Joi.object({
-            email: Joi.string().email().required().messages({
-                "string.empty": responseMessageConstant.EMAIL_422_EMPTY,
-                "string.email": responseMessageConstant.EMAIL_422_INVALID_FORMAT,
+        const schema = Joi.object({ 
+            username: Joi.string().pattern(/^\S*$/).required().messages({
+                "string.empty": responseMessageConstant.USERNAME_422_EMPTY,
+                "string.pattern.base": responseMessageConstant.USERNAME_422_INVALID_FORMAT
             }),
             password: Joi.string().regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/).required().messages({
                 "string.empty": responseMessageConstant.PASSWORD_422_EMPTY,
@@ -21,9 +21,6 @@ export default class UserValidator {
             confirm_password: Joi.string().valid(Joi.ref('password')).required().messages({
                 "any.only": responseMessageConstant.PASSWORD_CONFIRMATION_422_NOT_MATCHING
             }),
-            first_name: Joi.string().allow(null, ''),
-            last_name: Joi.string().allow(null, ''),
-            
         });
 
         // schema options
@@ -210,9 +207,9 @@ export default class UserValidator {
     async userLoginValidator(req: Request, res: Response, next: NextFunction) {
         // create schema object
         const schema = Joi.object({
-            email: Joi.string().email().required().messages({
-                "string.empty": responseMessageConstant.EMAIL_422_EMPTY,
-                "string.email": responseMessageConstant.EMAIL_422_INVALID_FORMAT,
+            username: Joi.string().pattern(/^\S*$/).required().messages({
+                "string.empty": responseMessageConstant.USERNAME_422_EMPTY,
+                "string.pattern.base": responseMessageConstant.USERNAME_422_INVALID_FORMAT
             }),
             password: Joi.string().regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/).required().messages({
                 "string.empty": responseMessageConstant.PASSWORD_422_EMPTY,

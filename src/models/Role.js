@@ -32,8 +32,14 @@ module.exports = (sequelize, DataTypes) => {
                 defaultValue: DataTypes.UUIDV4,
                 primaryKey: true,
             },
-            name: DataTypes.STRING,
-            level: DataTypes.INTEGER,
+            name: {
+                type: DataTypes.STRING,
+                allowNull: false, 
+            },
+            level: {
+                type: DataTypes.INTEGER,
+                allowNull: false, 
+            },
         },
         {
             sequelize,

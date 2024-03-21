@@ -4,8 +4,7 @@ import { IUser } from '../../models/interfaces/IUser';
 
 export default interface IUserService {
     createUser: (userBody: IUser) => Promise<ApiServiceResponse>;
-    createUserWithProduct: (req: Request) => Promise<ApiServiceResponse>;
-    isEmailExists: (email: string) => Promise<ApiServiceResponse>;
+    isUsernameExists: (username: string) => Promise<ApiServiceResponse>;
     getUserById: (id: string) => Promise<ApiServiceResponse>;
-    changePassword: (req: Request) => Promise<ApiServiceResponse>;
+    // changePassword: (req: Request) => Promise<ApiServiceResponse>;
 }

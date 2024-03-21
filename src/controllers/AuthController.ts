@@ -42,9 +42,9 @@ export default class AuthController {
         }
     };
 
-    checkEmail = async (req: Request, res: Response) => {
+    checkUsername = async (req: Request, res: Response) => {
         try {
-            const isExists = await this.userService.isEmailExists(req.body.email.toLowerCase());
+            const isExists = await this.userService.isUsernameExists(req.body.username.toLowerCase());
             res.status(isExists.statusCode).send(isExists.response);
         } catch (e) {
             logger.error(e);
@@ -54,9 +54,9 @@ export default class AuthController {
 
     login = async (req: Request, res: Response) => {
         try {
-            const { email, password } = req.body;
-            const user = await this.authService.loginWithEmailPassword(
-                email.toLowerCase(),
+            const { username, password } = req.body;
+            const user = await this.authService.loginWithUsernamePassword(
+                username.toLowerCase(),
                 password
             );
             const { message, data } = user.response;
@@ -101,13 +101,13 @@ export default class AuthController {
         }
     };
 
-    changePassword = async (req: Request, res: Response) => {
-        try {
-            const responseData = await this.userService.changePassword(req);
-            res.status(responseData.statusCode).send(responseData.response);
-        } catch (e) {
-            logger.error(e);
-            res.status(httpStatus.BAD_GATEWAY).send(e);
-        }
-    };
+    // changePassword = async (req: Request, res: Response) => {
+    //     try {
+    //         const responseData = await this.userService.changePassword(req);
+    //         res.status(responseData.statusCode).send(responseData.response);
+    //     } catch (e) {
+    //         logger.error(e);
+    //         res.status(httpStatus.BAD_GATEWAY).send(e);
+    //     }
+    // };
 }

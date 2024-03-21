@@ -47,13 +47,14 @@ export default class UserService implements IUserService {
 
     createUser = async (userBody: IUser) => {
         try {
-            userBody.email = userBody.email.toLowerCase();
+            userBody.username = userBody.username.toLowerCase();
             userBody.password = bcrypt.hashSync(userBody.password!, 8);
             userBody.is_active = true;
 
-            if (await this.userDao.isEmailExists(userBody.email)) {
+            if (await this.userDao.isUsernameExists(userBody.username)) {
                 return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.EMAIL_400_TAKEN);
             }
+            console.log(userBody);
           
             let userData = await this.userDao.create(userBody);
 
@@ -77,7 +78,7 @@ export default class UserService implements IUserService {
             let userData;
 
             const processUserData = async (user) => {
-                if (await this.userDao.isEmailExists(user.email)) throw { ec: 400, status: httpStatus.BAD_REQUEST, message: 'Email already taken' };
+                if (await this.userDao.isUsernameExists(user.username)) throw { ec: 400, status: httpStatus.BAD_REQUEST, message: 'Email already taken' };
 
                 if (user.password === undefined) throw { ec: 400, status: httpStatus.BAD_REQUEST, message: 'Password is required' };
 
@@ -94,7 +95,7 @@ export default class UserService implements IUserService {
             await sequelize.transaction(async (t) => {
                 const emailMap = new Map();
                 for (let i = 0; i < userBody.length; i++) {
-                    const email = userBody[i].email;
+                    const email = userBody[i].username;
 
                     if (emailMap.has(email)) throw { ec: 400, status: httpStatus.BAD_REQUEST, message: 'Email cannot be duplicates' };
 
@@ -115,68 +116,9 @@ export default class UserService implements IUserService {
         }
     };
 
-    createUserWithProduct = async (req: Request) => {
-        try {
-            let {
-                email,
-                password,
-                first_name,
-                last_name,
-                product_id
-            } = req.body
-            
-            const product = await Product.findOne({ where: { id: product_id } })
 
-            const id = uuid()
-            email = email.toLowerCase();
-            password = bcrypt.hashSync(password!, 8);
-            const is_active = true;
-            let userData
-
-            if (await this.userDao.isEmailExists(email)) {
-                return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.EMAIL_400_TAKEN);
-            }
-
-            if (!(product)) {
-                return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.PRODUCT_404_NOT_FOUND)
-            }
-
-            
-            await sequelize.transaction(async (t) => {
-                try {
-                    userData = await User.create({ 
-                        id,
-                        first_name,
-                        last_name,
-                        email,
-                        password,
-                        is_active,
-                    }, { transaction: t });
-
-                    if (!userData) {
-                        return responseHandler.returnError(httpStatus.BAD_GATEWAY, responseMessageConstant.HTTP_502_BAD_GATEWAY);
-                    }
-
-                    await userData.addProduct(product, { transaction: t })
-                } catch (e) {
-                    throw e
-                }
-            })
-
-
-            userData = userData.toJSON();
-            delete userData.password;
-
-            return responseHandler.returnSuccess(httpStatus.CREATED, responseMessageConstant.USER_201_REGISTERED, userData);
-        } catch (e: any) {
-            logger.error(e);
-            if (e.ec) return responseHandler.returnError(e.status, e.message);
-            return responseHandler.returnError(httpStatus.BAD_REQUEST, 'Something went wrong');
-        }
-    };
-
-    isEmailExists = async (email: string) => {
-        if (!(await this.userDao.isEmailExists(email))) {
+    isUsernameExists = async (username: string) => {
+        if (!(await this.userDao.isUsernameExists(username))) {
             return responseHandler.returnError(httpStatus.NOT_FOUND, responseMessageConstant.EMAIL_404_NOT_FOUND);
         }
         return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant.EMAIL_200_FOUND);
@@ -229,40 +171,40 @@ export default class UserService implements IUserService {
         }
     };
 
-    changePassword = async (req: Request) => {
-        try {
-            const { password, old_password } = req.body;
-            if (req.userInfo === undefined) {
-                return responseHandler.returnError(httpStatus.UNAUTHORIZED, responseMessageConstant.HTTP_401_UNAUTHORIZED);
-            }
-            let user = await this.userDao.findOneByWhere({ id: req.userInfo.id });
+    // changePassword = async (req: Request) => {
+    //     try {
+    //         const { password, old_password } = req.body;
+    //         if (req.userInfo === undefined) {
+    //             return responseHandler.returnError(httpStatus.UNAUTHORIZED, responseMessageConstant.HTTP_401_UNAUTHORIZED);
+    //         }
+    //         let user = await this.userDao.findOneByWhere({ id: req.userInfo.id });
 
-            if (!user) {
-                return responseHandler.returnError(httpStatus.NOT_FOUND, responseMessageConstant.USER_404_NOT_FOUND);
-            }
+    //         if (!user) {
+    //             return responseHandler.returnError(httpStatus.NOT_FOUND, responseMessageConstant.USER_404_NOT_FOUND);
+    //         }
 
-            const isPasswordValid = await bcrypt.compare(old_password, user.password);
-            user = user.toJSON();
-            delete user.password;
-            if (!isPasswordValid) {
-                return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.OLD_PASSWORD_400_INCORRECT);
-            }
-            const updateUser = await this.userDao.updateWhere(
-                { password: bcrypt.hashSync(password, 8) },
-                { id: user.id }
-            );
+    //         const isPasswordValid = await bcrypt.compare(old_password, user.password);
+    //         user = user.toJSON();
+    //         delete user.password;
+    //         if (!isPasswordValid) {
+    //             return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.OLD_PASSWORD_400_INCORRECT);
+    //         }
+    //         const updateUser = await this.userDao.updateWhere(
+    //             { password: bcrypt.hashSync(password, 8) },
+    //             { id: user.id }
+    //         );
 
-            if (updateUser) {
-                return responseHandler.returnSuccess(
-                    httpStatus.OK,
-                    responseMessageConstant.PASSWORD_200_UPDATE_SUCCESS,
-                );
-            }
+    //         if (updateUser) {
+    //             return responseHandler.returnSuccess(
+    //                 httpStatus.OK,
+    //                 responseMessageConstant.PASSWORD_200_UPDATE_SUCCESS,
+    //             );
+    //         }
 
-            return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.PASSWORD_400_UPDATE_FAILED);
-        } catch (e) {
-            console.log(e);
-            return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.PASSWORD_400_UPDATE_FAILED);
-        }
-    };
+    //         return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.PASSWORD_400_UPDATE_FAILED);
+    //     } catch (e) {
+    //         console.log(e);
+    //         return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.PASSWORD_400_UPDATE_FAILED);
+    //     }
+    // };
 }

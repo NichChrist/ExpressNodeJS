@@ -8,12 +8,15 @@ module.exports = {
                 primaryKey: true,
             },
             name: {
+                allowNull: false,
                 type: Sequelize.STRING,
             },
             code: {
+                allowNull: false,
                 type: Sequelize.STRING,
             },
             is_custom: {
+                allowNull: false,
                 type: Sequelize.BOOLEAN,
             },
             created_at: {

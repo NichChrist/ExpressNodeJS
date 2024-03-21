@@ -3,7 +3,6 @@ import authRoute from './authRoute';
 import userRoute from './userRoute';
 import moduleRoute from './moduleRoute';
 import roleRoute from './roleRoute';
-import productRoute from './productRoute';
 
 const router = Router();
 
@@ -23,10 +22,6 @@ const defaultRoutes = [
     {
         path: '/modules',
         route: moduleRoute,
-    },
-    {
-        path: '/products',
-        route: productRoute,
     },
 ];
 

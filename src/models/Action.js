@@ -9,8 +9,9 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
-            Action.belongsToMany(models.module, {
+            Action.belongsToMany(models.model, {
                 through: 'permission',
+                foreignKey: 'action_id',
                 onDelete: 'CASCADE',
                 onUpdate: 'CASCADE',
                 hooks: true,
@@ -25,9 +26,18 @@ module.exports = (sequelize, DataTypes) => {
                 defaultValue: DataTypes.UUIDV4,
                 primaryKey: true,
             },
-            name: DataTypes.STRING,
-            code: DataTypes.STRING,
-            is_custom: DataTypes.BOOLEAN,
+            name: {
+                type: DataTypes.STRING,
+                allowNull: false,
+            },
+            code: {
+                type: DataTypes.STRING,
+                allowNull: false,
+            },
+            is_custom: {
+                type: DataTypes.BOOLEAN,
+                allowNull: false,
+            },
         },
         {
             sequelize,

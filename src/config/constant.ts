@@ -10,6 +10,12 @@ const responseMessageConstant = {
     EMAIL_422_EMPTY: '"Email" is not allowed to be empty',
     EMAIL_422_INVALID_FORMAT: '"Email" must be in a valid email format',
 
+    USERNAME_200_FOUND: 'Username Found',
+    USERNAME_400_TAKEN: 'Username Taken',
+    USERNAME_404_NOT_FOUND: 'Username Not Found',
+    USERNAME_422_EMPTY: '"Username" is not allowed to be empty',
+    USERNAME_422_INVALID_FORMAT: '"Username" must be in a valid username format (No Spaces)',
+
     ID_422_INVALID_FORMAT: '"id" must be in a valid UUID format',
 
     IS_ACTIVE_422_INVALID_VALUE: '"is_active" must be boolean',

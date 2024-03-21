@@ -2,10 +2,12 @@ module.exports = {
     up: async (queryInterface, Sequelize) => {
         await queryInterface.createTable('user_roles', {
             user_id: {
+                allowNull: false,
                 type: Sequelize.UUID,
                 references: { model: 'users', key: 'id' },
             },
             role_id: {
+                allowNull: false,
                 type: Sequelize.UUID,
                 references: { model: 'roles', key: 'id' },
             },

@@ -7,11 +7,13 @@ module.exports = {
                 defaultValue: Sequelize.UUIDV1,
                 primaryKey: true,
             },
-            module_id: {
+            model_id: {
+                allowNull: false,
                 type: Sequelize.UUID,
-                references: { model: 'modules', key: 'id' },
+                references: { model: 'models', key: 'id' },
             },
             action_id: {
+                allowNull: false,
                 type: Sequelize.UUID,
                 references: { model: 'actions', key: 'id' },
             },

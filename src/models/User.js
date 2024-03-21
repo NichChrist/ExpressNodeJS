@@ -17,13 +17,12 @@ module.exports = (sequelize, DataTypes) => {
                 hooks: true,
             });
 
-            User.belongsToMany(models.product, {
-                through: 'user_product',
-                foreignKey: 'user_id',
-                onDelete: 'CASCADE',
-                onUpdate: 'CASCADE',
+            User.belongsTo(models.user, {
+                foreignKey: 'parent_id',
                 hooks: true,
+                as: 'parent',
             });
+
         }
     }
 
@@ -35,17 +34,28 @@ module.exports = (sequelize, DataTypes) => {
                 primaryKey: true,
                 allowNull: false,
             },
-            first_name: DataTypes.STRING,
-            last_name: DataTypes.STRING,
-            email: DataTypes.STRING,
-            password: DataTypes.STRING,
+            username:{
+                type: DataTypes.STRING,
+                allowNull: false,
+            },
+            password: {
+                type: DataTypes.STRING,
+                allowNull: false,  
+            },
             is_active: {
                 type: DataTypes.BOOLEAN,
                 defaultValue: true,
+                allowNull: false,  
             },
-            created_at: DataTypes.DATE,
-            updated_at: DataTypes.DATE,
-            deleted_at: DataTypes.DATE,
+            is_pwd_resetted: {
+                type: DataTypes.BOOLEAN,
+                defaultValue: true,
+                allowNull: false,
+            },
+            parent_id: {
+                type: DataTypes.UUID,
+                allowNull: true,
+            },
         },
         {
             scopes: {

@@ -11,16 +11,19 @@ module.exports = (sequelize, DataTypes) => {
             // define association here
             Permission.belongsToMany(models.role, {
                 through: 'role_permission',
+                foreignKey: 'role_id',
                 onDelete: 'CASCADE',
                 onUpdate: 'CASCADE',
                 hooks: true,
             });
-            Permission.belongsTo(models.module, {
+            Permission.belongsTo(models.model, {
+                foreignKey: 'model_id',
                 onDelete: 'CASCADE',
                 onUpdate: 'CASCADE',
                 hooks: true,
             });
             Permission.belongsTo(models.action, {
+                foreignKey: 'action_id',
                 onDelete: 'CASCADE',
                 onUpdate: 'CASCADE',
                 hooks: true,

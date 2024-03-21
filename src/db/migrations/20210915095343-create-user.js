@@ -8,21 +8,25 @@ module.exports = {
                 primaryKey: true,
                 unique: true,
             },
-            first_name: {
-                type: Sequelize.STRING,
-            },
-            last_name: {
-                type: Sequelize.STRING,
-            },
-            email: {
+            username: {
+                allowNull: false,
                 type: Sequelize.STRING,
             },
             password: {
+                allowNull: false,
                 type: Sequelize.STRING,
-                allowNull: true,
             },
             is_active: {
+                allowNull: false,
                 type: Sequelize.BOOLEAN,
+            },
+            is_pwd_resetted: {
+                allowNull: false,
+                type: Sequelize.BOOLEAN,
+            },
+            parent_id: {
+                type: Sequelize.UUID,
+                references: { model: 'users', key: 'id' },
             },
             created_at: {
                 allowNull: false,

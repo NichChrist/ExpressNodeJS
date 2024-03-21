@@ -1,6 +1,7 @@
 const { Model } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
-    class ActivityLog extends Model {
+    class Models extends Model {
         /**
          * Helper method for defining associations.
          * This method is not a part of Sequelize lifecycle.
@@ -8,26 +9,35 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
+            Models.belongsToMany(models.action, {
+                through: 'permission',
+                foreignKey: 'model_id',
+                onDelete: 'CASCADE',
+                onUpdate: 'CASCADE',
+                hooks: true,
+            });
         }
     }
-    ActivityLog.init(
+
+    Models.init(
         {
             id: {
                 type: DataTypes.UUID,
-                defaultValue: DataTypes.UUIDV1,
+                defaultValue: DataTypes.UUIDV4,
                 primaryKey: true,
+            },
+            name:{
+                type: DataTypes.STRING,
                 allowNull: false,
             },
-            action: DataTypes.ENUM('create', 'update', 'delete'),
-            table: DataTypes.STRING,
-            target_id: DataTypes.UUID,
-            created_at: DataTypes.DATE,
-            updated_at: DataTypes.DATE,
-            deleted_at: DataTypes.DATE,
+            is_shown: {
+                type: DataTypes.BOOLEAN,
+                allowNull: false,
+            },
         },
         {
             sequelize,
-            modelName: 'activity_log',
+            modelName: 'model',
             underscored: true,
             paranoid: true,
             createdAt: 'created_at',
@@ -35,5 +45,5 @@ module.exports = (sequelize, DataTypes) => {
             deletedAt: 'deleted_at',
         }
     );
-    return ActivityLog;
+    return Models;
 };
