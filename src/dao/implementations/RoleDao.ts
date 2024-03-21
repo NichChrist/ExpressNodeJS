@@ -4,7 +4,7 @@ import IRoleDao from '../contracts/IRoleDao';
 import SuperDao from './SuperDao';
 import { Op } from 'sequelize';
 
-const { role: Role, module: Module, action: Action, permission: Permission, role_permission: RolePermission } = models;
+const { role: Role, model: Model, action: Action, permission: Permission, role_permission: RolePermission } = models;
 
 export default class RoleDao extends SuperDao implements IRoleDao {
     constructor() {
@@ -51,8 +51,8 @@ export default class RoleDao extends SuperDao implements IRoleDao {
         const getActionsData = await Action.findAll({ attributes: ['code'], raw: true });
         const actions = getActionsData.map(action => action.code);
         const attributes = [
-            [sequelize.literal('"permissions->module"."id"'), 'module_id'],
-            [sequelize.literal('"permissions->module"."name"'), 'module_name'],
+            [sequelize.literal('"permissions->model"."id"'), 'module_id'],
+            [sequelize.literal('"permissions->model"."name"'), 'module_name'],
             ...actions.map(action => [
                 sequelize.literal(`(CASE WHEN "permissions->action"."code" = '${action}' THEN true ELSE false END)`),
                 action,
@@ -71,7 +71,7 @@ export default class RoleDao extends SuperDao implements IRoleDao {
                 },
                 include: [
                     {
-                        model: Module,
+                        model: Model,
                         attributes: []
                     },
                     {

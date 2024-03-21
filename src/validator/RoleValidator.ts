@@ -55,8 +55,8 @@ export default class RoleValidator {
         const schema = Joi.object({
             name: Joi.string(),
             permissions: Joi.array().items(Joi.object({
-                module_id: Joi.string().regex(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/).required(),
-                module_name: Joi.string().required(),
+                model_id: Joi.string().regex(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/).required(),
+                model_name: Joi.string().required(),
                 create: Joi.boolean().required(),
                 delete: Joi.boolean().required(),
                 read: Joi.boolean().required(),

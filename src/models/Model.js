@@ -30,10 +30,7 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.STRING,
                 allowNull: false,
             },
-            is_shown: {
-                type: DataTypes.BOOLEAN,
-                allowNull: false,
-            },
+            is_shown: DataTypes.BOOLEAN,
         },
         {
             sequelize,

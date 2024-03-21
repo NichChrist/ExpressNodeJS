@@ -6,7 +6,7 @@ import { Request } from 'express';
 import responseHandler from '../../helper/responseHandler';
 import RoleDao from '../../dao/implementations/RoleDao';
 import PermissionDao from '../../dao/implementations/PermissionDao';
-import ModuleDao from '../../dao/implementations/ModuleDao';
+import ModelDao from '../../dao/implementations/ModelDao';
 import IRoleService from '../contracts/IRoleService';
 import { IRole } from '../../models/interfaces/IRole';
 import { IPermission } from '../../models/interfaces/IPermission';
@@ -16,12 +16,12 @@ const { role: Role, action: Action } = models;
 
 export default class RoleService implements IRoleService {
     private roleDao: RoleDao;
-    private moduleDao: ModuleDao;
+    private modelDao: ModelDao;
     private permissionDao: PermissionDao;
 
     constructor() {
         this.roleDao = new RoleDao();
-        this.moduleDao = new ModuleDao();
+        this.modelDao = new ModelDao();
         this.permissionDao = new PermissionDao();
     }
 
@@ -72,9 +72,9 @@ export default class RoleService implements IRoleService {
 
             if (permissions) {
                 for (let i = 0; i < permissions.length; i++) {
-                    // check whether module with this ID AND name exist
-                    const module = await this.moduleDao.getModuleNameById(permissions[i].module_id, permissions[i].module_name);
-                    if (!module) return responseHandler.returnError(httpStatus.NOT_FOUND, 'Invalid module ID(s) or Name');
+                    // check whether model with this ID AND name exist
+                    const model = await this.modelDao.getModelNameById(permissions[i].model_id, permissions[i].model_name);
+                    if (!model) return responseHandler.returnError(httpStatus.NOT_FOUND, 'Invalid model ID(s) or Name');
                 }
             }
 
@@ -108,9 +108,9 @@ export default class RoleService implements IRoleService {
                     const addPermissionIds: string[] = [];
                     // Step 2: Loop to assign permissions to newly created role
                     for (const permission of permissions) {
-                        const { module_id, module_name } = permission;
+                        const { model_id, model_name } = permission;
 
-                        if (module_name !== "user" && (permission.change_password || permission.reset_password)) {
+                        if (model_name !== "user" && (permission.change_password || permission.reset_password)) {
                             delete permission.change_password;
                             delete permission.reset_password;
                         }
@@ -118,16 +118,16 @@ export default class RoleService implements IRoleService {
                         // Step 3: Create permission for every true value in actions 
                         for (const action of actions) {
                             if (permission[action]) {
-                                // Step 4: Find permission between module and action
+                                // Step 4: Find permission between model and action
                                 const actionData = await Action.findOne({ where: { code: action }, raw: true });
-                                const existingPermission = await this.permissionDao.findPermission(module_id, actionData.id);
+                                const existingPermission = await this.permissionDao.findPermission(model_id, actionData.id);
 
                                 if (!existingPermission) {
-                                    // If there is no permission between module and action, then create a new one. After that, push permission id to addPermissionIds
-                                    const newPermission = await this.permissionDao.createNewPermission(module_id, actionData.id, t);
+                                    // If there is no permission between model and action, then create a new one. After that, push permission id to addPermissionIds
+                                    const newPermission = await this.permissionDao.createNewPermission(model_id, actionData.id, t);
                                     addPermissionIds.push(newPermission.dataValues.id);
                                 } else {
-                                    // If permission between module and action already exists, then just push permission id to addPermissionIds
+                                    // If permission between model and action already exists, then just push permission id to addPermissionIds
                                     addPermissionIds.push(existingPermission.id)
                                 }
                             }
@@ -174,9 +174,9 @@ export default class RoleService implements IRoleService {
 
             if (permissions) {
                 for (let i = 0; i < permissions.length; i++) {
-                    let module = await this.moduleDao.getModuleNameById(permissions[i].module_id, permissions[i].module_name)
-                    // check whether module with this ID AND name exist
-                    if (!module) return responseHandler.returnError(httpStatus.NOT_FOUND, 'Invalid module ID(s) or Name');
+                    let model = await this.modelDao.getModelNameById(permissions[i].model_id, permissions[i].model_name)
+                    // check whether model with this ID AND name exist
+                    if (!model) return responseHandler.returnError(httpStatus.NOT_FOUND, 'Invalid model ID(s) or Name');
                 };
             };
 
@@ -204,27 +204,27 @@ export default class RoleService implements IRoleService {
                     const removePermssionIds: string[] = [];
                     // Step 4: For every new permissions data (from body), find if its already exist in the old permissions
                     for (const permission of permissions) {
-                        const { module_id, module_name } = permission;
+                        const { model_id, model_name } = permission;
 
-                        // filter out change_password and reset_password if module is not user
-                        const usedActions = module_name !== 'user'
+                        // filter out change_password and reset_password if model is not user
+                        const usedActions = model_name !== 'user'
                             ? actions.filter(item => item !== 'change_password' && item !== 'reset_password')
                             : actions;
 
-                        // Step 5: Determine whether this permission module already exists in the old permissions data
-                        const isOldPermissionsExist = oldPermissions.find(item => item.module_id === module_id);
+                        // Step 5: Determine whether this permission model already exists in the old permissions data
+                        const isOldPermissionsExist = oldPermissions.find(item => item.model_id === model_id);
 
                         if (isOldPermissionsExist) {
                             // Step 5a: If this permission is found in the old permissions, then update the old permission
                             for (const action of usedActions) {
                                 // Get action and permission data
                                 const actionData = await Action.findOne({ where: { code: action }, raw: true });
-                                const existingPermission = await this.permissionDao.findPermission(module_id, actionData.id);
+                                const existingPermission = await this.permissionDao.findPermission(model_id, actionData.id);
 
                                 if (!existingPermission) {
-                                    // If there is no permission between module and action, then create a new one
+                                    // If there is no permission between model and action, then create a new one
                                     // after that, push permission id to addPermissionIds
-                                    const newPermission = await this.permissionDao.createNewPermission(module_id, actionData.id, t);
+                                    const newPermission = await this.permissionDao.createNewPermission(model_id, actionData.id, t);
                                     addPermissionIds.push(newPermission.dataValues.id as string);
                                 } else {
                                     // If new action is true, but the old one is false, then create a new permission from this role
@@ -243,14 +243,14 @@ export default class RoleService implements IRoleService {
                                 if (permission[action]) {
                                     // Get action and permission data
                                     const actionData = await Action.findOne({ where: { code: action }, raw: true });
-                                    const existingPermission = await this.permissionDao.findPermission(module_id, actionData.id);
+                                    const existingPermission = await this.permissionDao.findPermission(model_id, actionData.id);
 
                                     if (!existingPermission) {
-                                        // If there is no permission between module and action, then create a new one. After that, push permission id to addPermissionIds
-                                        const newPermission = await this.permissionDao.createNewPermission(module_id, actionData.id, t);
+                                        // If there is no permission between model and action, then create a new one. After that, push permission id to addPermissionIds
+                                        const newPermission = await this.permissionDao.createNewPermission(model_id, actionData.id, t);
                                         addPermissionIds.push(newPermission.id);
                                     } else {
-                                        // If permission between module and action already exists, then just push permission id to addPermissionIds
+                                        // If permission between model and action already exists, then just push permission id to addPermissionIds
                                         addPermissionIds.push(existingPermission.id);
                                     };
                                 };

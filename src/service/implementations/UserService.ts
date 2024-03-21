@@ -15,7 +15,7 @@ import { ParamsDictionary } from 'express-serve-static-core';
 import { ParsedQs } from 'qs';
 import { ApiServiceResponse } from '../../@types/apiServiceResponse';
 
-const { user: User, product: Product } = db;
+const { user: User } = db;
 
 export default class UserService implements IUserService {
     private userDao: UserDao;
@@ -54,7 +54,6 @@ export default class UserService implements IUserService {
             if (await this.userDao.isUsernameExists(userBody.username)) {
                 return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.EMAIL_400_TAKEN);
             }
-            console.log(userBody);
           
             let userData = await this.userDao.create(userBody);
 

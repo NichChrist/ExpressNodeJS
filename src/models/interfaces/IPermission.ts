@@ -1,6 +1,6 @@
 export interface IPermission {
-    module_id: string;
-    module_name: string;
+    model_id: string;
+    model_name: string;
     create: boolean;
     read: boolean;
     update: boolean;

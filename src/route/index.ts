@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import authRoute from './authRoute';
 import userRoute from './userRoute';
-import moduleRoute from './moduleRoute';
+import modelRoute from './modelRoute';
 import roleRoute from './roleRoute';
 
 const router = Router();
@@ -20,8 +20,8 @@ const defaultRoutes = [
         route: roleRoute,
     },
     {
-        path: '/modules',
-        route: moduleRoute,
+        path: '/models',
+        route: modelRoute,
     },
 ];
 

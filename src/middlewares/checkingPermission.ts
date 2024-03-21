@@ -37,7 +37,7 @@ export const checkingPermission = (moduleName: string, actionName: string) => as
         });
     }
 
-    const userPermission = allPermissions.find(permission => permission.module_name === moduleName);
+    const userPermission = allPermissions.find(permission => permission.model_name === moduleName);
 
     if (!userPermission?.[actionName]) {
         return res.status(httpStatus.FORBIDDEN).json({

@@ -4,8 +4,8 @@ import httpStatus from 'http-status';
 import Joi from 'joi';
 import ApiError from '../helper/ApiError';
 
-export default class ModuleValidator {
-    async moduleCreateValidator(req: Request, res: Response, next: NextFunction) {
+export default class ModelValidator {
+    async modelCreateValidator(req: Request, res: Response, next: NextFunction) {
         const schema = Joi.object({
             name: Joi.string().required(),
         });
@@ -35,7 +35,7 @@ export default class ModuleValidator {
         }
     }
 
-    async moduleUpdateValidator(req: Request, res: Response, next: NextFunction) {
+    async modelUpdateValidator(req: Request, res: Response, next: NextFunction) {
         // create schema object
         const schema = Joi.object({
             name: Joi.string(),

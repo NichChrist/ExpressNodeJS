@@ -1,23 +1,23 @@
 import { Request, Response } from 'express';
 import httpStatus from 'http-status';
 import { logger } from '../config/logger';
-import ModuleService from '../service/implementations/ModuleService';
+import ModelService from '../service/implementations/ModelService';
 
-export default class ModuleController {
+export default class ModelController {
 
-    private moduleService: ModuleService;
+    private modelService: ModelService;
 
     constructor() {
-        this.moduleService = new ModuleService();
+        this.modelService = new ModelService();
     }
 
-    getModulesData = async (req: Request, res: Response) => {
+    getModelsData = async (req: Request, res: Response) => {
         try {
-            const module = await this.moduleService.getModulesData(req);
-            const { code, message } = module.response;
-            const data: any = module.response.data;
+            const model = await this.modelService.getModelsData(req);
+            const { code, message } = model.response;
+            const data: any = model.response.data;
 
-            res.status(module.statusCode).json({
+            res.status(model.statusCode).json({
                 code: code,
                 message: message,
                 count: data.count,
@@ -32,9 +32,9 @@ export default class ModuleController {
         }
     };
 
-    getModulesDataById = async (req: Request, res: Response) => {
+    getModelsDataById = async (req: Request, res: Response) => {
         try {
-            const data = await this.moduleService.getModulesById(req.params.id)
+            const data = await this.modelService.getModelById(req.params.id)
             const { code, message } = data.response;
             const role = data.response.data;
             res.status(data.statusCode).json({
@@ -51,15 +51,15 @@ export default class ModuleController {
         }
     };
 
-    createModule = async (req: Request, res: Response) => {
+    createModel = async (req: Request, res: Response) => {
         try {
-            const data = await this.moduleService.createNewModule(req.body.name)
+            const data = await this.modelService.createNewModel(req.body.name)
             const { code, message } = data.response;
-            const module = data.response.data;
+            const model = data.response.data;
             res.status(data.statusCode).json({
                 code: code,
                 message: message,
-                data: module,
+                data: model,
             });
         } catch (e) {
             logger.error(e);
@@ -70,9 +70,9 @@ export default class ModuleController {
         }
     }
 
-    deleteModule = async (req: Request, res: Response) => {
+    deleteModel = async (req: Request, res: Response) => {
         try {
-            const data = await this.moduleService.deleteModuleById(req.params.id)
+            const data = await this.modelService.deleteModelById(req.params.id)
             const { code, message } = data.response;
             res.status(data.statusCode).json({
                 code: code,
@@ -87,15 +87,15 @@ export default class ModuleController {
         }
     }
 
-    updateModule = async (req: Request, res: Response) => {
+    updateModel = async (req: Request, res: Response) => {
         try {
-            const data = await this.moduleService.updateModuleById(req.params.id, req.body.name);
+            const data = await this.modelService.updateModelById(req.params.id, req.body.name);
             const { code, message } = data.response;
-            const module = data.response.data;
+            const model = data.response.data;
             res.status(data.statusCode).json({
                 code: code,
                 message: message,
-                data: module
+                data: model
             })
         } catch (e) {
             logger.error(e);
