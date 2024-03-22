@@ -21,6 +21,18 @@ export default class UserValidator {
             confirm_password: Joi.string().valid(Joi.ref('password')).required().messages({
                 "any.only": responseMessageConstant.PASSWORD_CONFIRMATION_422_NOT_MATCHING
             }),
+            name: Joi.string().required().messages({
+                "string.empty": responseMessageConstant.NAME_422_EMPTY,
+                "string.pattern.base": responseMessageConstant.NAME_422_INVALID_FORMAT
+            }),
+            email: Joi.string().email().required().messages({
+                "string.empty": responseMessageConstant.EMAIL_422_EMPTY,
+                "string.email": responseMessageConstant.EMAIL_422_INVALID_FORMAT,
+            }),
+            phone_number: Joi.string().pattern(/^\S*$/).required().messages({
+                "string.empty": responseMessageConstant.PHONENUMBER_422_EMPTY,
+                "string.pattern.base": responseMessageConstant.PHONENUMBER_422_INVALID_FORMAT
+            }),
         });
 
         // schema options

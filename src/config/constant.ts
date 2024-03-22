@@ -16,6 +16,18 @@ const responseMessageConstant = {
     USERNAME_422_EMPTY: '"Username" is not allowed to be empty',
     USERNAME_422_INVALID_FORMAT: '"Username" must be in a valid username format (No Spaces)',
 
+    PHONENUMBER_200_FOUND: 'Phone number Found',
+    PHONENUMBER_400_TAKEN: 'Phone number Taken',
+    PHONENUMBER_404_NOT_FOUND: 'Phone number Not Found',
+    PHONENUMBER_422_EMPTY: '"Phone number" is not allowed to be empty',
+    PHONENUMBER_422_INVALID_FORMAT: '"Phone number" must be in a valid phone number format (No Spaces)',
+
+    NAME_200_FOUND: 'Name Found',
+    NAME_400_TAKEN: 'Name Taken',
+    NAME_404_NOT_FOUND: 'Name Not Found',
+    NAME_422_EMPTY: '"Name" is not allowed to be empty',
+    NAME_422_INVALID_FORMAT: '"Name" must be in a valid name format',
+
     ID_422_INVALID_FORMAT: '"id" must be in a valid UUID format',
 
     IS_ACTIVE_422_INVALID_VALUE: '"is_active" must be boolean',
