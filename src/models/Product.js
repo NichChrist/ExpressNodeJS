@@ -1,7 +1,7 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-    class Action extends Model {
+    class Product extends Model {
         /**
          * Helper method for defining associations.
          * This method is not a part of Sequelize lifecycle.
@@ -9,17 +9,10 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
-            Action.belongsToMany(models.model, {
-                through: 'permission',
-                foreignKey: 'action_id',
-                onDelete: 'CASCADE',
-                onUpdate: 'CASCADE',
-                hooks: true,
-            });
         }
     }
 
-    Action.init(
+    Product.init(
         {
             id: {
                 type: DataTypes.UUID,
@@ -27,22 +20,18 @@ module.exports = (sequelize, DataTypes) => {
                 primaryKey: true,
                 allowNull: false,
             },
+            product_category_id: {
+                type: DataTypes.UUID,
+                allowNull: false,
+            },
             name: {
                 type: DataTypes.STRING,
-                allowNull: false,
-            },
-            code: {
-                type: DataTypes.STRING,
-                allowNull: false,
-            },
-            is_custom: {
-                type: DataTypes.BOOLEAN,
                 allowNull: false,
             },
         },
         {
             sequelize,
-            modelName: 'action',
+            modelName: 'product',
             underscored: true,
             paranoid: true,
             createdAt: 'created_at',
@@ -50,5 +39,5 @@ module.exports = (sequelize, DataTypes) => {
             deletedAt: 'deleted_at',
         }
     );
-    return Action;
+    return Product;
 };
