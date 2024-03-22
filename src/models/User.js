@@ -56,6 +56,18 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.UUID,
                 allowNull: true,
             },
+            name: {
+                type: DataTypes.STRING,
+                allowNull: false,
+            },
+            email: {
+                type: DataTypes.STRING,
+                allowNull: false,
+            },
+            phone_number: {
+                type: DataTypes.STRING,
+                allowNull: false,
+            }
         },
         {
             scopes: {
@@ -64,13 +76,6 @@ module.exports = (sequelize, DataTypes) => {
                 },
                 withoutTimestamp: {
                     attributes: { exclude: ['created_at', 'updated_at', 'deleted_at'] },
-                },
-                dropdown: {
-                    attributes: [
-                        'id',
-                        'email',
-                        [sequelize.literal("first_name || ' ' || last_name"), 'full_name'],
-                    ]
                 },
             },
             sequelize,

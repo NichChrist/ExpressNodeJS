@@ -5,7 +5,6 @@ module.exports = {
                 allowNull: false,
                 primaryKey: true,
                 type: Sequelize.UUID,
-                primaryKey: true,
                 unique: true,
             },
             username: {
@@ -40,6 +39,18 @@ module.exports = {
                 allowNull: true,
                 type: Sequelize.DATE,
             },
+            name: {
+                allowNull: false,
+                type: Sequelize.STRING,
+            },
+            email: {
+                allowNull: false,
+                type: Sequelize.STRING,
+            },
+            phone_number: {
+                allowNull: false,
+                type: Sequelize.STRING,
+            }
         });
     },
 
