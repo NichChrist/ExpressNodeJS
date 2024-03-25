@@ -7,7 +7,7 @@ module.exports = {
                 type: Sequelize.UUID,
                 unique: true,
             },
-            province_id: {
+            city_id: {
                 allowNull: false,
                 type: Sequelize.UUID,
                 references: { model: 'cities', key: 'id' },
