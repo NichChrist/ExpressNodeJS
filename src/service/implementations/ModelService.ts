@@ -78,11 +78,8 @@ export default class ModelService implements IModelService {
             if (!(await this.modelDao.isModelExists(id))) {
                 return responseHandler.returnError(httpStatus.NOT_FOUND, 'Model Not Found');
             }
-            const model = await Model.findByPk(id);
 
-            model.setActions([]);
-
-            await Model.destroy({ where: { id: id } });
+            await this.modelDao.deleteById(id);
             return responseHandler.returnSuccess(httpStatus.OK, 'Successfully Delete Model');
         } catch (e) {
             console.log(e);

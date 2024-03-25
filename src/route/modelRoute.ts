@@ -10,7 +10,7 @@ const router = Router();
 const modelController = new ModelController();
 const modelValidator = new ModelValidator();
 
-// auth()
+//auth()
 
 router.get(
     '/',

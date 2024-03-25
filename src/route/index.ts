@@ -3,6 +3,7 @@ import authRoute from './authRoute';
 import userRoute from './userRoute';
 import modelRoute from './modelRoute';
 import roleRoute from './roleRoute';
+import businessTypeRoute from './businessTypeRoute';
 
 const router = Router();
 
@@ -22,6 +23,10 @@ const defaultRoutes = [
     {
         path: '/models',
         route: modelRoute,
+    },
+    {
+        path: '/business-type',
+        route: businessTypeRoute,
     },
 ];
 

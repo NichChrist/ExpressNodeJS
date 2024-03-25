@@ -33,6 +33,10 @@ export default class ModelDao extends SuperDao implements IModelDao {
         });
     };
 
+    async deleteById(id) {
+        return Model.destroy({ where: { id } });
+    }
+
     async findModel(id: string) {
         return Model.findOne({
             attributes: {
