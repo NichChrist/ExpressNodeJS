@@ -50,11 +50,6 @@ module.exports = {
             phone_number: {
                 allowNull: false,
                 type: Sequelize.STRING,
-            },
-            outlet_id: {
-                allowNull: false,
-                type: Sequelize.UUID,
-                references: { model: 'outlets', key: 'id' },
             }
         });
     },
