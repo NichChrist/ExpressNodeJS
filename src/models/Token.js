@@ -24,8 +24,10 @@ module.exports = (sequelize, DataTypes) => {
             sequelize,
             modelName: 'token',
             underscored: true,
+            paranoid: true,
             createdAt: 'created_at',
             updatedAt: 'updated_at',
+            deletedAt: 'deleted_at'
         },
     );
     return Token;
