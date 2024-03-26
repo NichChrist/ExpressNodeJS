@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
-            District.hasMany(models.subdistric, {
+            District.hasMany(models.subdistrict, {
                 foreignKey: 'district_id',
                 onDelete: 'CASCADE',
                 onUpdate: 'CASCADE',

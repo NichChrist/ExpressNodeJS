@@ -14,6 +14,12 @@ module.exports = (sequelize, DataTypes) => {
                 hooks: true,
                 as: 'parent',
             });
+
+            Outlet.hasMany(models.user, {
+                foreignKey: 'outlet_id',
+                hooks: true,
+            });
+            
         }
     }
 
@@ -23,10 +29,6 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.UUID,
                 defaultValue: DataTypes.UUIDV4,
                 primaryKey: true,
-                allowNull: false,
-            },
-            user_id: {
-                type: DataTypes.UUID,
                 allowNull: false,
             },
             business_type_id: {
@@ -49,11 +51,11 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.TEXT,
                 allowNull: true,
             },
-            user_id: {
+            parent_id: {
                 type: DataTypes.UUID,
                 allowNull: true,
             },
-            user_id: {
+            subdistrict_id: {
                 type: DataTypes.UUID,
                 allowNull: true,
             },
@@ -61,10 +63,10 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.STRING,
                 allowNull: true,
             },
-            postal_code: {
+            phone: {
                 type: DataTypes.STRING,
                 allowNull: false,
-            },
+            },  
             city: {
                 type: DataTypes.STRING,
                 allowNull: true,

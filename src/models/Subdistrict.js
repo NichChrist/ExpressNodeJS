@@ -1,7 +1,7 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-    class Subdistric extends Model {
+    class Subdistrict extends Model {
         /**
          * Helper method for defining associations.
          * This method is not a part of Sequelize lifecycle.
@@ -9,8 +9,8 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
-            Subdistric.hasMany(models.outlet, {
-                foreignKey: 'subdistric_id',
+            Subdistrict.hasMany(models.outlet, {
+                foreignKey: 'subdistrict_id',
                 onDelete: 'CASCADE',
                 onUpdate: 'CASCADE',
                 hooks: true,
@@ -18,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
         }
     }
 
-    Subdistric.init(
+    Subdistrict.init(
         {
             id: {
                 type: DataTypes.UUID,
@@ -26,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
                 primaryKey: true,
                 allowNull: false,
             },
-            Subdistric_id: {
+            district_id: {
                 type: DataTypes.UUID,
                 allowNull: false,
             },
@@ -41,7 +41,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         {
             sequelize,
-            modelName: 'subdistric',
+            modelName: 'subdistrict',
             underscored: true,
             paranoid: true,
             createdAt: 'created_at',
@@ -49,5 +49,5 @@ module.exports = (sequelize, DataTypes) => {
             deletedAt: 'deleted_at',
         }
     );
-    return Subdistric;
+    return Subdistrict;
 };

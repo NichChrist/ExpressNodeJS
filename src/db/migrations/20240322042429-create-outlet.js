@@ -7,10 +7,6 @@ module.exports = {
                 type: Sequelize.UUID,
                 unique: true,
             },
-            user_id: {
-                allowNull: false,
-                type: Sequelize.UUID,
-            },
 			business_type_id: {
                 allowNull: false,
                 type: Sequelize.UUID,
