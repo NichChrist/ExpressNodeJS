@@ -1,10 +1,11 @@
 import { Request } from 'express';
 import { ApiServiceResponse } from '../../@types/apiServiceResponse';
+import { IOutlet } from '../../models/interfaces/IOutlet';
 
-export default interface IModelService {
-    getModelsData: (req: Request) => Promise<ApiServiceResponse>
-    getModelById: (id: string) => Promise<ApiServiceResponse>
-    createNewModel: (name: string) => Promise<ApiServiceResponse>
-    deleteModelById: (id: string) => Promise<ApiServiceResponse>
-    updateModelById: (id: string, name: string) => Promise<ApiServiceResponse>
+export default interface IOutletervice {
+    getOutletsData: (req: Request) => Promise<ApiServiceResponse>
+    getOutletDataById: (id: string) => Promise<ApiServiceResponse>
+    createNewOutlet: (outletBody: IOutlet, req: Request) => Promise<ApiServiceResponse>
+    deleteOutletById: (id: string) => Promise<ApiServiceResponse>
+    updateOutletById: (outletBody: IOutlet, id: string) => Promise<ApiServiceResponse>
 }

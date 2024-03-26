@@ -44,7 +44,7 @@ export default class BusinessTypeService implements IBusinessTypeService {
     getBusinessTypeById = async (id: string) => {
         try {
             if (!(await this.businessTypeDao.isBusinessTypeExists(id))) {
-                return responseHandler.returnError(httpStatus.NOT_FOUND, 'BusinessType Not Found');
+                return responseHandler.returnError(httpStatus.NOT_FOUND, 'Business Type Not Found');
             }
 
             const BusinessType = await this.businessTypeDao.findBusinessType(id);

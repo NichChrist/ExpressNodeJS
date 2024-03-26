@@ -4,6 +4,7 @@ import userRoute from './userRoute';
 import modelRoute from './modelRoute';
 import roleRoute from './roleRoute';
 import businessTypeRoute from './businessTypeRoute';
+import outletRoute from './OutletRoute'
 
 const router = Router();
 
@@ -27,6 +28,10 @@ const defaultRoutes = [
     {
         path: '/business-type',
         route: businessTypeRoute,
+    },
+    {
+        path: '/outlet',
+        route: outletRoute,
     },
 ];
 

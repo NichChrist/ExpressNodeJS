@@ -6,6 +6,7 @@ import responseHandler from '../../helper/responseHandler';
 import IModelService from '../contracts/IModelService';
 import ModelDao from '../../dao/implementations/ModelDao';
 import models from '../../models';
+import { responseMessageConstant } from '../../config/constant';
 
 const { model: Model } = models;
 
@@ -34,25 +35,25 @@ export default class ModelService implements IModelService {
 
             const allData = await Model.findAndCountAll(options)
             
-            return responseHandler.returnSuccess(httpStatus.OK, 'Models retrieved successfully', allData);
+            return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant.MODEL_200_FETCHED_ALL, allData);
         } catch (e) {
             console.log(e);
-            return responseHandler.returnError(httpStatus.BAD_REQUEST, 'Something Went Wrong');
+            return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.HTTP_502_BAD_GATEWAY);
         }
     };
 
     getModelById = async (id: string) => {
         try {
             if (!(await this.modelDao.isModelExists(id))) {
-                return responseHandler.returnError(httpStatus.NOT_FOUND, 'Model Not Found');
+                return responseHandler.returnError(httpStatus.NOT_FOUND, responseMessageConstant.MODEL_404_NOT_FOUND);
             }
 
             const model = await this.modelDao.findModel(id);
 
-            return responseHandler.returnSuccess(httpStatus.OK, 'Successfully Fetch A Model Data', model);
+            return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant.MODEL_200_FETCHED_SINGLE, model);
         } catch (e) {
             console.log(e);
-            return responseHandler.returnError(httpStatus.BAD_REQUEST, 'Something Went Wrong');
+            return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.HTTP_502_BAD_GATEWAY);
         }
     };
 
@@ -69,28 +70,28 @@ export default class ModelService implements IModelService {
             return responseHandler.returnSuccess(httpStatus.CREATED, 'Successfully Create Model', data);
         } catch (e) {
             console.log(e);
-            return responseHandler.returnError(httpStatus.BAD_REQUEST, 'Something Went Wrong');
+            return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.HTTP_502_BAD_GATEWAY);
         }
-    }
+    };
 
     deleteModelById = async (id: string) => {
         try {
             if (!(await this.modelDao.isModelExists(id))) {
-                return responseHandler.returnError(httpStatus.NOT_FOUND, 'Model Not Found');
+                return responseHandler.returnError(httpStatus.NOT_FOUND, responseMessageConstant.MODEL_404_NOT_FOUND);
             }
 
             await this.modelDao.deleteById(id);
-            return responseHandler.returnSuccess(httpStatus.OK, 'Successfully Delete Model');
+            return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant.MODEL_200_DELETED);
         } catch (e) {
             console.log(e);
-            return responseHandler.returnError(httpStatus.BAD_REQUEST, 'Something Went Wrong');
+            return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.HTTP_502_BAD_GATEWAY);
         }
     }
 
     updateModelById = async (id: string, name: string) => {
         try {
             if (!(await this.modelDao.isModelExists(id))) {
-                return responseHandler.returnError(httpStatus.NOT_FOUND, 'Model Not Found');
+                return responseHandler.returnError(httpStatus.NOT_FOUND, responseMessageConstant.MODEL_404_NOT_FOUND);
             }
 
             let data = await this.modelDao.findModel(id);
@@ -111,10 +112,10 @@ export default class ModelService implements IModelService {
                 delete data.deleted_at;
             }
 
-            return responseHandler.returnSuccess(httpStatus.OK, 'Successfully Update Model', data);
+            return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant.MODEL_200_UPDATED, data);
         } catch (e) {
             console.log(e);
-            return responseHandler.returnError(httpStatus.BAD_REQUEST, 'Something Went Wrong');
+            return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.HTTP_502_BAD_GATEWAY);
         }
     }
 }

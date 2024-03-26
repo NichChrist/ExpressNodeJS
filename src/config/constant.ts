@@ -53,6 +53,20 @@ const responseMessageConstant = {
     USER_201_REGISTERED: 'Successfully Registered The User',
     USER_404_NOT_FOUND: 'User Not Found',
 
+    OUTLET_200_DELETED: 'Successfully Deleted A Single Outlet',
+    OUTLET_200_FETCHED_ALL: 'Successfully Fetched All Outlets',
+    OUTLET_200_FETCHED_SINGLE: 'Successfully Fetched A Single Outlet',
+    OUTLET_200_UPDATED: 'Successfully Updated A Single Outlet',
+    OUTLET_201_REGISTERED: 'Successfully Registered The Outlet',
+    OUTLET_404_NOT_FOUND: 'Outlet Not Found',
+
+    MODEL_200_DELETED: 'Successfully Deleted A Single Model',
+    MODEL_200_FETCHED_ALL: 'Successfully Fetched All Models',
+    MODEL_200_FETCHED_SINGLE: 'Successfully Fetched A Single Model',
+    MODEL_200_UPDATED: 'Successfully Updated A Single Model',
+    MODEL_201_REGISTERED: 'Successfully Registered The Model',
+    MODEL_404_NOT_FOUND: 'Model Not Found',
+
     PRODUCT_201_CREATED: 'Successfully Created The Product',
     PRODUCT_CODE_400_TAKEN: 'Product Code Taken',
     PRODUCT_200_FETCHED_ALL: 'Successfully Fetched All Products',
