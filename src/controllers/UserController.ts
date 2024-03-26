@@ -90,7 +90,7 @@ export default class UserController {
 
     create = async (req: Request, res: Response) => {
         try {
-            const user = await this.userService.createUser(req.body);
+            const user = await this.userService.createUser(req.body, req);
             const { message, data } = user.response;
             const code = user.statusCode;
             res.status(code).send({ code, message, data });
@@ -99,7 +99,6 @@ export default class UserController {
             res.status(httpStatus.BAD_GATEWAY).send(e);
         }
     };
-
 
     checkUsername = async (req: Request, res: Response) => {
         try {

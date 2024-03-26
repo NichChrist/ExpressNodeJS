@@ -8,7 +8,8 @@ const router = Router();
 const authController = new AuthController();
 const userValidator = new UserValidator();
 
-router.post('/register', userValidator.userCreateValidator, authController.register);
+router.post('/register-owner', userValidator.ownerCreateValidator, authController.registerOwner);
+router.post('/register-user', auth(), userValidator.userCreateValidator, authController.register);
 router.post('/username-exists', userValidator.checkUsernameValidator, authController.checkUsername);
 router.post('/login', userValidator.userLoginValidator, authController.login);
 router.post('/refresh-token', authController.refreshTokens);

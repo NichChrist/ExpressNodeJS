@@ -99,6 +99,8 @@ export default class OutletValidator {
                 "string.empty": '"Code" is not allowed to be empty',
                 "string.pattern.base": '"Code" must be in a valid phone number format (No Spaces)'
             }),
+            description: Joi.string().allow(null, ''),
+            address: Joi.string().allow(null, ''),
             phone: Joi.string().optional().pattern(/^\S*$/).messages({
                 "string.empty": responseMessageConstant.PHONENUMBER_422_EMPTY,
                 "string.pattern.base": responseMessageConstant.PHONENUMBER_422_INVALID_FORMAT

@@ -28,7 +28,7 @@ export default class AuthController {
 
     register = async (req: Request, res: Response) => {
         try {
-            const user: ApiServiceResponse = await this.userService.createUser(req.body);
+            const user: ApiServiceResponse = await this.userService.createUser(req.body, req);
             let tokens = {};
             if (user.response.code === 200) {
                 tokens = await this.tokenService.generateAuthTokens(<IUser>user.response.data);
@@ -36,6 +36,18 @@ export default class AuthController {
             const { message, data } = user.response;
             const code = user.statusCode;
             res.status(user.statusCode).send({ code, message, data });
+        } catch (e) {
+            logger.error(e);
+            res.status(httpStatus.BAD_GATEWAY).send(e);
+        }
+    };
+
+    registerOwner = async (req: Request, res: Response) => {
+        try {
+            const user = await this.authService.registerOwner(req.body);
+            const { message, data } = user.response;
+            const code = user.statusCode;
+            res.status(code).send({ code, message, data });
         } catch (e) {
             logger.error(e);
             res.status(httpStatus.BAD_GATEWAY).send(e);

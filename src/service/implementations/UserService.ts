@@ -11,17 +11,16 @@ import { IUser } from '../../models/interfaces/IUser';
 import IUserService from '../contracts/IUserService';
 import { responseMessageConstant } from '../../config/constant';
 import db, { sequelize } from '../../models';
-import { ParamsDictionary } from 'express-serve-static-core';
-import { ParsedQs } from 'qs';
-import { ApiServiceResponse } from '../../@types/apiServiceResponse';
 
-const { user: User } = db;
+const { user: User, outlet: Outlet } = db;
 
 export default class UserService implements IUserService {
     private userDao: UserDao;
 
+
     constructor() {
         this.userDao = new UserDao();
+
     }
 
     listUsers = async (query) => {
@@ -45,11 +44,13 @@ export default class UserService implements IUserService {
         }
     }
 
-    createUser = async (userBody: IUser) => {
+    createUser = async (userBody: IUser, req: Request) => {
         try {
             userBody.username = userBody.username.toLowerCase();
             userBody.password = bcrypt.hashSync(userBody.password!, 8);
             userBody.is_active = true;
+            userBody.parent_id = req.userInfo?.id
+            userBody.outlet_id = req.userInfo?.outlet_id
 
             if (await this.userDao.isUsernameExists(userBody.username)) {
                 return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.EMAIL_400_TAKEN);
