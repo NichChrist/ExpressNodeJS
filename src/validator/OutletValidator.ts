@@ -31,6 +31,8 @@ export default class OutletValidator {
             subdistrict_id: Joi.string().guid().allow(null, '').messages({
                 "string.guid": '"subdistrict_id" must be in a valid UUID format',
             }),
+            description: Joi.string().allow(null, ''),
+            address: Joi.string().allow(null, ''),
         });
 
         // schema options
@@ -53,7 +55,7 @@ export default class OutletValidator {
             return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, errorMessage));
         } else {
             try {
-                if (['', null].includes(value.subdistrict_id)) {
+                if (!['', null].includes(value.subdistrict_id)) {
 
                     const subdistrict = await Subdistrict.findByPk(value.subdistrict_id);
                     
@@ -61,13 +63,6 @@ export default class OutletValidator {
                         return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'Subdistrict Not Found'));
                     }
                     
-                    const postalCode = await Subdistrict.findOne({
-                        attributes: ['postal_code'],
-                        where: {
-                            id: value.subdistrict_id,
-                        }
-                    });
-                    value.postal_code = postalCode.postal_code;
                 } else {
                     value.subdistrict_id = null;
                 }
@@ -89,25 +84,25 @@ export default class OutletValidator {
     async outletUpdateValidator(req: Request, res: Response, next: NextFunction) {
         // create schema object
         const schema = Joi.object({
-            name: Joi.string().optional().allow(null, '').messages({
-                "string.empty": responseMessageConstant.NAME_422_EMPTY,
-            }),
-            business_type_id: Joi.string().guid().optional().allow(null, '').messages({
+            business_type_id: Joi.string().guid().required().messages({
                 "string.guid": '"business_type_id" must be in a valid UUID format',
             }),
-            code: Joi.string().optional().allow(null, '').pattern(/^\S*$/).messages({
+            name: Joi.string().required().messages({
+                "string.empty": responseMessageConstant.NAME_422_EMPTY,
+            }),
+            code: Joi.string().required().messages({
                 "string.empty": '"Code" is not allowed to be empty',
                 "string.pattern.base": '"Code" must be in a valid phone number format (No Spaces)'
             }),
-            description: Joi.string().allow(null, ''),
-            address: Joi.string().allow(null, ''),
-            phone: Joi.string().optional().pattern(/^\S*$/).messages({
+            phone: Joi.string().pattern(/^\S*$/).required().messages({
                 "string.empty": responseMessageConstant.PHONENUMBER_422_EMPTY,
                 "string.pattern.base": responseMessageConstant.PHONENUMBER_422_INVALID_FORMAT
             }),
-            subdistrict_id: Joi.string().guid().optional().allow(null, '').messages({
+            subdistrict_id: Joi.string().guid().allow(null, '').messages({
                 "string.guid": '"subdistrict_id" must be in a valid UUID format',
             }),
+            description: Joi.string().allow(null, ''),
+            address: Joi.string().allow(null, ''),
         });
 
         // schema options
@@ -130,24 +125,21 @@ export default class OutletValidator {
             return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, errorMessage));
         } else {
             try {
-                if (['', null].includes(value.subdistrict_id)) {
+                if (!['', null].includes(value.subdistrict_id)) {
 
                     const subdistrict = await Subdistrict.findByPk(value.subdistrict_id);
-
+                    
                     if(!subdistrict) {
                         return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'Subdistrict Not Found'));
                     }
                     
-                    const postalCode = await Subdistrict.findOne({
-                        attributes: ['postal_code'],
-                        where: {
-                            id: value.subdistrict_id,
-                        }
-                    });
-
-                    value.postal_code = postalCode.postal_code;
                 } else {
-                    delete value.subdistrict_id;
+                    value.subdistrict_id = null;
+                }
+                    
+                const businessType = await BusinessType.findByPk(value.business_type_id);
+                if (businessType === null) {
+                    return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'Business Type Not Found'));
                 }
                 
                 req.body = value;

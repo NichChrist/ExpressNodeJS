@@ -38,10 +38,6 @@ module.exports = {
                 type: Sequelize.UUID,
 				references: { model: 'subdistricts', key: 'id' },
             },
-			postal_code: {
-                allowNull: true,
-                type: Sequelize.STRING,
-            },
 			phone: {
                 allowNull: false,
                 type: Sequelize.STRING,

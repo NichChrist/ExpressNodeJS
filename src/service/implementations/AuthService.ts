@@ -94,7 +94,7 @@ export default class AuthService implements IAuthService {
                 ownerBody.is_active = true;
 
                 if (await this.userDao.isUsernameExists(ownerBody.username)) {
-                    return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.EMAIL_400_TAKEN);
+                    return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.USERNAME_400_TAKEN);
                 }
 
                 if (await this.outletDao.isOutletNameExists(ownerBody.outlet_name)) {
@@ -117,6 +117,8 @@ export default class AuthService implements IAuthService {
 
                 }
 
+                console.log(outletBody)
+
                 const dataOutlet =  await Outlet.create(
                     outletBody,
                     {
@@ -134,7 +136,7 @@ export default class AuthService implements IAuthService {
                 }
 
                 ownerData = await User.create(
-                    userBody,
+                    userBody, 
                     {
                         transaction: t
                     });

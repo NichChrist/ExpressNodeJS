@@ -49,6 +49,12 @@ export default class OutletService implements IOutletService {
             if (!outletData) {
                 return responseHandler.returnError(httpStatus.NOT_FOUND, responseMessageConstant.OUTLET_404_NOT_FOUND);
             }
+            if (await this.outletDao.isOutletNameExists(outletBody.name)) {
+                return responseHandler.returnError(httpStatus.BAD_REQUEST, "Outlet Name Taken");
+            }
+            if (await this.outletDao.isOutletCodeExists(outletBody.code)) {
+                return responseHandler.returnError(httpStatus.BAD_REQUEST, "Outlet Code Taken");
+            }
 
             let updatedUserData = await this.outletDao.updateById(outletBody, id);
             if (updatedUserData[0] !== 1) {
