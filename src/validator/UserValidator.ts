@@ -79,7 +79,7 @@ export default class UserValidator {
             return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, errorMessage));
         } else {
             try {
-                if (['', null].includes(value.subdistrict_id)) {
+                if (!['', null].includes(value.subdistrict_id)) {
 
                     const subdistrict = await Subdistrict.findByPk(value.subdistrict_id);
                     
@@ -87,13 +87,6 @@ export default class UserValidator {
                         return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'Subdistrict Not Found'));
                     }
                     
-                    const postalCode = await Subdistrict.findOne({
-                        attributes: ['postal_code'],
-                        where: {
-                            id: value.subdistrict_id,
-                        }
-                    });
-                    value.postal_code = postalCode.postal_code;
                 } else {
                     value.subdistrict_id = null;
                 }
