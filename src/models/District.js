@@ -36,6 +36,18 @@ module.exports = (sequelize, DataTypes) => {
             },
         },
         {
+            scopes: {
+                withoutTimestamp: {
+                    attributes: { exclude: ['created_at', 'updated_at', 'deleted_at'] },
+                },
+                dropdown: {
+                    attributes: [
+                        'id',
+                        'name',
+                        'city_id',
+                    ]
+                },
+            },
             sequelize,
             modelName: 'district',
             underscored: true,

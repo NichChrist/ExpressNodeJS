@@ -5,6 +5,10 @@ import modelRoute from './modelRoute';
 import roleRoute from './roleRoute';
 import businessTypeRoute from './businessTypeRoute';
 import outletRoute from './OutletRoute'
+import provinceRoute from './provinceRoute'
+import cityRoute from './cityRoute'
+import districtRoute from './districtRoute'
+import subdistrictRoute from './subdistrictRoute'
 
 const router = Router();
 
@@ -32,6 +36,22 @@ const defaultRoutes = [
     {
         path: '/outlet',
         route: outletRoute,
+    },
+    {
+        path: '/province',
+        route: provinceRoute,
+    },
+    {
+        path: '/city',
+        route: cityRoute,
+    },
+    {
+        path: '/district',
+        route: districtRoute,
+    },
+    {
+        path: '/subdistrict',
+        route: subdistrictRoute,
     },
 ];
 
