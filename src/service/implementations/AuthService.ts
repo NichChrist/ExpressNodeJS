@@ -116,9 +116,6 @@ export default class AuthService implements IAuthService {
                     phone: ownerBody.phone,
 
                 }
-
-                console.log(outletBody)
-
                 const dataOutlet =  await Outlet.create(
                     outletBody,
                     {
