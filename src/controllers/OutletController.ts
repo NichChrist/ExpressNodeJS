@@ -11,24 +11,15 @@ export default class OutletController {
         this.outletService = new OutletService();
     }
 
-    getOutletsData = async (req: Request, res: Response) => {
+    listOutlets = async (req: Request, res: Response) => {
         try {
-            const Outlet = await this.outletService.getOutletsData(req);
-            const { code, message } = Outlet.response;
-            const data: any = Outlet.response.data;
-
-            res.status(Outlet.statusCode).json({
-                code: code,
-                message: message,
-                count: data.count,
-                data: data.rows,
-            });
+            const users = await this.outletService.listOutlet(req.query);
+            const { message, data } = users.response;
+            const code = users.statusCode;
+            res.status(code).send({ code, message, data });
         } catch (e) {
             logger.error(e);
-            res.status(httpStatus.BAD_GATEWAY).json({
-                status: httpStatus.BAD_GATEWAY,
-                message: 'Something Went Wrong',
-            });
+            res.status(httpStatus.BAD_GATEWAY).send(e);
         }
     };
 

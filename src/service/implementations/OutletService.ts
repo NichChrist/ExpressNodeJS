@@ -21,14 +21,6 @@ export default class OutletService implements IOutletService {
 
     createNewOutlet = async (outletBody: IOutlet) => {
         try {
-
-            if (await this.outletDao.isOutletNameExists(outletBody.name)) {
-                return responseHandler.returnError(httpStatus.BAD_REQUEST, "Outlet Name Taken");
-            }
-            if (await this.outletDao.isOutletCodeExists(outletBody.code)) {
-                return responseHandler.returnError(httpStatus.BAD_REQUEST, "Outlet Code Taken");
-            }
-
             let outletData = await this.outletDao.create(outletBody);
 
             if (!outletData) {
@@ -49,12 +41,6 @@ export default class OutletService implements IOutletService {
             if (!outletData) {
                 return responseHandler.returnError(httpStatus.NOT_FOUND, responseMessageConstant.OUTLET_404_NOT_FOUND);
             }
-            if (await this.outletDao.isOutletNameExists(outletBody.name)) {
-                return responseHandler.returnError(httpStatus.BAD_REQUEST, "Outlet Name Taken");
-            }
-            if (await this.outletDao.isOutletCodeExists(outletBody.code)) {
-                return responseHandler.returnError(httpStatus.BAD_REQUEST, "Outlet Code Taken");
-            }
 
             let updatedUserData = await this.outletDao.updateById(outletBody, id);
             if (updatedUserData[0] !== 1) {
@@ -69,26 +55,15 @@ export default class OutletService implements IOutletService {
         }
     };
 
-    getOutletsData = async (req: Request) => {
+    listOutlet = async (query) => {
         try {
-            const pagination = req.query.pagination;
-            let options = {
-                attributes: {
-                    exclude: ['deleted_at']
-                },
-            };
-            if (pagination == 'true') {
-                const row: any = req.query.row;
-                const page: any = req.query.page;
-                const offset = (page - 1) * row;
-                options['offset'] = offset;
-                options['limit'] = row;
-            }
-            const allData = await Outlet.findAndCountAll(options);
-            return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant.OUTLET_200_FETCHED_ALL, allData);
+            const { pagination, page, row } = query;
+            let provinceData = await this.outletDao.list(['withoutTimestamp'], pagination, page, row);
+            console.log(provinceData)
+            return responseHandler.returnSuccess(httpStatus.OK, 'Successfully Fetched All Outlet', provinceData);
         } catch (e) {
             console.log(e);
-            return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.HTTP_502_BAD_GATEWAY);
+            return responseHandler.returnError(httpStatus.BAD_GATEWAY, responseMessageConstant.HTTP_502_BAD_GATEWAY);
         }
     }
 

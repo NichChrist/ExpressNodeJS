@@ -15,7 +15,7 @@ const outletValidator = new OutletValidator();
 router.get(
     '/',
     parameterCheck(),
-    outletController.getOutletsData
+    outletController.listOutlets
 );
 router.get(
     '/:id',
@@ -35,6 +35,7 @@ router.delete(
 );
 router.put(
     '/:id',
+    auth(),
     idCheck(),
     outletValidator.outletUpdateValidator,
     outletController.updateOutlet

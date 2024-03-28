@@ -9,6 +9,19 @@ export default class OutletDao extends SuperDao implements IOutletDao {
         super(Outlet);
     }
 
+    async list(scopes, pagination = 'true', page = 1, row = 10) {
+        const option = {};
+
+        if (pagination !== 'false') {
+            Object.assign(option, {
+                offset: (+page - 1) * +row,
+                limit: +row,
+            });
+        }
+
+        return Outlet.scope(scopes).findAll(option);
+    }
+
     async isOutletExists(id: string) {
         return Outlet.count({ where: { id } }).then((count) => {
             if (count != 0) {
@@ -37,7 +50,7 @@ export default class OutletDao extends SuperDao implements IOutletDao {
     }
 
     
-    async deleteById(id) {
+    async deleteById(id: string) {
         return Outlet.destroy({ where: { id } });
     }
     
@@ -50,7 +63,7 @@ export default class OutletDao extends SuperDao implements IOutletDao {
         })
     }
     
-    async getById(id) {
+    async getById(id: string) {
         return Outlet.findOne({ where: { id } });
     }
 

@@ -65,6 +65,11 @@ module.exports = (sequelize, DataTypes) => {
             },  
         },
         {
+            scopes: {
+                withoutTimestamp: {
+                    attributes: { exclude: ['created_at', 'updated_at', 'deleted_at'] },
+                },
+            },
             sequelize,
             modelName: 'outlet',
             underscored: true,
