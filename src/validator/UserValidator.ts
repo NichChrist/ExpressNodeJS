@@ -1,12 +1,13 @@
 /* eslint-disable class-methods-use-this */
 import { NextFunction, Request, Response } from 'express';
+import * as bcrypt from 'bcrypt';
 import httpStatus from 'http-status';
 import Joi from 'joi';
 import ApiError from '../helper/ApiError';
 import { responseMessageConstant } from '../config/constant';
 import models from '../models';
 
-const {subdistrict: Subdistrict, business_type: BusinessType} = models;
+const {subdistrict: Subdistrict, business_type: BusinessType, outlet: Outlet, user: User} = models;
 
 export default class UserValidator {
 
@@ -44,9 +45,9 @@ export default class UserValidator {
             outlet_name: Joi.string().required().messages({
                 "string.empty": responseMessageConstant.NAME_422_EMPTY,
             }),
-            code: Joi.string().required().messages({
+            code: Joi.string().pattern(/^\S*$/).required().messages({
                 "string.empty": '"Code" is not allowed to be empty',
-                "string.pattern.base": '"Code" must be in a valid phone number format (No Spaces)'
+                "string.pattern.base": '"Code" must be in a valid code format (No Spaces)'
             }),
             description: Joi.string().allow(null, ''),
             address: Joi.string().allow(null, ''),
@@ -79,21 +80,59 @@ export default class UserValidator {
             return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, errorMessage));
         } else {
             try {
-                if (!['', null].includes(value.subdistrict_id)) {
+                //preprocessing
+                value.password = bcrypt.hashSync(value.password!, 8);
+                value.is_active = true;
+                
+                //username
+                //LowerCase the value.username
+                value.username = value.username.toLowerCase();
+                //Find value.code in DB that is not self
+                const ownerName = await User.findOne({
+                    where: {
+                        username: value.username
+                    }
+                });
+                //if the const is true throw error
+                if (ownerName){
+                    return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, responseMessageConstant.USERNAME_400_TAKEN)); 
+                }
 
+                //bussinessType
+                //Check does the bussinessType exist or not    
+                const businessType = await BusinessType.findByPk(value.business_type_id);
+                //if it doesn't exist kaboom throw error
+                if (!businessType) {
+                    return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'Business Type Not Found'));
+                }
+
+                //subdistrict_id
+                //If the value.subdistrict_id not null 
+                if (!['', null].includes(value.subdistrict_id)) {
+                    //Check does the bussinessType exist or not  
                     const subdistrict = await Subdistrict.findByPk(value.subdistrict_id);
-                    
+                    //if it doesn't exist kaboom throw error
                     if(!subdistrict) {
                         return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'Subdistrict Not Found'));
                     }
-                    
+                // else the value.subdistrict_id null
                 } else {
+                    //just empty it
                     value.subdistrict_id = null;
                 }
-                    
-                const businessType = await BusinessType.findByPk(value.business_type_id);
-                if (businessType === null) {
-                    return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'Business Type Not Found'));
+
+                //code
+                //UpperCase the value.code
+                value.code = value.code.toUpperCase();
+                //Find value.code in DB that is not self
+                const outletCode = await Outlet.findOne({
+                    where: {
+                        code: value.code
+                    }
+                });
+                //if the const is true throw error
+                if (outletCode){
+                    return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'Outlet Code is Taken')); 
                 }
                 
                 req.body = value;

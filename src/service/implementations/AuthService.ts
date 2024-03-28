@@ -89,22 +89,6 @@ export default class AuthService implements IAuthService {
             try {
                 let ownerData: any
 
-                ownerBody.username = ownerBody.username.toLowerCase();
-                ownerBody.password = bcrypt.hashSync(ownerBody.password!, 8);
-                ownerBody.is_active = true;
-
-                if (await this.userDao.isUsernameExists(ownerBody.username)) {
-                    return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.USERNAME_400_TAKEN);
-                }
-
-                if (await this.outletDao.isOutletNameExists(ownerBody.outlet_name)) {
-                    return responseHandler.returnError(httpStatus.BAD_REQUEST, "Outlet Name Taken");
-                }
-                
-                if (await this.outletDao.isOutletCodeExists(ownerBody.code)) {
-                    return responseHandler.returnError(httpStatus.BAD_REQUEST, "Outlet Code Taken");
-                }
-
                 const outletBody:IOutlet = {
                     business_type_id: ownerBody.business_type_id,
                     name: ownerBody.outlet_name,
