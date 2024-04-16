@@ -46,15 +46,6 @@ export default class UserService implements IUserService {
 
     createUser = async (userBody: IUser, req: Request) => {
         try {
-            userBody.username = userBody.username.toLowerCase();
-            userBody.password = bcrypt.hashSync(userBody.password!, 8);
-            userBody.is_active = true;
-            userBody.parent_id = req.userInfo?.id
-            userBody.outlet_id = req.userInfo?.outlet_id
-
-            if (await this.userDao.isUsernameExists(userBody.username)) {
-                return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.EMAIL_400_TAKEN);
-            }
           
             let userData = await this.userDao.create(userBody);
 

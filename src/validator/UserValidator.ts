@@ -191,9 +191,29 @@ export default class UserValidator {
                 .join(', ');
             return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, errorMessage));
         } else {
-            // on success replace req.body with validated value and trigger next middleware function
-            req.body = value;
-            return next();
+            try {
+                value.username = value.username.toLowerCase();
+                value.password = bcrypt.hashSync(value.password!, 8);
+                value.is_active = true;
+                value.parent_id = req.userInfo?.id
+                value.outlet_id = req.userInfo?.outlet_id
+
+                const checkName = await User.findOne({
+                    where: {
+                        username: value.username
+                    }
+                });
+                //if the const is true throw error
+                if (checkName){
+                    return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, responseMessageConstant.USERNAME_400_TAKEN)); 
+                }
+
+                req.body = value;
+                return next();
+            } catch (e) {
+                console.log(e);
+                return next(new ApiError(httpStatus.BAD_GATEWAY, 'Validation Error' ));
+            }
         }
     }
 
