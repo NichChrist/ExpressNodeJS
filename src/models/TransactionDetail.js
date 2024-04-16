@@ -1,7 +1,7 @@
 const { Model} = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-    class Transaction extends Model {
+    class TransactionDetail extends Model {
         /**
          * Helper method for defining associations.
          * This method is not a part of Sequelize lifecycle.
@@ -9,14 +9,11 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here  
-            Transaction.hasMany(models.transaction_detail, {
-                foreignKey: 'transaction_id',
-                hooks: true,
-            });
+            
         }
     }
 
-    Transaction.init(
+    TransactionDetail.init(
         {
             id: {
                 type: DataTypes.UUID,
@@ -24,47 +21,19 @@ module.exports = (sequelize, DataTypes) => {
                 primaryKey: true,
                 allowNull: false,
             },
-            outlet_id: {
+            transaction_id: {
                 type: DataTypes.UUID,
-                allowNull: false,
+                allowNull: false,   
             },
-            space_id: {
-                type: DataTypes.UUID,
-                allowNull: true,
-            },
-            handled_by: {
-                type: DataTypes.UUID,
-                allowNull: false,
-            },
-            payment_method: {
+            product_name: {
                 type: DataTypes.STRING,
                 allowNull: false,
             },
-            invoice: {
-                type: DataTypes.STRING,
+            quantity: {
+                type: DataTypes.INTEGER,
                 allowNull: false,
             },
-            status: {
-                type: DataTypes.STRING,
-                allowNull: false,
-            },
-            discount_code: {
-                type: DataTypes.STRING,
-                allowNull: true,
-            },
-            total: {
-                type: DataTypes.DECIMAL,
-				allowNull: false,
-			},
-            discounted_amount: {
-				allowNull: true,
-				type: DataTypes.DECIMAL,
-			},
-            taxed_amount: {
-                type: DataTypes.DECIMAL,
-				allowNull: true,
-			},
-            grand_total: {
+            price: {
                 type: DataTypes.DECIMAL,
 				allowNull: false,
 			},
@@ -88,7 +57,7 @@ module.exports = (sequelize, DataTypes) => {
                 },
             },
             sequelize,
-            modelName: 'transaction',
+            modelName: 'transaction_detail',
             underscored: true,
             paranoid: true,
             createdAt: 'created_at',
@@ -96,5 +65,5 @@ module.exports = (sequelize, DataTypes) => {
             deletedAt: 'deleted_at',
         }
     );
-    return Transaction;
+    return TransactionDetail;
 };
