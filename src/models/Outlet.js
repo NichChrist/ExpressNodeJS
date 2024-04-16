@@ -24,6 +24,14 @@ module.exports = (sequelize, DataTypes) => {
                 foreignKey: 'outlet_id',
                 hooks: true,
             });
+
+            Outlet.belongsToMany(models.discount, {
+                through: 'outlet_discount',
+                foreignKey: 'outlet_id',
+                onDelete: 'CASCADE',
+                onUpdate: 'CASCADE',
+                hooks: true,
+            });
         }
     }
 

@@ -1,7 +1,7 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-    class Uom extends Model {
+    class Discount extends Model {
         /**
          * Helper method for defining associations.
          * This method is not a part of Sequelize lifecycle.
@@ -9,10 +9,23 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
+            Discount.hasMany(models.discount_hour, {
+                foreignKey: 'discount_id',
+                hooks: true,
+            });
+
+            Discount.belongsToMany(models.outlet, {
+                through: 'outlet_discount',
+                foreignKey: 'discount_id',
+                onDelete: 'CASCADE',
+                onUpdate: 'CASCADE',
+                hooks: true,
+            });
+
         }
     }
 
-    Uom.init(
+    Discount.init(
         {
             id: {
                 type: DataTypes.UUID,
@@ -64,7 +77,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         {
             sequelize,
-            modelName: 'uom',
+            modelName: 'discount',
             underscored: true,
             paranoid: true,
             createdAt: 'created_at',
@@ -72,5 +85,5 @@ module.exports = (sequelize, DataTypes) => {
             deletedAt: 'deleted_at'
         },
     );
-    return Uom;
+    return Discount;
 };
