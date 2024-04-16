@@ -16,13 +16,18 @@ module.exports = (sequelize, DataTypes) => {
                 onUpdate: 'CASCADE',
                 hooks: true,
             });
-
+            
             User.belongsTo(models.user, {
                 foreignKey: 'parent_id',
                 hooks: true,
                 as: 'parent',
             });
 
+            User.hasMany(models.shift_log, {
+                foreignKey: 'user_id',
+                hooks: true,
+            });
+            
         }
     }
 
@@ -34,7 +39,7 @@ module.exports = (sequelize, DataTypes) => {
                 primaryKey: true,
                 allowNull: false,
             },
-            username:{
+            username: {
                 type: DataTypes.STRING,
                 allowNull: false,
             },
