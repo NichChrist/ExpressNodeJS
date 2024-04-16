@@ -27,6 +27,11 @@ module.exports = (sequelize, DataTypes) => {
                 foreignKey: 'user_id',
                 hooks: true,
             });
+
+            User.hasMany(models.transaction, {
+                foreignKey: 'handled_by',
+                hooks: true,
+            });
             
         }
     }

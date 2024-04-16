@@ -9,7 +9,10 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here  
-            
+            Space.hasMany(models.transaction, {
+                foreignKey: 'space_id',
+                hooks: true,
+            });
         }
     }
 

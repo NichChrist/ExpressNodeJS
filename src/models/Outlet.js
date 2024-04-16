@@ -20,6 +20,10 @@ module.exports = (sequelize, DataTypes) => {
                 hooks: true,
             });
             
+            Outlet.hasMany(models.transaction, {
+                foreignKey: 'outlet_id',
+                hooks: true,
+            });
         }
     }
 
