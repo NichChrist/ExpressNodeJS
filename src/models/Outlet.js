@@ -32,6 +32,14 @@ module.exports = (sequelize, DataTypes) => {
                 onUpdate: 'CASCADE',
                 hooks: true,
             });
+
+            Outlet.belongsToMany(models.tax, {
+                through: 'outlet_tax',
+                foreignKey: 'outlet_id',
+                onDelete: 'CASCADE',
+                onUpdate: 'CASCADE',
+                hooks: true,
+            });
         }
     }
 

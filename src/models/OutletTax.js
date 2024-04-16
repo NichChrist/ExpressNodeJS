@@ -1,7 +1,7 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-    class OutletDiscount extends Model {
+    class OutletTax extends Model {
         /**
          * Helper method for defining associations.
          * This method is not a part of Sequelize lifecycle.
@@ -12,11 +12,11 @@ module.exports = (sequelize, DataTypes) => {
         }
     }
 
-    OutletDiscount.init(
+    OutletTax.init(
         {},
         {
             sequelize,
-            modelName: 'outlet_discount',
+            modelName: 'outlet_tax',
             underscored: true,
             paranoid: true,
             createdAt: 'created_at',
@@ -24,5 +24,5 @@ module.exports = (sequelize, DataTypes) => {
             deletedAt: 'deleted_at',
         }
     );
-    return OutletDiscount;
+    return OutletTax;
 };

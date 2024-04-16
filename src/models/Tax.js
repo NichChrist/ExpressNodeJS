@@ -1,7 +1,7 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-    class Discount extends Model {
+    class Tax extends Model {
         /**
          * Helper method for defining associations.
          * This method is not a part of Sequelize lifecycle.
@@ -9,23 +9,17 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
-            Discount.hasMany(models.discount_hour, {
-                foreignKey: 'discount_id',
-                hooks: true,
-            });
-
-            Discount.belongsToMany(models.outlet, {
-                through: 'outlet_discount',
-                foreignKey: 'discount_id',
+            Tax.belongsToMany(models.outlet, {
+                through: 'outlet_tax',
+                foreignKey: 'tax_id',
                 onDelete: 'CASCADE',
                 onUpdate: 'CASCADE',
                 hooks: true,
             });
-
         }
     }
 
-    Discount.init(
+    Tax.init(
         {
             id: {
                 type: DataTypes.UUID,
@@ -33,51 +27,30 @@ module.exports = (sequelize, DataTypes) => {
                 primaryKey: true,
                 allowNull: false,
             },
-            code: {
+            name: {
                 type: DataTypes.STRING,
                 allowNull: false,
             },
+			amount: {
+                type: DataTypes.DECIMAL,
+				allowNull: false,
+			},
             description: {
                 type: DataTypes.TEXT,
-                allowNull: true,
-            },
-            type: {
-                type: DataTypes.STRING,
-                allowNull: false,
-            },
-            quota: {
-                type: DataTypes.INTEGER,
-                allowNull: true,
-            },
-            start_date: {
-                type: DataTypes.DATE,
-				allowNull: false,
-			},
-            end_date: {
-                type: DataTypes.DATE,
-				allowNull: true,
-			},
-            minimum_amount: {
-                type: DataTypes.DECIMAL,
-				allowNull: false,
-			},
-            discount_amount: {
-                type: DataTypes.DECIMAL,
-				allowNull: false,
-			},
-            discount_amount_cap: {
-                type: DataTypes.DECIMAL,
 				allowNull: true,
 			},
             is_active: {
                 type: DataTypes.BOOLEAN,
-                defaultValue: true,
                 allowNull: false,
             },
+			created_at: {
+                type: DataTypes.DATE,
+				allowNull: false,
+			},
         },
         {
             sequelize,
-            modelName: 'discount',
+            modelName: 'tax',
             underscored: true,
             paranoid: true,
             createdAt: 'created_at',
@@ -85,5 +58,5 @@ module.exports = (sequelize, DataTypes) => {
             deletedAt: 'deleted_at'
         },
     );
-    return Discount;
+    return Tax;
 };

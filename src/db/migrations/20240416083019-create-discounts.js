@@ -33,15 +33,15 @@ module.exports = {
 				allowNull: true,
 				type: Sequelize.DATE,
 			},
-            minimum_ammount: {
+            minimum_amount: {
 				allowNull: false,
 				type: Sequelize.DECIMAL,
 			},
-            discount_ammount: {
+            discount_amount: {
 				allowNull: false,
 				type: Sequelize.DECIMAL,
 			},
-            discount_ammount_cap: {
+            discount_amount_cap: {
 				allowNull: true,
 				type: Sequelize.DECIMAL,
 			},
