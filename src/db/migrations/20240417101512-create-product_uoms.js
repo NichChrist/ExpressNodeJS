@@ -1,16 +1,16 @@
 module.exports = {
     up: async (queryInterface, Sequelize) => {
-        await queryInterface.createTable('ingredient_uoms', {
+        await queryInterface.createTable('product_uoms', {
 			id: {
 				allowNull: false,
 				primaryKey: true,
 				type: Sequelize.UUID,
 				unique: true,
 			},
-            ingredient_id: {
+            product_id: {
                 allowNull: false,
                 type: Sequelize.UUID,
-                references: { model: 'ingredients', key: 'id' },
+                references: { model: 'products', key: 'id' },
             },
             uom_id: {
                 allowNull: false,
@@ -36,7 +36,7 @@ module.exports = {
     },
   
     down: async (queryInterface, Sequelize) => {
-        await queryInterface.dropTable('ingredient_uoms');
+        await queryInterface.dropTable('product_uoms');
     },
   };
   
