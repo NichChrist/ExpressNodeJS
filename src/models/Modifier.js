@@ -1,7 +1,7 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-    class Product extends Model {
+    class Modifier extends Model {
         /**
          * Helper method for defining associations.
          * This method is not a part of Sequelize lifecycle.
@@ -9,9 +9,17 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
-            Product.belongsToMany(models.modifier, {
+            Modifier.belongsToMany(models.outlet, {
                 through: 'outlet_modifiers',
                 foreignKey: 'modifier_id',
+                onDelete: 'CASCADE',
+                onUpdate: 'CASCADE',
+                hooks: true,
+            });
+
+            Modifier.belongsToMany(models.product, {
+                through: 'products_modifiers',
+                foreignKey: 'product_id',
                 onDelete: 'CASCADE',
                 onUpdate: 'CASCADE',
                 hooks: true,
@@ -19,7 +27,7 @@ module.exports = (sequelize, DataTypes) => {
         }
     }
 
-    Product.init(
+    Modifier.init(
         {
             id: {
                 type: DataTypes.UUID,
@@ -27,22 +35,14 @@ module.exports = (sequelize, DataTypes) => {
                 primaryKey: true,
                 allowNull: false,
             },
-            product_category_id: {
-                type: DataTypes.UUID,
-                allowNull: false,
-            },
             name: {
                 type: DataTypes.STRING,
                 allowNull: false,
-            },
-            picture: {
-                type: DataTypes.UUID,
-                allowNull: true
-            },
+            }           
         },
         {
             sequelize,
-            modelName: 'product',
+            modelName: 'modifier',
             underscored: true,
             paranoid: true,
             createdAt: 'created_at',
@@ -50,5 +50,5 @@ module.exports = (sequelize, DataTypes) => {
             deletedAt: 'deleted_at',
         }
     );
-    return Product;
+    return Modifier;
 };
