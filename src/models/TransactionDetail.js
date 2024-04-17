@@ -36,18 +36,6 @@ module.exports = (sequelize, DataTypes) => {
             price: {
                 type: DataTypes.DECIMAL,
 				allowNull: false,
-			},
-			created_at: {
-                type: DataTypes.DATE,
-				allowNull: false,
-			},
-			updated_at: {
-                type: DataTypes.DATE,
-				allowNull: false,
-			},
-			deleted_at: {
-                type: DataTypes.DATE,
-				allowNull: true,
 			}
         },
         {

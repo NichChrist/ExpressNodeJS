@@ -35,18 +35,6 @@ module.exports = (sequelize, DataTypes) => {
             end_hour: {
                 type: DataTypes.DECIMAL,
 				allowNull: false,
-			},
-			created_at: {
-                type: DataTypes.DATE,
-				allowNull: false,
-			},
-			updated_at: {
-                type: DataTypes.DATE,
-				allowNull: false,
-			},
-			deleted_at: {
-                type: DataTypes.DATE,
-				allowNull: true,
 			}
         },
         {

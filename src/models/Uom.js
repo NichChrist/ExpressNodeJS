@@ -38,7 +38,7 @@ module.exports = (sequelize, DataTypes) => {
             metric_code: {
                 type: DataTypes.STRING,
                 allowNull: false,
-            },
+            }
         },
         {
             sequelize,

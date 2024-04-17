@@ -42,7 +42,7 @@ module.exports = (sequelize, DataTypes) => {
             multiplier: {
                 type: DataTypes.DECIMAL,
                 allowNull: false,
-            },
+            }
         },
         {
             sequelize,
