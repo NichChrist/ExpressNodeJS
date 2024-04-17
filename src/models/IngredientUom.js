@@ -1,7 +1,7 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-    class OutletIngredient extends Model {
+    class IngredientUom extends Model {
         /**
          * Helper method for defining associations.
          * This method is not a part of Sequelize lifecycle.
@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
         }
     }
 
-    OutletIngredient.init(
+    IngredientUom.init(
         {
             id: {
                 type: DataTypes.UUID,
@@ -33,7 +33,7 @@ module.exports = (sequelize, DataTypes) => {
                 },
             },
             sequelize,
-            modelName: 'outlet_ingredient',
+            modelName: 'ingredient_uom',
             underscored: true,
             paranoid: true,
             createdAt: 'created_at',
@@ -41,5 +41,5 @@ module.exports = (sequelize, DataTypes) => {
             deletedAt: 'deleted_at',
         }
     );
-    return OutletIngredient;
+    return IngredientUom;
 };

@@ -28,6 +28,15 @@ module.exports = (sequelize, DataTypes) => {
                 onUpdate: 'CASCADE',
                 hooks: true,
             });
+
+            Uom.belongsToMany(models.ingredient, {
+                through: 'ingredient_uom',
+                foreignKey: 'uom_id',
+                onDelete: 'CASCADE',
+                onUpdate: 'CASCADE',
+                hooks: true,
+            });
+
         }
     }
 
