@@ -9,6 +9,14 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
+            PaymentMethod.belongsToMany(models.outlet, {
+                through: 'outlet_payment_method',
+                foreignKey: 'payment_method_id',
+                onDelete: 'CASCADE',
+                onUpdate: 'CASCADE',
+                hooks: true,
+            });
+
         }
     }
 
