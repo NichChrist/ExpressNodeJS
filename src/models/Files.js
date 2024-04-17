@@ -1,7 +1,7 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-    class Product extends Model {
+    class File extends Model {
         /**
          * Helper method for defining associations.
          * This method is not a part of Sequelize lifecycle.
@@ -9,10 +9,14 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
+            File.hasOne(models.product, {
+                foreignKey: 'picture',
+                hooks: true,
+            });
         }
     }
 
-    Product.init(
+    File.init(
         {
             id: {
                 type: DataTypes.UUID,
@@ -20,22 +24,35 @@ module.exports = (sequelize, DataTypes) => {
                 primaryKey: true,
                 allowNull: false,
             },
-            product_category_id: {
-                type: DataTypes.UUID,
-                allowNull: false,
-            },
             name: {
                 type: DataTypes.STRING,
                 allowNull: false,
             },
-            picture: {
-                type: DataTypes.UUID,
-                allowNull: true
+            mime_type: {
+                type: DataTypes.STRING,
+                allowNull: false,
+            },
+            file_path: {
+                type: DataTypes.TEXT,
+                allowNull: false,
+			},
+            is_uploaded: {
+                type: DataTypes.BOOLEAN,
+                allowNull: false,
+            },	
+            is_resized: {
+                type: DataTypes.BOOLEAN,
+                allowNull: true,
             },
         },
         {
+            scopes: {
+                withoutTimestamp: {
+                    attributes: { exclude: ['created_at', 'updated_at', 'deleted_at'] },
+                },
+            },
             sequelize,
-            modelName: 'product',
+            modelName: 'file',
             underscored: true,
             paranoid: true,
             createdAt: 'created_at',
@@ -43,5 +60,5 @@ module.exports = (sequelize, DataTypes) => {
             deletedAt: 'deleted_at',
         }
     );
-    return Product;
+    return File;
 };

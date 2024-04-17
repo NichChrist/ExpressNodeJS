@@ -10,9 +10,6 @@ module.exports = (sequelize, DataTypes) => {
         static associate(models) {
             // define association here
             ProductCategory.hasMany(models.product, {
-                foreignKey: 'product_category_id',
-                onDelete: 'CASCADE',
-                onUpdate: 'CASCADE',
                 hooks: true,
             });
         }

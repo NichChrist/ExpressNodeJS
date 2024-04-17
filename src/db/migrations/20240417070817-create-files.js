@@ -1,6 +1,6 @@
 module.exports = {
 	up: async (queryInterface, Sequelize) => {
-		await queryInterface.createTable('taxes', {
+		await queryInterface.createTable('files', {
 			id: {
 				allowNull: false,
 				primaryKey: true,
@@ -11,18 +11,22 @@ module.exports = {
                 allowNull: false,
                 type: Sequelize.STRING,
             },
-			amount: {
+            mime_type: {
+                allowNull: false,
+                type: Sequelize.STRING,
+            },
+            file_path: {
 				allowNull: false,
-				type: Sequelize.DECIMAL,
-			},
-            description: {
-				allowNull: true,
                 type: Sequelize.TEXT,
 			},
-            is_active: {
+            is_uploaded: {
                 allowNull: false,
 				type: Sequelize.BOOLEAN,
-            },
+            },	
+            is_resized: {
+                allowNull: true,
+				type: Sequelize.BOOLEAN,
+            },	
 			created_at: {
 				allowNull: false,
 				type: Sequelize.DATE,
@@ -39,6 +43,6 @@ module.exports = {
 	},
 
   down: async (queryInterface, Sequelize) => {
-      await queryInterface.dropTable('taxes');
+      await queryInterface.dropTable('files');
   },
 };
