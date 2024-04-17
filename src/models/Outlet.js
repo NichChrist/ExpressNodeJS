@@ -65,6 +65,14 @@ module.exports = (sequelize, DataTypes) => {
                 hooks: true,
             });
 
+            Outlet.belongsToMany(models.ingredient, {
+                through: 'outlet_ingredient',
+                foreignKey: 'outlet_id',
+                onDelete: 'CASCADE',
+                onUpdate: 'CASCADE',
+                hooks: true,
+            });
+
         }
     }
 
