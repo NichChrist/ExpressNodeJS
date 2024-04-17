@@ -20,6 +20,14 @@ module.exports = (sequelize, DataTypes) => {
                 sourceKey: 'id',
                 as: 'uoms_conversion_to',
             });
+
+            Uom.belongsToMany(models.outlet, {
+                through: 'outlet_uom',
+                foreignKey: 'uom_id',
+                onDelete: 'CASCADE',
+                onUpdate: 'CASCADE',
+                hooks: true,
+            });
         }
     }
 

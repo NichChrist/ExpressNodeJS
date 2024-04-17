@@ -81,6 +81,14 @@ module.exports = (sequelize, DataTypes) => {
                 hooks: true,
             });
 
+            Outlet.belongsToMany(models.uom, {
+                through: 'outlet_uom',
+                foreignKey: 'outlet_id',
+                onDelete: 'CASCADE',
+                onUpdate: 'CASCADE',
+                hooks: true,
+            });
+
         }
     }
 
