@@ -40,6 +40,14 @@ module.exports = (sequelize, DataTypes) => {
                 onUpdate: 'CASCADE',
                 hooks: true,
             });
+
+            Outlet.belongsToMany(models.product_category, {
+                through: 'outlet_product_category',
+                foreignKey: 'outlet_id',
+                onDelete: 'CASCADE',
+                onUpdate: 'CASCADE',
+                hooks: true,
+            });
         }
     }
 
