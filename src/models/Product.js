@@ -10,8 +10,16 @@ module.exports = (sequelize, DataTypes) => {
         static associate(models) {
             // define association here
             Product.belongsToMany(models.modifier, {
-                through: 'outlet_modifiers',
-                foreignKey: 'modifier_id',
+                through: 'product_modifiers',
+                foreignKey: 'product_id',
+                onDelete: 'CASCADE',
+                onUpdate: 'CASCADE',
+                hooks: true,
+            });
+
+            Product.belongsToMany(models.ingredient, {
+                through: 'recipe',
+                foreignKey: 'product_id',
                 onDelete: 'CASCADE',
                 onUpdate: 'CASCADE',
                 hooks: true,

@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
 
             Modifier.belongsToMany(models.product, {
                 through: 'product_modifiers',
-                foreignKey: 'product_id',
+                foreignKey: 'modifier_id',
                 onDelete: 'CASCADE',
                 onUpdate: 'CASCADE',
                 hooks: true,

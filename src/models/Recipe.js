@@ -1,7 +1,7 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-    class Ingredient extends Model {
+    class Recipe extends Model {
         /**
          * Helper method for defining associations.
          * This method is not a part of Sequelize lifecycle.
@@ -9,17 +9,11 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
-            Ingredient.belongsToMany(models.product, {
-                through: 'recipe',
-                foreignKey: 'ingredient_id',
-                onDelete: 'CASCADE',
-                onUpdate: 'CASCADE',
-                hooks: true,
-            });
+
         }
     }
 
-    Ingredient.init(
+    Recipe.init(
         {
             id: {
                 type: DataTypes.UUID,
@@ -27,14 +21,19 @@ module.exports = (sequelize, DataTypes) => {
                 primaryKey: true,
                 allowNull: false,
             },
-            name: {
-                type: DataTypes.STRING,
+            quantity: {
+                type: DataTypes.DECIMAL,
                 allowNull: false,
-            }           
+            },
         },
         {
+            scopes: {
+                withoutTimestamp: {
+                    attributes: { exclude: ['created_at', 'updated_at', 'deleted_at'] },
+                },
+            },
             sequelize,
-            modelName: 'ingredient',
+            modelName: 'recipe',
             underscored: true,
             paranoid: true,
             createdAt: 'created_at',
@@ -42,5 +41,5 @@ module.exports = (sequelize, DataTypes) => {
             deletedAt: 'deleted_at',
         }
     );
-    return Ingredient;
+    return Recipe;
 };
