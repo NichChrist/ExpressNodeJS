@@ -9,6 +9,7 @@ import provinceRoute from './provinceRoute'
 import cityRoute from './cityRoute'
 import districtRoute from './districtRoute'
 import subdistrictRoute from './subdistrictRoute'
+import productCategoryRoute from './productCategoryRoute';
 
 const router = Router();
 
@@ -52,6 +53,10 @@ const defaultRoutes = [
     {
         path: '/subdistrict',
         route: subdistrictRoute,
+    },
+    {
+        path: '/product-category',
+        route: productCategoryRoute
     },
 ];
 

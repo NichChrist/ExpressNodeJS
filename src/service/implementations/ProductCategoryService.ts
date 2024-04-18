@@ -1,0 +1,156 @@
+/* eslint-disable no-param-reassign */
+/* eslint-disable @typescript-eslint/no-shadow */
+import httpStatus from 'http-status';
+import { Request } from 'express';
+import responseHandler from '../../helper/responseHandler';
+import IProductCategoryService from '../contracts/IProductCategoryService';
+import ProductCategoryDao from '../../dao/implementations/ProductCategoryDao';
+import models from '../../models';
+import { responseMessageConstant } from '../../config/constant';
+import * as csv from 'exceljs';
+import * as path from 'path';
+
+const { product_category: ProductCategory } = models;
+
+export default class ProductCategoryService implements IProductCategoryService {
+    private productCategoryDao: ProductCategoryDao;
+
+    constructor() {
+        this.productCategoryDao = new ProductCategoryDao();
+    }
+
+    getProductCategoriesData = async (req: Request) => {
+        try {
+            const pagination = req.query.pagination;
+            let options = {
+                attributes: {
+                    exclude: ['deleted_at']
+                },
+            };
+            if (pagination == 'true') {
+                const row: any = req.query.row;
+                const page: any = req.query.page;
+                const offset = (page - 1) * row;
+                options['offset'] = offset;
+                options['limit'] = row;
+            }
+
+            const allData = await ProductCategory.findAndCountAll(options)
+            
+            return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant.ProductCategory_200_FETCHED_ALL, allData);
+        } catch (e) {
+            console.log(e);
+            return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.HTTP_502_BAD_GATEWAY);
+        }
+    };
+
+    getProductCategoryByName = async (name: string) => {
+        try {
+            if (!(await this.productCategoryDao.isProductCategoryNameExists(name))) {
+                return responseHandler.returnError(httpStatus.NOT_FOUND, responseMessageConstant.ProductCategory_404_NOT_FOUND);
+            }
+
+            const data = await this.productCategoryDao.findProductCategoryByName(name);
+
+            return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant.ProductCategory_200_FETCHED_SINGLE, data);
+        } catch (e) {
+            console.log(e);
+            return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.HTTP_502_BAD_GATEWAY);
+        }
+    };
+
+    createNewProductCategory = async (name: string) => {
+        try {
+            // if (await this.productCategoryDao.isProductCategoryNameExists(name)) {
+            //     return responseHandler.returnError(httpStatus.BAD_REQUEST, 'Product Category with this name already exists');
+            // }
+
+            let data = await this.productCategoryDao.create({ name: name });
+            data = data.toJSON();
+            delete data.deleted_at;
+
+            return responseHandler.returnSuccess(httpStatus.CREATED, responseMessageConstant.ProductCategory_201_REGISTERED, data);
+        } catch (e) {
+            console.log(e);
+            return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.HTTP_502_BAD_GATEWAY);
+        }
+    };
+
+    deleteProductCategoryById = async (id: string) => {
+        try {
+            if (!(await this.productCategoryDao.isProductCategoryExists(id))) {
+                return responseHandler.returnError(httpStatus.NOT_FOUND, responseMessageConstant.ProductCategory_404_NOT_FOUND);
+            }
+
+            await this.productCategoryDao.deleteById(id);
+            return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant.ProductCategory_200_DELETED);
+        } catch (e) {
+            console.log(e);
+            return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.HTTP_502_BAD_GATEWAY);
+        }
+    }
+
+    updateProductCategoryById = async (id: string, name: string) => {
+        try {
+            if (!(await this.productCategoryDao.isProductCategoryExists(id))) {
+                return responseHandler.returnError(httpStatus.NOT_FOUND, responseMessageConstant.ProductCategory_404_NOT_FOUND);
+            }
+
+            let data = await this.productCategoryDao.findProductCategory(id);
+            if (name) {
+                if (await this.productCategoryDao.isProductCategoryNameExists(name)) {
+                    const modelData = await ProductCategory.findOne({ where: { name: name } });
+
+                    if (modelData.dataValues.id !== id) {
+                        return responseHandler.returnError(httpStatus.BAD_REQUEST, 'ProductCategory with this name already exists');
+                    };
+                };
+
+                data = await ProductCategory.update(
+                    { name: name },
+                    { where: { id: id }, returning: true, plain: true }
+                );
+                data = data[1].dataValues;
+                delete data.deleted_at;
+            }
+
+            return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant.ProductCategory_200_UPDATED, data);
+        } catch (e) {
+            console.log(e);
+            return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.HTTP_502_BAD_GATEWAY);
+        }
+    }
+
+    exportToCSV = async (req: Request) => {
+        try {
+            const workbook = new csv.Workbook();
+            const worksheet = workbook.addWorksheet('Product Category List');
+
+            let options = {
+                attributes: {
+                    exclude: ['deleted_at','created_at','updated_at']
+                },
+            };
+            const { rows: allData } = await ProductCategory.findAndCountAll(options);
+
+            const productCategoryColumns = [
+                { key: 'id', header: 'ID', width: 36},
+                { key: 'name', header: 'Product Category', width: 36},
+            ];
+            worksheet.columns = productCategoryColumns;
+
+            allData.forEach((rowData) => {
+            worksheet.addRow(rowData);
+            });
+
+            const exportPath = `${path.join(__dirname, '..', '..','Output_File','Placeholder.csv')}`;
+    
+            await workbook.xlsx.writeFile(exportPath);
+
+            return responseHandler.returnSuccess(httpStatus.OK, 'Export Success');
+      } catch (e) {
+            console.log(e);
+            return responseHandler.returnError(httpStatus.BAD_REQUEST, "Export Failed")
+      }
+};
+}
