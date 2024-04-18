@@ -12,7 +12,7 @@ module.exports = {
 				type: Sequelize.STRING,
 			},
 			metric_code: {
-				allowNull: false,
+				allowNull: true,
 				type: Sequelize.STRING,
 			},
 			created_at: {
