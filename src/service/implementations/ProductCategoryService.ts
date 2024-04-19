@@ -1,16 +1,16 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable @typescript-eslint/no-shadow */
 import httpStatus from 'http-status';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import responseHandler from '../../helper/responseHandler';
 import IProductCategoryService from '../contracts/IProductCategoryService';
 import ProductCategoryDao from '../../dao/implementations/ProductCategoryDao';
-import models from '../../models';
+import db, { sequelize } from '../../models';
 import { responseMessageConstant } from '../../config/constant';
 import * as csv from 'exceljs';
 import * as path from 'path';
 
-const { product_category: ProductCategory } = models;
+const { product_category: ProductCategory } = db;
 
 export default class ProductCategoryService implements IProductCategoryService {
     private productCategoryDao: ProductCategoryDao;
@@ -59,7 +59,7 @@ export default class ProductCategoryService implements IProductCategoryService {
         }
     };
 
-    createNewProductCategory = async (name: string) => {
+    createProductCategory = async (name: string) => {
         try {
             // if (await this.productCategoryDao.isProductCategoryNameExists(name)) {
             //     return responseHandler.returnError(httpStatus.BAD_REQUEST, 'Product Category with this name already exists');
@@ -73,6 +73,23 @@ export default class ProductCategoryService implements IProductCategoryService {
         } catch (e) {
             console.log(e);
             return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.HTTP_502_BAD_GATEWAY);
+        }
+    };
+
+    createBulkProductCategory = async (name: string[]) => {
+        try {
+            let message = 'Successfully Create Product Categories';
+            let allData;
+
+            await sequelize.transaction(async (t) => {
+                allData = await ProductCategory.bulkCreate(name, { transaction: t });
+            });
+
+            return responseHandler.returnSuccess(httpStatus.CREATED, message, allData);
+        } catch (e: any) {
+            console.log(e);
+            if (e.ec) return responseHandler.returnError(e.status, e.message);
+            return responseHandler.returnError(httpStatus.BAD_REQUEST, 'Something went wrong');
         }
     };
 
@@ -121,7 +138,7 @@ export default class ProductCategoryService implements IProductCategoryService {
         }
     }
 
-    exportToCSV = async (req: Request) => {
+    exportToCSV = async (res: Response) => {
         try {
             const workbook = new csv.Workbook();
             const worksheet = workbook.addWorksheet('Product Category List');
@@ -143,14 +160,23 @@ export default class ProductCategoryService implements IProductCategoryService {
             worksheet.addRow(rowData);
             });
 
-            const exportPath = `${path.join(__dirname, '..', '..','Output_File','Placeholder.csv')}`;
-    
-            await workbook.xlsx.writeFile(exportPath);
-
-            return responseHandler.returnSuccess(httpStatus.OK, 'Export Success');
+            res.setHeader(
+                'Content-Type',
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            );
+            res.setHeader(
+                'Content-Disposition',
+                `attachment; filename=placeholder.xlsx`,
+            );
+        
+            return workbook.xlsx.write(res).then(() => {
+                res.status(200).end();
+            });
+            
       } catch (e) {
             console.log(e);
             return responseHandler.returnError(httpStatus.BAD_REQUEST, "Export Failed")
       }
-};
+    }
+
 }

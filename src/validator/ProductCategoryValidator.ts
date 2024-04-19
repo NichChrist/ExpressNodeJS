@@ -65,5 +65,11 @@ export default class ProductCategoryValidator {
             return next();
         }
     }
+
+    async userBulkCreateCsvValidator(req: Request, res: Response, next: NextFunction) {
+        if (!req.file) {
+            return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'csv is required'));
+        } else return next();
+    }
 }
 
