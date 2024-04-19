@@ -10,7 +10,7 @@ import { responseMessageConstant } from '../../config/constant';
 import * as csv from 'exceljs';
 import * as path from 'path';
 
-const { product_category: ProductCategory, outlet_product_category: OutletProductCategory } = db;
+const { product_category: ProductCategory, outlet_product_category: OutletProductCategory , outlet: Outlet} = db;
 
 export default class ProductCategoryService implements IProductCategoryService {
     private productCategoryDao: ProductCategoryDao;
@@ -19,7 +19,7 @@ export default class ProductCategoryService implements IProductCategoryService {
         this.productCategoryDao = new ProductCategoryDao();
     }
 
-    getProductCategoriesData = async (req: Request) => {
+    getProductCategories = async (req: Request) => {
         try {
             const pagination = req.query.pagination;
             let options = {
@@ -44,7 +44,40 @@ export default class ProductCategoryService implements IProductCategoryService {
         }
     };
 
-    getProductCategoryByName = async (name: string) => {
+    getProductCategoriesByBranch = async (id:string, req: Request) => {
+        try {
+            const pagination = req.query.pagination;
+            let options = { 
+                where: { id },
+                include: [{
+                    model: ProductCategory,
+                    through: { 
+                      model: OutletProductCategory, 
+                    },
+                    attributes: { 
+                      exclude: ['deleted_at'],
+                    },
+                  }],
+            };
+
+            if (pagination == 'true') {
+                const row: any = req.query.row;
+                const page: any = req.query.page;
+                const offset = (page - 1) * row;
+                options['offset'] = offset;
+                options['limit'] = row;
+            }
+
+            const allData = await Outlet.findAndCountAll(options)
+            
+            return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant.ProductCategory_200_FETCHED_ALL, allData);
+        } catch (e) {
+            console.log(e);
+            return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.HTTP_502_BAD_GATEWAY);
+        }
+    };
+
+    getProductCategoryByName = async (name: any) => {
         try {
             if (!(await this.productCategoryDao.isProductCategoryNameExists(name))) {
                 return responseHandler.returnError(httpStatus.NOT_FOUND, responseMessageConstant.ProductCategory_404_NOT_FOUND);

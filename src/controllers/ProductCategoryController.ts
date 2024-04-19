@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import httpStatus from 'http-status';
 import { logger } from '../config/logger';
 import ProductCategoryService from '../service/implementations/ProductCategoryService';
-import fs from 'fs';
 const csv = require('csv-parser');
 
 export default class ProductCategoryController {
@@ -13,9 +12,44 @@ export default class ProductCategoryController {
         this.productCategoryService = new ProductCategoryService();
     }
 
-    getProductCategoriesData = async (req: Request, res: Response) => {
+    getProductCategories = async (req: Request, res: Response) => {
         try {
-            const model = await this.productCategoryService.getProductCategoriesData(req);
+            const hasNameQueryParam = req.query.name !== undefined && req.query.name !== '';
+
+            if (!hasNameQueryParam) {
+                const model = await this.productCategoryService.getProductCategories(req);
+                const { code, message } = model.response;
+                const data: any = model.response.data;
+
+                res.status(model.statusCode).json({
+                    code: code,
+                    message: message,
+                    count: data.count,
+                    data: data.rows,
+                });
+            }else{
+                const data = await this.productCategoryService.getProductCategoryByName(req.query.name)
+                const { code, message } = data.response;
+                const role = data.response.data;
+                res.status(data.statusCode).json({
+                    code: code,
+                    message: message,
+                    data: role,
+                });
+            }
+            
+        } catch (e) {
+            logger.error(e);
+            res.status(httpStatus.BAD_GATEWAY).json({
+                status: httpStatus.BAD_GATEWAY,
+                message: 'Something Went Wrong',
+            });
+        }
+    };
+
+    getProductCategoriesByBranch = async (req: Request, res: Response) => {
+        try {
+            const model = await this.productCategoryService.getProductCategoriesByBranch(req.params.id, req);
             const { code, message } = model.response;
             const data: any = model.response.data;
 
@@ -29,25 +63,6 @@ export default class ProductCategoryController {
             logger.error(e);
             res.status(httpStatus.BAD_GATEWAY).json({
                 status: httpStatus.BAD_GATEWAY,
-                message: 'Something Went Wrong',
-            });
-        }
-    };
-
-    getProductCategoryDataByName = async (req: Request, res: Response) => {
-        try {
-            const data = await this.productCategoryService.getProductCategoryByName(req.params.name)
-            const { code, message } = data.response;
-            const role = data.response.data;
-            res.status(data.statusCode).json({
-                code: code,
-                message: message,
-                data: role,
-            });
-        } catch (e) {
-            logger.error(e);
-            res.status(httpStatus.BAD_GATEWAY).json({
-                error: httpStatus.BAD_GATEWAY,
                 message: 'Something Went Wrong',
             });
         }

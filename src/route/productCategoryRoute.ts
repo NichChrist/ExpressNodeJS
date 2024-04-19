@@ -17,15 +17,21 @@ const productCategoryValidator = new ProductCategoryValidator();
 router.get(
     '/',
     parameterCheck(),
-    productCategoryController.getProductCategoriesData
+    productCategoryController.getProductCategories
+);
+// router.get(
+//     '/:name',
+//     parameterCheck(),
+//     productCategoryController.getProductCategoryDataByName
+// );
+router.get(
+    '/:id',
+    parameterCheck(),
+    productCategoryController.getProductCategoriesByBranch
 );
 router.get(
     '/export-csv',
     productCategoryController.ExportToCSV
-);
-router.get(
-    '/:name',
-    productCategoryController.getProductCategoryDataByName
 );
 router.post(
     '/',
