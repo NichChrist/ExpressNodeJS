@@ -10,7 +10,7 @@ import { responseMessageConstant } from '../../config/constant';
 import * as csv from 'exceljs';
 import * as path from 'path';
 
-const { product_category: ProductCategory } = db;
+const { product_category: ProductCategory, outlet_product_category: OutletProductCategory } = db;
 
 export default class ProductCategoryService implements IProductCategoryService {
     private productCategoryDao: ProductCategoryDao;
@@ -59,38 +59,30 @@ export default class ProductCategoryService implements IProductCategoryService {
         }
     };
 
-    createProductCategory = async (name: string) => {
-        try {
-            // if (await this.productCategoryDao.isProductCategoryNameExists(name)) {
-            //     return responseHandler.returnError(httpStatus.BAD_REQUEST, 'Product Category with this name already exists');
-            // }
+    createProductCategory = async (name: string, req: Request) => {
+        return sequelize.transaction(async (t) =>{
+            try {
+                let data = await ProductCategory.create({
+                    name: name                    
+                }, {
+                    transaction: t        
+                });
+                delete data.deleted_at;
 
-            let data = await this.productCategoryDao.create({ name: name });
-            data = data.toJSON();
-            delete data.deleted_at;
+                await OutletProductCategory.create({
+                    outlet_id: req.userInfo?.outlet_id,
+                    product_category_id: data.id
+                }, {
+                    transaction: t
+                }); 
 
-            return responseHandler.returnSuccess(httpStatus.CREATED, responseMessageConstant.ProductCategory_201_REGISTERED, data);
-        } catch (e) {
-            console.log(e);
-            return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.HTTP_502_BAD_GATEWAY);
-        }
-    };
-
-    createBulkProductCategory = async (name: string[]) => {
-        try {
-            let message = 'Successfully Create Product Categories';
-            let allData;
-
-            await sequelize.transaction(async (t) => {
-                allData = await ProductCategory.bulkCreate(name, { transaction: t });
-            });
-
-            return responseHandler.returnSuccess(httpStatus.CREATED, message, allData);
-        } catch (e: any) {
-            console.log(e);
-            if (e.ec) return responseHandler.returnError(e.status, e.message);
-            return responseHandler.returnError(httpStatus.BAD_REQUEST, 'Something went wrong');
-        }
+                return responseHandler.returnSuccess(httpStatus.CREATED, responseMessageConstant.ProductCategory_201_REGISTERED, data);
+            } catch (e) {
+                console.log(e);
+                await t.rollback();
+                return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.HTTP_502_BAD_GATEWAY);
+            }
+        })
     };
 
     deleteProductCategoryById = async (id: string) => {
@@ -179,4 +171,27 @@ export default class ProductCategoryService implements IProductCategoryService {
       }
     }
 
+    // importFromCSV = async (req: Request) => {
+    //     try {
+    //         const workbook = new csv.Workbook();
+    //         await workbook.xlsx.read();
+
+    //         const worksheet = workbook.getWorksheet(1); // Assuming data is in the first sheet
+
+    //         const data = await worksheet.getRows(); // Get all rows of data
+
+    //         // Process data and prepare for database insertion (optional)
+    //         const formattedData = data.slice(1).map(row => ({
+    //         column1: row[1],
+    //         }));
+
+    //         // Use Sequelize to insert data into the database
+    //         await ProductCategory.bulkCreate(formattedData); // Bulk create with validation
+
+    //         return responseHandler.returnSuccess(httpStatus.CREATED, 'Successfully Create Product Categories'); 
+    //   } catch (e) {
+    //         console.log(e);
+    //         return responseHandler.returnError(httpStatus.BAD_REQUEST, "Export Failed")
+    //   }
+    // }
 }

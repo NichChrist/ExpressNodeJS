@@ -55,7 +55,7 @@ export default class ProductCategoryController {
 
     createProductCategory = async (req: Request, res: Response) => {
         try {
-            const data = await this.productCategoryService.createProductCategory(req.body.name)
+            const data = await this.productCategoryService.createProductCategory(req.body.name, req)
             const { code, message } = data.response;
             const model = data.response.data;
             res.status(data.statusCode).json({
@@ -117,43 +117,4 @@ export default class ProductCategoryController {
         }
     };
 
-    createBulkProductCategory = async (req: Request, res: Response) => {
-        try {
-            let Data: string[] = [];
-            if (req.file) {
-                const csvFilePath = req.file.path;
-                await new Promise<void>((resolve, reject) => {
-                    fs.createReadStream(csvFilePath, { encoding: 'utf8' })
-                        .pipe(csv())
-                        .on('data', (data) => {
-                            Data.push(data);
-                        })
-                        .on('end', () => {
-                            fs.unlinkSync(csvFilePath);
-                            resolve();
-                        })
-                        .on('error', (e) => {
-                            reject(e);
-                        });
-                });
-            } else {
-                Data = req.body;
-                if (!Array.isArray(req.body)) Data = [req.body];
-            }
-
-            const user = await this.productCategoryService.createBulkProductCategory(Data);
-            const { code, message, data } = user.response;
-            res.status(user.statusCode).json({
-                code: code,
-                message: message,
-                data: data,
-            });
-        } catch (e) {
-            logger.error(e);
-            res.status(httpStatus.BAD_GATEWAY).json({
-                code: httpStatus.BAD_GATEWAY,
-                message: 'Something Went Wrong'
-            })
-        }
-    };
 }

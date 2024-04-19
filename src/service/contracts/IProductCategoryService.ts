@@ -2,8 +2,7 @@ import { Request, Response } from 'express';
 import { ApiServiceResponse } from '../../@types/apiServiceResponse';
 
 export default interface IProductCategoryService {
-    createProductCategory: (name: string) => Promise<ApiServiceResponse>
-    createBulkProductCategory: (name: string[]) => Promise<ApiServiceResponse>
+    createProductCategory: (name: string, req: Request) => Promise<ApiServiceResponse>
     getProductCategoryByName: (name: string) => Promise<ApiServiceResponse>
     updateProductCategoryById: (id: string, name: string) => Promise<ApiServiceResponse>
     deleteProductCategoryById: (id: string) => Promise<ApiServiceResponse>
