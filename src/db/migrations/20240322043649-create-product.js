@@ -12,7 +12,7 @@ module.exports = {
                 type: Sequelize.STRING,
             },
             product_category_id: {
-                allowNull: true,
+                allowNull: false,
                 type: Sequelize.UUID,
 				references: { model: 'product_categories', key: 'id' },
             },

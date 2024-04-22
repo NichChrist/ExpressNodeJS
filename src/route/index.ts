@@ -31,31 +31,31 @@ const defaultRoutes = [
         route: modelRoute,
     },
     {
-        path: '/business-type',
+        path: '/business-types',
         route: businessTypeRoute,
     },
     {
-        path: '/outlet',
+        path: '/outlets',
         route: outletRoute,
     },
     {
-        path: '/province',
+        path: '/provinces',
         route: provinceRoute,
     },
     {
-        path: '/city',
+        path: '/cities',
         route: cityRoute,
     },
     {
-        path: '/district',
+        path: '/districts',
         route: districtRoute,
     },
     {
-        path: '/subdistrict',
+        path: '/subdistricts',
         route: subdistrictRoute,
     },
     {
-        path: '/product-category',
+        path: '/product-categories',
         route: productCategoryRoute
     },
 ];

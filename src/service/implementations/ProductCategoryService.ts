@@ -100,14 +100,37 @@ export default class ProductCategoryService implements IProductCategoryService {
                 }, {
                     transaction: t        
                 });
-                delete data.deleted_at;
 
+                console.log(data.id, '<<<<<<<<<Data.id')
                 await OutletProductCategory.create({
                     outlet_id: req.userInfo?.outlet_id,
                     product_category_id: data.id
                 }, {
                     transaction: t
                 }); 
+
+                return responseHandler.returnSuccess(httpStatus.CREATED, responseMessageConstant.ProductCategory_201_REGISTERED, data);
+            } catch (e) {
+                console.log(e);
+                await t.rollback();
+                return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.HTTP_502_BAD_GATEWAY);
+            }
+        })
+    };
+
+    createBulkProductCategory = async (name: string[], req: Request) => {
+        return sequelize.transaction(async (t) =>{
+            try {
+                let data = await ProductCategory.bulkCreate(name, { transaction: t });
+                
+                const bulkData = data.map(item => {
+                    return {
+                        outlet_id: req.userInfo?.outlet_id,
+                        product_category_id: item.id
+                    }
+                });
+
+                await OutletProductCategory.bulkCreate(bulkData, { transaction: t });
 
                 return responseHandler.returnSuccess(httpStatus.CREATED, responseMessageConstant.ProductCategory_201_REGISTERED, data);
             } catch (e) {
@@ -191,10 +214,10 @@ export default class ProductCategoryService implements IProductCategoryService {
             );
             res.setHeader(
                 'Content-Disposition',
-                `attachment; filename=placeholder.xlsx`,
+                `attachment; filename=placeholder.csv`,
             );
         
-            return workbook.xlsx.write(res).then(() => {
+            return workbook.csv.write(res).then(() => {
                 res.status(200).end();
             });
             
@@ -204,27 +227,4 @@ export default class ProductCategoryService implements IProductCategoryService {
       }
     }
 
-    // importFromCSV = async (req: Request) => {
-    //     try {
-    //         const workbook = new csv.Workbook();
-    //         await workbook.xlsx.read();
-
-    //         const worksheet = workbook.getWorksheet(1); // Assuming data is in the first sheet
-
-    //         const data = await worksheet.getRows(); // Get all rows of data
-
-    //         // Process data and prepare for database insertion (optional)
-    //         const formattedData = data.slice(1).map(row => ({
-    //         column1: row[1],
-    //         }));
-
-    //         // Use Sequelize to insert data into the database
-    //         await ProductCategory.bulkCreate(formattedData); // Bulk create with validation
-
-    //         return responseHandler.returnSuccess(httpStatus.CREATED, 'Successfully Create Product Categories'); 
-    //   } catch (e) {
-    //         console.log(e);
-    //         return responseHandler.returnError(httpStatus.BAD_REQUEST, "Export Failed")
-    //   }
-    // }
 }
