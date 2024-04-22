@@ -28,7 +28,7 @@ export default class AuthController {
 
     register = async (req: Request, res: Response) => {
         try {
-            const user: ApiServiceResponse = await this.userService.createUser(req.body, req);
+            const user: ApiServiceResponse = await this.authService.createUser(req.body, req);
             let tokens = {};
             if (user.response.code === 200) {
                 tokens = await this.tokenService.generateAuthTokens(<IUser>user.response.data);

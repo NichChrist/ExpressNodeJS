@@ -21,8 +21,14 @@ export default class ProductCategoryService implements IProductCategoryService {
     createProductCategory = async (name: string, req: Request) => {
         return sequelize.transaction(async (t) =>{
             try {
+                // let data = await ProductCategory.create(
+                //     name.toLowerCase(),                    
+                // {
+                //     transaction: t        
+                // });
+
                 let data = await ProductCategory.create(
-                    name.toLowerCase(),                    
+                    name,                    
                 {
                     transaction: t        
                 });
@@ -43,12 +49,13 @@ export default class ProductCategoryService implements IProductCategoryService {
         })
     };
     
-    createBulkProductCategory = async (name: any, req: Request) => {
+    createBulkProductCategory = async (name: string[], req: Request) => {
         return sequelize.transaction(async (t) =>{
             try {
-                const lowerCasedName = name.map((item) => ({ name: item.name.toLowerCase() }));
+                // name: any change the name name: string[]
+                // const lowerCasedName = name.map((item) => ({ name: item.name.toLowerCase() }));
                 
-                let data = await ProductCategory.bulkCreate(lowerCasedName, { transaction: t });
+                let data = await ProductCategory.bulkCreate(name, { transaction: t });
                 
                 const bulkData = data.map(item => {
                     return {
@@ -158,7 +165,7 @@ export default class ProductCategoryService implements IProductCategoryService {
 
     updateProductCategoryById = async (id: string, name: string) => {
         try {
-            name.toLowerCase();
+            // name.toLowerCase();
             if (!(await this.productCategoryDao.isProductCategoryExists(id))) {
                 return responseHandler.returnError(httpStatus.NOT_FOUND, responseMessageConstant.ProductCategory_404_NOT_FOUND);
             }

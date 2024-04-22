@@ -74,6 +74,13 @@ const responseMessageConstant = {
     ProductCategory_201_REGISTERED: 'Successfully Registered The Product Category',
     ProductCategory_404_NOT_FOUND: 'Product Category Not Found',
 
+    Product_200_DELETED: 'Successfully Deleted A Single Product ',
+    Product_200_FETCHED_ALL: 'Successfully Fetched All Products',
+    Product_200_FETCHED_SINGLE: 'Successfully Fetched A Single Product',
+    Product_200_UPDATED: 'Successfully Updated A Single Product',
+    Product_201_REGISTERED: 'Successfully Registered The Product',
+    Product_404_NOT_FOUND: 'Product  Not Found',
+
     PRODUCT_201_CREATED: 'Successfully Created The Product',
     PRODUCT_CODE_400_TAKEN: 'Product Code Taken',
     PRODUCT_200_FETCHED_ALL: 'Successfully Fetched All Products',

@@ -4,9 +4,9 @@ import { Request, Response } from 'express';
 import { logger } from '../../config/logger';
 import { IOwner } from '../../models/interfaces/IOwner';
 import { IOutlet } from '../../models/interfaces/IOutlet';
+import { IUser } from '../../models/interfaces/IUser';
 import TokenDao from '../../dao/implementations/TokenDao';
 import UserDao from '../../dao/implementations/UserDao';
-import OutletDao from '../../dao/implementations/OutletDao';
 import responseHandler from '../../helper/responseHandler';
 import IAuthService from '../contracts/IAuthService';
 import RedisService from './RedisService';
@@ -23,14 +23,11 @@ export default class AuthService implements IAuthService {
 
     private redisService: RedisService;
 
-    private outletDao: OutletDao;
-
     constructor() {
         this.userDao = new UserDao();
         this.tokenDao = new TokenDao();
         this.redisService = new RedisService();
-        this.outletDao = new OutletDao();
-        
+
     }
 
     loginWithUsernamePassword = async (username: string, password: string) => {
@@ -84,9 +81,35 @@ export default class AuthService implements IAuthService {
         return true;
     };
 
+    createUser = async (userBody: IUser, req: Request) => {
+        try {
+            if (await this.userDao.isUsernameExists(userBody.username)) {
+                return responseHandler.returnError(httpStatus.BAD_REQUEST, 'User with this username already exists');
+            }
+          
+            let userData = await this.userDao.create(userBody);
+
+            if (!userData) {
+                return responseHandler.returnError(httpStatus.BAD_GATEWAY, responseMessageConstant.HTTP_502_BAD_GATEWAY);
+            }
+
+            userData = userData.toJSON();
+            delete userData.password;
+
+            return responseHandler.returnSuccess(httpStatus.CREATED, responseMessageConstant.USER_201_REGISTERED, userData);
+        } catch (e) {
+            logger.error(e);
+            return responseHandler.returnError(httpStatus.BAD_GATEWAY, responseMessageConstant.HTTP_502_BAD_GATEWAY);
+        }
+    };
+
     registerOwner = async (ownerBody: IOwner) => {
         return sequelize.transaction(async (t) =>{
             try {
+                if (await this.userDao.isUsernameExists(ownerBody.username)) {
+                    return responseHandler.returnError(httpStatus.BAD_REQUEST, 'User with this username already exists');
+                }
+
                 let ownerData: any
 
                 const outletBody:IOutlet = {
