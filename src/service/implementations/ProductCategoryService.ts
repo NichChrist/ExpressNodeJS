@@ -8,16 +8,65 @@ import ProductCategoryDao from '../../dao/implementations/ProductCategoryDao';
 import db, { sequelize } from '../../models';
 import { responseMessageConstant } from '../../config/constant';
 import * as csv from 'exceljs';
-import * as path from 'path';
 
 const { product_category: ProductCategory, outlet_product_category: OutletProductCategory , outlet: Outlet} = db;
 
 export default class ProductCategoryService implements IProductCategoryService {
     private productCategoryDao: ProductCategoryDao;
-
+    
     constructor() {
         this.productCategoryDao = new ProductCategoryDao();
     }
+
+    createProductCategory = async (name: string, req: Request) => {
+        return sequelize.transaction(async (t) =>{
+            try {
+                let data = await ProductCategory.create(
+                    name.toLowerCase(),                    
+                {
+                    transaction: t        
+                });
+
+                await OutletProductCategory.create({
+                    outlet_id: req.userInfo?.outlet_id,
+                    product_category_id: data.id
+                }, {
+                    transaction: t
+                }); 
+
+                return responseHandler.returnSuccess(httpStatus.CREATED, responseMessageConstant.ProductCategory_201_REGISTERED, data);
+            } catch (e) {
+                console.log(e);
+                await t.rollback();
+                return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.HTTP_502_BAD_GATEWAY);
+            }
+        })
+    };
+    
+    createBulkProductCategory = async (name: any, req: Request) => {
+        return sequelize.transaction(async (t) =>{
+            try {
+                const lowerCasedName = name.map((item) => ({ name: item.name.toLowerCase() }));
+                
+                let data = await ProductCategory.bulkCreate(lowerCasedName, { transaction: t });
+                
+                const bulkData = data.map(item => {
+                    return {
+                        outlet_id: req.userInfo?.outlet_id,
+                        product_category_id: item.id
+                    }
+                });
+    
+                await OutletProductCategory.bulkCreate(bulkData, { transaction: t });
+    
+                return responseHandler.returnSuccess(httpStatus.CREATED, responseMessageConstant.ProductCategory_201_REGISTERED, data);
+            } catch (e) {
+                console.log(e);
+                await t.rollback();
+                return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.HTTP_502_BAD_GATEWAY);
+            }
+        })
+    };
 
     getProductCategories = async (req: Request) => {
         try {
@@ -38,6 +87,22 @@ export default class ProductCategoryService implements IProductCategoryService {
             const allData = await ProductCategory.findAndCountAll(options)
             
             return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant.ProductCategory_200_FETCHED_ALL, allData);
+        } catch (e) {
+            console.log(e);
+            return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.HTTP_502_BAD_GATEWAY);
+        }
+    };
+
+    getProductCategoryByName = async (name: any) => {
+        try {
+            name.toLowerCase();
+            if (!(await this.productCategoryDao.isProductCategoryNameExists(name))) {
+                return responseHandler.returnError(httpStatus.NOT_FOUND, responseMessageConstant.ProductCategory_404_NOT_FOUND);
+            }
+
+            const data = await this.productCategoryDao.findProductCategoryByName(name);
+
+            return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant.ProductCategory_200_FETCHED_SINGLE, data);
         } catch (e) {
             console.log(e);
             return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.HTTP_502_BAD_GATEWAY);
@@ -77,70 +142,6 @@ export default class ProductCategoryService implements IProductCategoryService {
         }
     };
 
-    getProductCategoryByName = async (name: any) => {
-        try {
-            if (!(await this.productCategoryDao.isProductCategoryNameExists(name))) {
-                return responseHandler.returnError(httpStatus.NOT_FOUND, responseMessageConstant.ProductCategory_404_NOT_FOUND);
-            }
-
-            const data = await this.productCategoryDao.findProductCategoryByName(name);
-
-            return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant.ProductCategory_200_FETCHED_SINGLE, data);
-        } catch (e) {
-            console.log(e);
-            return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.HTTP_502_BAD_GATEWAY);
-        }
-    };
-
-    createProductCategory = async (name: string, req: Request) => {
-        return sequelize.transaction(async (t) =>{
-            try {
-                let data = await ProductCategory.create({
-                    name: name                    
-                }, {
-                    transaction: t        
-                });
-
-                console.log(data.id, '<<<<<<<<<Data.id')
-                await OutletProductCategory.create({
-                    outlet_id: req.userInfo?.outlet_id,
-                    product_category_id: data.id
-                }, {
-                    transaction: t
-                }); 
-
-                return responseHandler.returnSuccess(httpStatus.CREATED, responseMessageConstant.ProductCategory_201_REGISTERED, data);
-            } catch (e) {
-                console.log(e);
-                await t.rollback();
-                return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.HTTP_502_BAD_GATEWAY);
-            }
-        })
-    };
-
-    createBulkProductCategory = async (name: string[], req: Request) => {
-        return sequelize.transaction(async (t) =>{
-            try {
-                let data = await ProductCategory.bulkCreate(name, { transaction: t });
-                
-                const bulkData = data.map(item => {
-                    return {
-                        outlet_id: req.userInfo?.outlet_id,
-                        product_category_id: item.id
-                    }
-                });
-
-                await OutletProductCategory.bulkCreate(bulkData, { transaction: t });
-
-                return responseHandler.returnSuccess(httpStatus.CREATED, responseMessageConstant.ProductCategory_201_REGISTERED, data);
-            } catch (e) {
-                console.log(e);
-                await t.rollback();
-                return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.HTTP_502_BAD_GATEWAY);
-            }
-        })
-    };
-
     deleteProductCategoryById = async (id: string) => {
         try {
             if (!(await this.productCategoryDao.isProductCategoryExists(id))) {
@@ -157,20 +158,13 @@ export default class ProductCategoryService implements IProductCategoryService {
 
     updateProductCategoryById = async (id: string, name: string) => {
         try {
+            name.toLowerCase();
             if (!(await this.productCategoryDao.isProductCategoryExists(id))) {
                 return responseHandler.returnError(httpStatus.NOT_FOUND, responseMessageConstant.ProductCategory_404_NOT_FOUND);
             }
 
             let data = await this.productCategoryDao.findProductCategory(id);
             if (name) {
-                if (await this.productCategoryDao.isProductCategoryNameExists(name)) {
-                    const modelData = await ProductCategory.findOne({ where: { name: name } });
-
-                    if (modelData.dataValues.id !== id) {
-                        return responseHandler.returnError(httpStatus.BAD_REQUEST, 'ProductCategory with this name already exists');
-                    };
-                };
-
                 data = await ProductCategory.update(
                     { name: name },
                     { where: { id: id }, returning: true, plain: true }
