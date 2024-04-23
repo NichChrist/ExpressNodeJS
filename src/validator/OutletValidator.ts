@@ -145,7 +145,6 @@ export default class OutletValidator {
             return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, errorMessage));
         } else {
             try {
-                console.log(value,"Value Before")
                 //Call the data row of with the same 'id' from 'req.params.id'
                 //'req.params.id' is from the ApiDog path params
                 const outletData = await Outlet.findOne({
@@ -234,8 +233,7 @@ export default class OutletValidator {
                 
                 //parent_id
                 value.parent_id = outletData.parent_id
-
-                console.log(value,"Value After")
+                
                 req.body = value;
                 return next();
             } catch (e) {
