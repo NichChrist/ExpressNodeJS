@@ -24,6 +24,7 @@ module.exports = (sequelize, DataTypes) => {
             stock: {
                 type: DataTypes.DECIMAL,
                 allowNull: false,
+                defaultValue: 0,
             },
             is_active: {
                 type: DataTypes.BOOLEAN,
