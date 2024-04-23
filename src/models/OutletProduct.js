@@ -25,6 +25,10 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.DECIMAL,
                 allowNull: false,
             },
+            is_active: {
+                type: DataTypes.BOOLEAN,
+                defaultValue: false,
+            },
         },
         {
             scopes: {
