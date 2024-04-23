@@ -44,7 +44,7 @@ export default class OutletController {
 
     createOutlet = async (req: Request, res: Response) => {
         try {
-            const data = await this.outletService.createNewOutlet(req.body)
+            const data = await this.outletService.createNewOutlet(req, req.body)
             const { code, message } = data.response;
             const Outlet = data.response.data;
             res.status(data.statusCode).json({

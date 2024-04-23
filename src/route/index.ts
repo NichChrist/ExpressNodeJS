@@ -4,7 +4,7 @@ import userRoute from './userRoute';
 import modelRoute from './modelRoute';
 import roleRoute from './roleRoute';
 import businessTypeRoute from './businessTypeRoute';
-import outletRoute from './OutletRoute'
+import outletRoute from './outletRoute'
 import provinceRoute from './provinceRoute'
 import cityRoute from './cityRoute'
 import districtRoute from './districtRoute'

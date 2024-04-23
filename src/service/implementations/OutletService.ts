@@ -19,8 +19,9 @@ export default class OutletService implements IOutletService {
         this.outletDao = new OutletDao();
     }
 
-    createNewOutlet = async (outletBody: IOutlet) => {
+    createNewOutlet = async (req: Request, outletBody: IOutlet) => {
         try {
+            outletBody.parent_id= req.userInfo?.outlet_id;
             let outletData = await this.outletDao.create(outletBody);
 
             if (!outletData) {

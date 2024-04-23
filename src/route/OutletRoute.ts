@@ -10,15 +10,16 @@ const router = Router();
 const outletController = new OutletController();
 const outletValidator = new OutletValidator();
 
-//auth()
 
 router.get(
     '/',
+    auth(),
     parameterCheck(),
     outletController.listOutlets
 );
 router.get(
     '/:id',
+    auth(),
     idCheck(),
     outletController.getOutletsDataById
 );
