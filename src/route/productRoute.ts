@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import ProductCategoryController from '../controllers/ProductCategoryController';
-import ProductCategoryValidator from '../validator/ProductCategoryValidator';
+import ProductController from '../controllers/ProductController';
+import ProductValidator from '../validator/ProductValidator';
 import path = require("path");
 import fs from 'fs';
 import { auth } from '../middlewares/auth';
@@ -30,50 +30,49 @@ const upload = multer({
     }
 });
 
-const productCategoryController = new ProductCategoryController();
-const productCategoryValidator = new ProductCategoryValidator();
+const productController = new ProductController();
+const productValidator = new ProductValidator();
 
-//auth()
 
 router.get(
     '/',
     auth(),
     parameterCheck(),
-    productCategoryController.getProductCategories
+    productController.getProduct
 );
 router.get(
     '/export-csv',
-    productCategoryController.exportToCsv
+    productController.exportToCsv
 );
 router.get(
     '/:id',
     auth(),
     parameterCheck(),
-    productCategoryController.getProductCategoriesByBranch
+    productController.getProductByBranch
 );
 router.post(
     '/',
     auth(),
-    productCategoryValidator.productCategoryCreateValidator,
-    productCategoryController.createProductCategory
+    productValidator.productCreateValidator,
+    productController.createProduct
 );
 router.post(
     '/upload-csv',
     auth(),
     upload.single('import_test'),
-    productCategoryValidator.csvValidator,
-    productCategoryController.createMultipleProductCategory
+    productValidator.csvValidator,
+    productController.createMultipleProduct
 );
 router.delete(
     '/:id',
     idCheck(),
-    productCategoryController.deleteProductCategory
+    productController.deleteProduct
 );
 router.put(
     '/:id',
     idCheck(),
-    productCategoryValidator.productCategoryUpdateValidator,
-    productCategoryController.updateProductCategory
+    productValidator.productUpdateValidator,
+    productController.updateProduct
 )
 
 export default router;
