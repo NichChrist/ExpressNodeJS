@@ -3,11 +3,14 @@ import { NextFunction, Request, Response } from 'express';
 import httpStatus from 'http-status';
 import Joi from 'joi';
 import ApiError from '../helper/ApiError';
+import { responseMessageConstant } from '../config/constant';
 
 export default class ProductCategoryValidator {
     async productCategoryCreateValidator(req: Request, res: Response, next: NextFunction) {
         const schema = Joi.object({
-            name: Joi.string().required(),
+            name: Joi.string().required().messages({
+                "string.empty": responseMessageConstant.NAME_422_EMPTY,
+            }),
         });
 
         // schema options
@@ -38,7 +41,9 @@ export default class ProductCategoryValidator {
     async productCategoryUpdateValidator(req: Request, res: Response, next: NextFunction) {
         // create schema object
         const schema = Joi.object({
-            name: Joi.string().required(),
+            name: Joi.string().required().messages({
+                "string.empty": responseMessageConstant.NAME_422_EMPTY,
+            }),
         });
 
         // schema options
@@ -66,7 +71,7 @@ export default class ProductCategoryValidator {
         }
     }
 
-    async userBulkCreateCsvValidator(req: Request, res: Response, next: NextFunction) {
+    async csvValidator(req: Request, res: Response, next: NextFunction) {
         if (!req.file) {
             return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'csv is required'));
         } else return next();

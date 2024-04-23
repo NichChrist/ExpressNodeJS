@@ -59,7 +59,7 @@ router.post(
     '/upload-csv',
     auth(),
     upload.single('import_test'),
-    productCategoryValidator.userBulkCreateCsvValidator,
+    productCategoryValidator.csvValidator,
     productCategoryController.createMultipleProductCategory
 );
 router.delete(
