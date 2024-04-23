@@ -5,7 +5,7 @@ import { Request, Response } from 'express';
 import responseHandler from '../../helper/responseHandler';
 import IProductCategoryService from '../contracts/IProductCategoryService';
 import ProductCategoryDao from '../../dao/implementations/ProductCategoryDao';
-import db, { sequelize } from '../../models';
+import db, { Sequelize, sequelize } from '../../models';
 import { responseMessageConstant } from '../../config/constant';
 import * as csv from 'exceljs';
 
@@ -112,14 +112,19 @@ export default class ProductCategoryService implements IProductCategoryService {
             const pagination = req.query.pagination;
             let options = { 
                 where: { id },
+                attributes: ['id','business_type_id','name','code'],
                 include: [{
                     model: ProductCategory,
                     through: { 
                       model: OutletProductCategory, 
-                    },
-                    attributes: { 
-                      exclude: ['deleted_at'],
-                    },
+                      attributes: [],
+                        },
+                        attributes: {
+                            include: [
+                                [Sequelize.literal('"product_categories->outlet_product_category"."product_category_id"'), 'product_category_id']
+                            ], 
+                            exclude: ['deleted_at','created_at','updated_at'],
+                        },
                   }],
             };
 
