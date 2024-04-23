@@ -21,11 +21,6 @@ export default class ProductCategoryService implements IProductCategoryService {
     createProductCategory = async (name: string, req: Request) => {
         return sequelize.transaction(async (t) =>{
             try {
-                // let data = await ProductCategory.create(
-                //     name.toLowerCase(),                    
-                // {
-                //     transaction: t        
-                // });
 
                 let data = await ProductCategory.create(
                     name,                    
@@ -52,9 +47,6 @@ export default class ProductCategoryService implements IProductCategoryService {
     createBulkProductCategory = async (name: string[], req: Request) => {
         return sequelize.transaction(async (t) =>{
             try {
-                // name: any change the name name: string[]
-                // const lowerCasedName = name.map((item) => ({ name: item.name.toLowerCase() }));
-                
                 let data = await ProductCategory.bulkCreate(name, { transaction: t });
                 
                 const bulkData = data.map(item => {
@@ -102,7 +94,6 @@ export default class ProductCategoryService implements IProductCategoryService {
 
     getProductCategoryByName = async (name: any) => {
         try {
-            name.toLowerCase();
             if (!(await this.productCategoryDao.isProductCategoryNameExists(name))) {
                 return responseHandler.returnError(httpStatus.NOT_FOUND, responseMessageConstant.ProductCategory_404_NOT_FOUND);
             }
@@ -165,7 +156,6 @@ export default class ProductCategoryService implements IProductCategoryService {
 
     updateProductCategoryById = async (id: string, name: string) => {
         try {
-            // name.toLowerCase();
             if (!(await this.productCategoryDao.isProductCategoryExists(id))) {
                 return responseHandler.returnError(httpStatus.NOT_FOUND, responseMessageConstant.ProductCategory_404_NOT_FOUND);
             }
