@@ -6,17 +6,11 @@ import ApiError from '../helper/ApiError';
 import responseHandler from '../helper/responseHandler';
 import models from '../models';
 import { Op } from 'sequelize';
-import ProductDao from '../dao/implementations/ProductDao';
 import { responseMessageConstant } from '../config/constant';
 
 const {product_category: ProductCategory, product: Product} = models;
 
 export default class ProductValidator {
-    private productDao: ProductDao;
-
-    constructor() {
-        this.productDao = new ProductDao();
-    }
 
     async productCreateValidator(req: Request, res: Response, next: NextFunction) {
         const schema = Joi.object({
