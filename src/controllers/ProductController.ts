@@ -59,7 +59,7 @@ export default class ProductController {
 
     createProduct = async (req: Request, res: Response) => {
         try {
-            const data = await this.productService.createProduct(req.body.name, req)
+            const data = await this.productService.createProduct(req.body, req)
             const { code, message } = data.response;
             const model = data.response.data;
             res.status(data.statusCode).json({
@@ -95,7 +95,8 @@ export default class ProductController {
 
     updateProduct = async (req: Request, res: Response) => {
         try {
-            const data = await this.productService.updateProductById(req.params.id, req.body.name);
+            console.log(req.params.id)
+            const data = await this.productService.updateProductById(req.params.id, req.body);
             const { code, message } = data.response;
             const model = data.response.data;
             res.status(data.statusCode).json({

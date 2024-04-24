@@ -27,9 +27,6 @@ export default class ProductValidator {
                 "string.empty": '"Product Category Id" is not allowed to be empty',
                 "string.guid": '"Product category Id" must be in a valid UUID format',
             }),
-            stock: Joi.number().messages({
-                "string.empty": '"Stock" is not allowed to be empty',
-            }),
         });
 
         // schema options
@@ -54,11 +51,12 @@ export default class ProductValidator {
             try {
                 //product_category_id
                 //value.product_category_id check does it exist
-                const productCategory = await ProductCategory.findByPk(value.product_category_id);
-                if (productCategory === null) {
+                const categoryCheck = await ProductCategory.findByPk(value.product_category_id);
+                if (categoryCheck === null) {
                     return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'Product Category Not Found'));
                 }      
                 // on success replace req.body with validated value and trigger next middleware function
+                console.log({value})    
                 req.body = value;
                 return next();
             } catch (e) {
@@ -74,12 +72,8 @@ export default class ProductValidator {
             name: Joi.string().required().messages({
                 "string.empty": responseMessageConstant.NAME_422_EMPTY,
             }),
-            product_category_id: Joi.string().guid().messages({
-                "string.empty": '"Product Category Id" is not allowed to be empty',
+            product_category_id: Joi.string().guid().allow(null, '').messages({
                 "string.guid": '"Product category Id" must be in a valid UUID format',
-            }),
-            stock: Joi.number().messages({
-                "string.empty": '"Stock" is not allowed to be empty',
             }),
         });
 
@@ -103,12 +97,26 @@ export default class ProductValidator {
             return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, errorMessage));
         } else {
             try {
+                const products = await Product.findOne({
+                    where: {
+                        id: req.params.id,
+                    }
+                });  
+                
                 //product_category_id
                 //value.product_category_id check does it exist
-                const productCategory = await ProductCategory.findByPk(value.product_category_id);
-                if (productCategory === null) {
+                if (!['', null].includes(value.product_category_id)) {
+                    const productCategories= await ProductCategory.findByPk(value.product_category_id);
+                if (productCategories === null) {
                     return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'Product Category Not Found'));
-                }      
+                } 
+                console.log({value},'value Before')
+                }
+                //if null fill it with it own data from the DB row
+                if (['', null].includes(value.product_category_id)) {
+                    value.product_category_id = products.product_category_id
+                }  
+                console.log({value},'value After')
                 // on success replace req.body with validated value and trigger next middleware function
                 req.body = value;
                 return next();

@@ -11,6 +11,7 @@ import db, { Sequelize, sequelize } from '../../models';
 import { responseMessageConstant } from '../../config/constant';
 import * as csv from 'exceljs';
 import { Op } from 'sequelize';
+import { log } from 'console';
 
 const { product: Product, outlet_product: OutletProduct, file: File, outlet: Outlet} = db;
 
@@ -213,30 +214,18 @@ export default class ProductService implements IProductService {
     }
 
     
-    updateProductById = async (id: string, name: string) => {
+    updateProductById = async (id: string, productBody: IProduct) => {
         try {
             if (!(await this.productDao.isProductExists(id))) {
                 return responseHandler.returnError(httpStatus.NOT_FOUND, responseMessageConstant.Product_404_NOT_FOUND);
             }
 
-            let data = await this.productDao.findProduct(id);
-            if (name) {
-                if (await this.productDao.isProductNameExists(name)) {
-                    const modelData = await Product.findOne({ where: { name: name } });
-
-                    if (modelData.dataValues.id !== id) {
-                        return responseHandler.returnError(httpStatus.BAD_REQUEST, 'Product  with this name already exists');
-                    };
-                };
-
-                data = await Product.update(
-                    { name: name },
-                    { where: { id: id }, returning: true, plain: true }
-                );
-                data = data[1].dataValues;
-                delete data.deleted_at;
+            let updatedProductData = await this.productDao.updateById(productBody, id);
+            if (updatedProductData[0] !== 1) {
+                return responseHandler.returnError(httpStatus.BAD_GATEWAY, responseMessageConstant.HTTP_502_BAD_GATEWAY);
             }
 
+            let data = await this.productDao.findProduct(id);
             return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant.Product_200_UPDATED, data);
         } catch (e) {
             console.log(e);
