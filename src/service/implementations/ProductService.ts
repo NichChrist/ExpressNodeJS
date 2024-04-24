@@ -7,21 +7,23 @@ import responseHandler from '../../helper/responseHandler';
 import IProductService from '../contracts/IProductService';
 import ProductDao from '../../dao/implementations/ProductDao';
 import ProductCategoryDao from '../../dao/implementations/ProductCategoryDao';
+import StockDao from '../../dao/implementations/StockDao';
 import db, { Sequelize, sequelize } from '../../models';
 import { responseMessageConstant } from '../../config/constant';
 import * as csv from 'exceljs';
 import { Op } from 'sequelize';
-import { log } from 'console';
 
 const { product: Product, outlet_product: OutletProduct, file: File, outlet: Outlet} = db;
 
 export default class ProductService implements IProductService {
     private productDao: ProductDao;
     private productCategoryDao: ProductCategoryDao;
+    private stockDao: StockDao;
 
     constructor() {
         this.productDao = new ProductDao();
         this.productCategoryDao = new ProductCategoryDao();
+        this.stockDao = new StockDao();
     }
 
     createProduct = async (productBody: IProduct, req: Request) => {
@@ -205,6 +207,7 @@ export default class ProductService implements IProductService {
                 return responseHandler.returnError(httpStatus.NOT_FOUND, responseMessageConstant.Product_404_NOT_FOUND);
             }
 
+            await this.stockDao.deleteById(id);
             await this.productDao.deleteById(id);
             return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant.Product_200_DELETED);
         } catch (e) {
