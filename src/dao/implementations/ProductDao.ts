@@ -1,6 +1,7 @@
 import models from '../../models';
 import IProductDao from '../contracts/IProductDao'
 import SuperDao from './SuperDao';
+import { Op } from 'sequelize';
 
 const { product: Product } = models;
 
@@ -25,12 +26,18 @@ export default class ModelDao extends SuperDao implements IProductDao {
     };
 
     async isProductNameExists(name: string) {
-        return Product.count({ where: { name } }).then((count) => {
-            if (count != 0) {
-                return true;
+        return Product.count({ 
+            where:{ 
+                name:{
+                    [Op.iLike]: `%${name}%`
+                    }}}
+                ).then((count) => {
+                    if (count != 0) {
+                        return true;
+                }
+                return false;
             }
-            return false;
-        });
+        );
     };
 
     async deleteById(id: string) {
@@ -47,11 +54,12 @@ export default class ModelDao extends SuperDao implements IProductDao {
     }
 
     async findProductByName(name: string) {
-        return Product.findOne({
-            attributes: {
-                exclude: ['deleted_at']
-            },
-            where: { name: name }
+        return Product.findAndCountAll({
+            attributes: ['id','name'],
+            where:{ 
+                name:{
+                    [Op.iLike]: `%${name}%`
+            }}
         })
     }
 }

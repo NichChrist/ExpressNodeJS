@@ -38,6 +38,7 @@ router.get(
     '/',
     auth(),
     parameterCheck(),
+    productValidator.productGetValidator,
     productController.getProduct
 );
 router.get(

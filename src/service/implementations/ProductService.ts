@@ -11,7 +11,6 @@ import db, { Sequelize, sequelize } from '../../models';
 import { responseMessageConstant } from '../../config/constant';
 import * as csv from 'exceljs';
 import { Op } from 'sequelize';
-import { includes } from 'lodash';
 
 const { product: Product, outlet_product: OutletProduct, file: File, outlet: Outlet} = db;
 
@@ -76,7 +75,7 @@ export default class ProductService implements IProductService {
 
                 for (let i = 0; i < productBody.length; i++) {
                     if (!(await this.productCategoryDao.isProductCategoryExists(productBody[i].product_category_id))) {
-                        return responseHandler.returnError(httpStatus.NOT_FOUND, 'There is invalid Product Category Id at row ' + (i+1));
+                        return responseHandler.returnError(httpStatus.UNPROCESSABLE_ENTITY, 'There is invalid Product Category Id at row ' + (i+1));
                     }
                 }
 
@@ -92,8 +91,7 @@ export default class ProductService implements IProductService {
                 });
 
                 const bulkOutletProducts:Array<any> = [];
-                console.log({outlets})
-                console.log({products})
+                
                 outlets.forEach((outlet) => {
                     products.forEach((product) => {
                         bulkOutletProducts.push({
@@ -114,13 +112,15 @@ export default class ProductService implements IProductService {
         })
     };
 
-    getProduct = async (req: Request) => {
+    getProduct = async (sort: any, name: any, req: Request) => {
         try {
+            const hasNameQueryParam = req.query.name !== undefined && req.query.name !== '';
+            const hasSortQueryParam = req.query.order_by !== undefined && req.query.sort !== '';
+
             const pagination = req.query.pagination;
             let options = {
                 attributes: ['id','name'],
             };
-
             if (pagination == 'true') {
                 const row: any = req.query.row;
                 const page: any = req.query.page;
@@ -129,24 +129,31 @@ export default class ProductService implements IProductService {
                 options['limit'] = row;
             }
 
-            const allData = await Product.findAndCountAll(options)
-            
-            return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant.Product_200_FETCHED_ALL, allData);
-        } catch (e) {
-            console.log(e);
-            return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.HTTP_502_BAD_GATEWAY);
-        }
-    };
+            if(hasNameQueryParam){
+                const data = await this.productDao.findProductByName(name);
 
-    getProductByName = async (name: any) => {
-        try {
-            if (!(await this.productDao.isProductNameExists(name))) {
-                return responseHandler.returnError(httpStatus.NOT_FOUND, responseMessageConstant.Product_404_NOT_FOUND);
+                return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant.Product_200_FETCHED_SINGLE, data);
+            }else if(hasSortQueryParam){
+                if (sort) {
+                    const [sortBy, sortOrder] = sort.split(':');
+                    if (Object.keys(Product.rawAttributes).includes(sortBy)) {
+                        if (['ASC', 'DESC'].includes(sortOrder.toUpperCase())) {
+                            options['order'] = [[sortBy, sortOrder.toUpperCase()]];
+                        } else {
+                            return responseHandler.returnError(httpStatus.BAD_REQUEST, `Invalid sort order '${sortOrder}'.`);
+                        }
+                    } else {
+                        return responseHandler.returnError(httpStatus.BAD_REQUEST, `Column '${sortBy}' does not exist.`);
+                    }
+                }
+                const allData = await Product.findAndCountAll(options)
+                
+                return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant.Product_200_FETCHED_ALL, allData);
+            }else{
+                const allData = await Product.findAndCountAll(options)
+
+                return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant.Product_200_FETCHED_ALL, allData);
             }
-
-            const data = await this.productDao.findProductByName(name);
-
-            return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant.Product_200_FETCHED_SINGLE, data);
         } catch (e) {
             console.log(e);
             return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.HTTP_502_BAD_GATEWAY);

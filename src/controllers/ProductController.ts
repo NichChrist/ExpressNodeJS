@@ -16,30 +16,17 @@ export default class ProductController {
 
     getProduct = async (req: Request, res: Response) => {
         try {
-            const hasNameQueryParam = req.query.name !== undefined && req.query.name !== '';
-
-            if (!hasNameQueryParam) {
-                const model = await this.productService.getProduct(req);
-                const { code, message } = model.response;
-                const data: any = model.response.data;
-
-                res.status(model.statusCode).json({
-                    code: code,
-                    message: message,
-                    count: data.count,
-                    data: data.rows,
-                });
-            }else{
-                const data = await this.productService.getProductByName(req.query.name)
-                const { code, message } = data.response;
-                const role = data.response.data;
-                res.status(data.statusCode).json({
-                    code: code,
-                    message: message,
-                    data: role,
-                });
-            }
+            const model = await this.productService.getProduct(req.query.order_by, req.query.name, req);
+            const { code, message } = model.response;
+            const data: any = model.response.data;
             
+            res.status(model.statusCode).json({
+                code: code,
+                message: message,
+                count: data.count,
+                data: data.rows,
+            });
+
         } catch (e) {
             logger.error(e);
             res.status(httpStatus.BAD_GATEWAY).json({

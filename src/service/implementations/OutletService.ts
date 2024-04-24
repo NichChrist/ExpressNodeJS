@@ -60,7 +60,6 @@ export default class OutletService implements IOutletService {
         try {
             const { pagination, page, row } = query;
             let provinceData = await this.outletDao.list(['withoutTimestamp'], pagination, page, row);
-            console.log(provinceData)
             return responseHandler.returnSuccess(httpStatus.OK, 'Successfully Fetched All Outlet', provinceData);
         } catch (e) {
             console.log(e);
