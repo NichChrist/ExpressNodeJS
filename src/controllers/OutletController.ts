@@ -35,6 +35,18 @@ export default class OutletController {
         }
     };
 
+    dropdownBranch = async (req: Request, res: Response) => {
+        try {
+            const users = await this.outletService.dropdownOutletBranch(req);
+            const { message, data } = users.response;
+            const code = users.statusCode;
+            res.status(code).send({ code, message, data });
+        } catch (e) {
+            logger.error(e);
+            res.status(httpStatus.BAD_GATEWAY).send(e);
+        }
+    };
+
     getOutletsDataById = async (req: Request, res: Response) => {
         try {
             const data = await this.outletService.getOutletDataById(req.params.id)

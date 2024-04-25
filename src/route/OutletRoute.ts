@@ -20,7 +20,14 @@ router.get(
 
 router.get(
     '/dropdown', 
+    auth(),
     outletController.dropdown
+);
+
+router.get(
+    '/dropdown-branch',
+    auth(), 
+    outletController.dropdownBranch
 );
 
 router.get(

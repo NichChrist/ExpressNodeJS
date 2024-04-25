@@ -8,6 +8,7 @@ import OutletDao from '../../dao/implementations/OutletDao';
 import IOutletService from '../contracts/IOutletService';
 import { IOutlet } from '../../models/interfaces/IOutlet';
 import { responseMessageConstant } from '../../config/constant';
+import { Op } from 'sequelize';
 import models, { sequelize } from '../../models';
 
 const { outlet: Outlet} = models;
@@ -32,8 +33,28 @@ export default class OutletService implements IOutletService {
 
     dropdownOutlet = async () => {
         try {
-            let provinceData = await this.outletDao.list(['dropdown'], 'false', null!, null!);
-            return responseHandler.returnSuccess(httpStatus.OK, 'Successfully Fetched All City', provinceData);
+            let outletData = await this.outletDao.list(['dropdown'], 'false', null!, null!);
+            return responseHandler.returnSuccess(httpStatus.OK, 'Successfully Fetched All Outlet', outletData);
+        } catch (e) {
+            console.log(e);
+            return responseHandler.returnError(httpStatus.BAD_GATEWAY, responseMessageConstant.HTTP_502_BAD_GATEWAY);
+        }
+    }
+
+    dropdownOutletBranch = async (req: Request) => {
+        try {
+            const option = {
+                where: {
+                    [Op.or]: [
+                        {id: req.userInfo?.outlet_id},
+                        {parent_id: req.userInfo?.outlet_id}
+                    ],
+                }
+            };
+        
+            let outletData = await  Outlet.scope(['withoutTimestamp']).findAll(option);
+            
+            return responseHandler.returnSuccess(httpStatus.OK, 'Successfully Fetched Outlet Branches', outletData);
         } catch (e) {
             console.log(e);
             return responseHandler.returnError(httpStatus.BAD_GATEWAY, responseMessageConstant.HTTP_502_BAD_GATEWAY);
