@@ -115,7 +115,7 @@ export default class ProductService implements IProductService {
 
             const pagination = req.query.pagination;
             let options = {
-                attributes: ['id','name'],
+                attributes: ['id','name','sku'],
             };
             if (pagination == 'true') {
                 const row: any = req.query.row;

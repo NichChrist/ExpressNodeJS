@@ -108,6 +108,12 @@ export default class ProductValidator {
             name: Joi.string().required().messages({
                 "string.empty": responseMessageConstant.NAME_422_EMPTY,
             }),
+            price: Joi.number().required().messages({
+                "number.empty": '"Price" is not allowed to be empty'
+            }),
+            sku: Joi.string().required().messages({
+                "string.empty": '"SKU" is not allowed to be empty'
+            }),
             product_category_id: Joi.string().guid().allow(null, '').messages({
                 "string.guid": '"Product category Id" must be in a valid UUID format',
             }),
@@ -137,21 +143,34 @@ export default class ProductValidator {
                     where: {
                         id: req.params.id,
                     }
-                });  
+                });
+
+                if (!['', null].includes(value.sku)) {
+                    const skuCheck = await Product.findOne({
+                        where: {
+                            id: {
+                                [Op.ne]: req.params.id
+                            },
+                            sku: value.sku
+                        }
+                    })
+                    if (skuCheck){
+                        return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, '"SKU" is unavailable'))
+                    }                  
+                }
                 
-                //product_category_id
-                //value.product_category_id check does it exist
+                
+
                 if (!['', null].includes(value.product_category_id)) {
                     const productCategories= await ProductCategory.findByPk(value.product_category_id);
                 if (productCategories === null) {
                     return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'Product Category Not Found'));
                 } 
                 }
-                //if null fill it with it own data from the DB row
+
                 if (['', null].includes(value.product_category_id)) {
                     value.product_category_id = products.product_category_id
                 }  
-                // on success replace req.body with validated value and trigger next middleware function
                 req.body = value;
                 return next();
             } catch (e) {
