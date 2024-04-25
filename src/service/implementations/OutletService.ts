@@ -14,9 +14,30 @@ const { outlet: Outlet} = models;
 
 export default class OutletService implements IOutletService {
     private outletDao: OutletDao;
-
+    
     constructor() {
         this.outletDao = new OutletDao();
+    }
+
+    listOutlet = async (query) => {
+        try {
+            const { pagination, page, row } = query;
+            let provinceData = await this.outletDao.list(['withoutTimestamp'], pagination, page, row);
+            return responseHandler.returnSuccess(httpStatus.OK, 'Successfully Fetched All Outlet', provinceData);
+        } catch (e) {
+            console.log(e);
+            return responseHandler.returnError(httpStatus.BAD_GATEWAY, responseMessageConstant.HTTP_502_BAD_GATEWAY);
+        }
+    }
+
+    dropdownOutlet = async () => {
+        try {
+            let provinceData = await this.outletDao.list(['dropdown'], 'false', null!, null!);
+            return responseHandler.returnSuccess(httpStatus.OK, 'Successfully Fetched All City', provinceData);
+        } catch (e) {
+            console.log(e);
+            return responseHandler.returnError(httpStatus.BAD_GATEWAY, responseMessageConstant.HTTP_502_BAD_GATEWAY);
+        }
     }
 
     createNewOutlet = async (req: Request, outletBody: IOutlet) => {
@@ -56,16 +77,6 @@ export default class OutletService implements IOutletService {
         }
     };
 
-    listOutlet = async (query) => {
-        try {
-            const { pagination, page, row } = query;
-            let provinceData = await this.outletDao.list(['withoutTimestamp'], pagination, page, row);
-            return responseHandler.returnSuccess(httpStatus.OK, 'Successfully Fetched All Outlet', provinceData);
-        } catch (e) {
-            console.log(e);
-            return responseHandler.returnError(httpStatus.BAD_GATEWAY, responseMessageConstant.HTTP_502_BAD_GATEWAY);
-        }
-    }
 
     getOutletDataById = async (id: string) => {
         try {

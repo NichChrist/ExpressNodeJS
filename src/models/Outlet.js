@@ -138,6 +138,13 @@ module.exports = (sequelize, DataTypes) => {
                 withoutTimestamp: {
                     attributes: { exclude: ['created_at', 'updated_at', 'deleted_at'] },
                 },
+                dropdown: {
+                    attributes: [
+                        'id',
+                        'name',
+                        'code'
+                    ]
+                }
             },
             sequelize,
             modelName: 'outlet',

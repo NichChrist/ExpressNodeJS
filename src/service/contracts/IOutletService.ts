@@ -4,6 +4,7 @@ import { IOutlet } from '../../models/interfaces/IOutlet';
 
 export default interface IOutletService {
     listOutlet: (query) => Promise<ApiServiceResponse>
+    dropdownOutlet: () => Promise<ApiServiceResponse>;
     getOutletDataById: (id: string) => Promise<ApiServiceResponse>
     createNewOutlet: (req:Request, outletBody: IOutlet) => Promise<ApiServiceResponse>
     deleteOutletById: (id: string) => Promise<ApiServiceResponse>

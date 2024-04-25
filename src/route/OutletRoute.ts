@@ -17,6 +17,12 @@ router.get(
     parameterCheck(),
     outletController.listOutlets
 );
+
+router.get(
+    '/dropdown', 
+    outletController.dropdown
+);
+
 router.get(
     '/:id',
     auth(),
