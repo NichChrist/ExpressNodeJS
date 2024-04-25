@@ -2,7 +2,7 @@ import { Request } from 'express';
 import { ApiServiceResponse } from '../../@types/apiServiceResponse';
 import { IOutlet } from '../../models/interfaces/IOutlet';
 
-export default interface IOutletervice {
+export default interface IOutletService {
     listOutlet: (query) => Promise<ApiServiceResponse>
     getOutletDataById: (id: string) => Promise<ApiServiceResponse>
     createNewOutlet: (req:Request, outletBody: IOutlet) => Promise<ApiServiceResponse>
