@@ -1,14 +1,14 @@
 /* eslint-disable class-methods-use-this */
 import { NextFunction, Request, Response } from 'express';
 import httpStatus from 'http-status';
-import Joi from 'joi';
+import Joi, { string } from 'joi';
 import ApiError from '../helper/ApiError';
 import responseHandler from '../helper/responseHandler';
 import models from '../models';
 import { Op } from 'sequelize';
 import { responseMessageConstant } from '../config/constant';
 
-const {product_category: ProductCategory, product: Product} = models;
+const {product_category: ProductCategory, product: Product, outlet: Outlet} = models;
 
 export default class ProductValidator {
 
@@ -17,9 +17,18 @@ export default class ProductValidator {
             name: Joi.string().required().messages({
                 "string.empty": responseMessageConstant.NAME_422_EMPTY,
             }),
+            price: Joi.number().required().messages({
+                "number.empty": '"Price" is not allowed to be empty'
+            }),
+            sku: Joi.string().required().messages({
+                "string.empty": '"SKU" is not allowed to be empty'
+            }),
             product_category_id: Joi.string().guid().messages({
                 "string.empty": '"Product Category Id" is not allowed to be empty',
-                "string.guid": '"Product category Id" must be in a valid UUID format',
+                "string.guid": '"Product Category Id" must be in a valid UUID format',
+            }),
+            outlet_id: Joi.array<string>().required().messages({
+                "array.empty": '"Outlet Id" is not allowed to be empty'
             }),
         });
 
@@ -48,9 +57,42 @@ export default class ProductValidator {
                 const categoryCheck = await ProductCategory.findByPk(value.product_category_id);
                 if (categoryCheck === null) {
                     return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'Product Category Not Found'));
-                }      
-                // on success replace req.body with validated value and trigger next middleware function
-                console.log({value})    
+                }   
+
+                value.outlet_id.forEach(async (id) => {
+                    const outletIdCheck = await Outlet.findByPk(id)
+                        if(outletIdCheck === null){
+                            return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'Outlet Id Not Found'));
+                        }
+                }); 
+
+                const skuCheck = await Product.findOne({
+                    where: {
+                        sku: value.sku
+                    }
+                })
+                if (skuCheck){
+                    return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, '"SKU" is unavailable'))
+                }
+
+                for (let i = 0; i < value.outlet_id.length; i++) {
+                    const outlets = await Outlet.findOne({
+                        where: {
+                            id: value.outlet_id[i],
+                        }
+                    });
+                    
+                    if (outlets.parent_id === null){
+                        if (outlets.id !== req.userInfo?.outlet_id){
+                            return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'This Outlet Is Not Your Branch'));
+                        }
+                    }else{
+                        if (outlets.parent_id !== req.userInfo?.outlet_id){
+                            return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'This Outlet Is Not Your Branch'));
+                        }
+                    }
+                }
+  
                 req.body = value;
                 return next();
             } catch (e) {
@@ -104,13 +146,11 @@ export default class ProductValidator {
                 if (productCategories === null) {
                     return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'Product Category Not Found'));
                 } 
-                console.log({value},'value Before')
                 }
                 //if null fill it with it own data from the DB row
                 if (['', null].includes(value.product_category_id)) {
                     value.product_category_id = products.product_category_id
                 }  
-                console.log({value},'value After')
                 // on success replace req.body with validated value and trigger next middleware function
                 req.body = value;
                 return next();

@@ -30,7 +30,7 @@ export default class ProductService implements IProductService {
         return sequelize.transaction(async (t) =>{
             try {
                 if (req.file) {
-                    let e = await File.create({
+                    let files = await File.create({
                         name: req.file?.filename,
                         mime_type: req.file?.mimetype,
                         file_path: req.file?.path,
@@ -40,26 +40,19 @@ export default class ProductService implements IProductService {
                         transaction: t
                     }); 
 
-                    productBody.picture = e.id;
+                    productBody.picture = files.id;
                 }
                 
                 let data = await Product.create(productBody, { transaction: t });
 
-                const outlets = await Outlet.findAll({
-                    where: {
-                        [Op.or]: [
-                            {id: req.userInfo?.outlet_id},
-                            {parent_id: req.userInfo?.outlet_id}
-                        ],
-                    }
-                });
+                const bulkData:Array<any> = [];
 
-                const bulkData = outlets.map(item => {
-                    return {
-                        outlet_id: item.id,
+                productBody.outlet_id.forEach((outlet) => {
+                    bulkData.push({
+                        outlet_id: outlet,
                         product_id: data.id
-                    }
-                });
+                    })
+                })
 
                 await OutletProduct.bulkCreate(bulkData, {transaction: t}); 
 
