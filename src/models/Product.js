@@ -63,6 +63,14 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.UUID,
                 allowNull: true
             },
+            price: {
+                type: DataTypes.DECIMAL,
+                allowNull: false
+            },
+            sku: {
+                type: DataTypes.STRING,
+                allowNull: false
+            }
         },
         {
             sequelize,
