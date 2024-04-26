@@ -40,11 +40,11 @@ export default class ProvinceService implements IProvinceService {
 
     getProvinceById = async (id: string) => {
         try {
-            let userData = await this.provinceDao.getById(['withoutTimestamp'], id)
-            if (!userData) {
+            let data = await this.provinceDao.getById(['withoutTimestamp'], id)
+            if (!data) {
                 return responseHandler.returnError(httpStatus.NOT_FOUND, 'Province Not Found');
             }
-            return responseHandler.returnSuccess(httpStatus.OK, 'Successfully Fetched A Single Province', userData);
+            return responseHandler.returnSuccess(httpStatus.OK, 'Successfully Fetched A Single Province', data);
         } catch (e) {
             logger.error(e);
             return responseHandler.returnError(httpStatus.BAD_GATEWAY, responseMessageConstant.HTTP_502_BAD_GATEWAY);

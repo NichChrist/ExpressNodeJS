@@ -21,8 +21,8 @@ export default class SubdistirctService implements ISubdistirctService {
     listSubdistrict = async (query) => {
         try {
             const { pagination, page, row } = query;
-            let provinceData = await this.subdistrictDao.list(['withoutTimestamp'], pagination, page, row);
-            return responseHandler.returnSuccess(httpStatus.OK, 'Successfully Fetched All Subdistrict', provinceData);
+            let subdistrictData = await this.subdistrictDao.list(['withoutTimestamp'], pagination, page, row);
+            return responseHandler.returnSuccess(httpStatus.OK, 'Successfully Fetched All Subdistrict', subdistrictData);
         } catch (e) {
             logger.error(e);
             return responseHandler.returnError(httpStatus.BAD_GATEWAY, responseMessageConstant.HTTP_502_BAD_GATEWAY);
@@ -31,8 +31,8 @@ export default class SubdistirctService implements ISubdistirctService {
 
     dropdownSubdistrict = async () => {
         try {
-            let provinceData = await this.subdistrictDao.list(['dropdown'], 'false', null!, null!);
-            return responseHandler.returnSuccess(httpStatus.OK, 'Successfully Fetched All Subdistrict', provinceData);
+            let subdistrictData = await this.subdistrictDao.list(['dropdown'], 'false', null!, null!);
+            return responseHandler.returnSuccess(httpStatus.OK, 'Successfully Fetched All Subdistrict', subdistrictData);
         } catch (e) {
             logger.error(e);
             return responseHandler.returnError(httpStatus.BAD_GATEWAY, responseMessageConstant.HTTP_502_BAD_GATEWAY);
@@ -41,11 +41,11 @@ export default class SubdistirctService implements ISubdistirctService {
 
     getSubdistrictById = async (id: string) => {
         try {
-            let userData = await this.subdistrictDao.getById(['withoutTimestamp'], id)
-            if (!userData) {
+            let data = await this.subdistrictDao.getById(['withoutTimestamp'], id)
+            if (!data) {
                 return responseHandler.returnError(httpStatus.NOT_FOUND, 'Subdistrict Not Found');
             }
-            return responseHandler.returnSuccess(httpStatus.OK, 'Successfully Fetched A Single Subdistrict', userData);
+            return responseHandler.returnSuccess(httpStatus.OK, 'Successfully Fetched A Single Subdistrict', data);
         } catch (e) {
             logger.error(e);
             return responseHandler.returnError(httpStatus.BAD_GATEWAY, responseMessageConstant.HTTP_502_BAD_GATEWAY);

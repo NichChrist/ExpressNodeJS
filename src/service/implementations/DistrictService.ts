@@ -21,8 +21,8 @@ export default class DistrictService implements IDistrictService {
     listDistrict = async (query) => {
         try {
             const { pagination, page, row } = query;
-            let provinceData = await this.districtDao.list(['withoutTimestamp'], pagination, page, row);
-            return responseHandler.returnSuccess(httpStatus.OK, 'Successfully Fetched All District', provinceData);
+            let districtData = await this.districtDao.list(['withoutTimestamp'], pagination, page, row);
+            return responseHandler.returnSuccess(httpStatus.OK, 'Successfully Fetched All District', districtData);
         } catch (e) {
             logger.error(e);
             return responseHandler.returnError(httpStatus.BAD_GATEWAY, responseMessageConstant.HTTP_502_BAD_GATEWAY);
@@ -31,8 +31,8 @@ export default class DistrictService implements IDistrictService {
 
     dropdownDistrict = async () => {
         try {
-            let provinceData = await this.districtDao.list(['dropdown'], 'false', null!, null!);
-            return responseHandler.returnSuccess(httpStatus.OK, 'Successfully Fetched All District', provinceData);
+            let districtData = await this.districtDao.list(['dropdown'], 'false', null!, null!);
+            return responseHandler.returnSuccess(httpStatus.OK, 'Successfully Fetched All District', districtData);
         } catch (e) {
             logger.error(e);
             return responseHandler.returnError(httpStatus.BAD_GATEWAY, responseMessageConstant.HTTP_502_BAD_GATEWAY);
@@ -41,11 +41,11 @@ export default class DistrictService implements IDistrictService {
 
     getDistrictById = async (id: string) => {
         try {
-            let userData = await this.districtDao.getById(['withoutTimestamp'], id)
-            if (!userData) {
+            let data = await this.districtDao.getById(['withoutTimestamp'], id)
+            if (!data) {
                 return responseHandler.returnError(httpStatus.NOT_FOUND, 'District Not Found');
             }
-            return responseHandler.returnSuccess(httpStatus.OK, 'Successfully Fetched A Single District', userData);
+            return responseHandler.returnSuccess(httpStatus.OK, 'Successfully Fetched A Single District', data);
         } catch (e) {
             logger.error(e);
             return responseHandler.returnError(httpStatus.BAD_GATEWAY, responseMessageConstant.HTTP_502_BAD_GATEWAY);

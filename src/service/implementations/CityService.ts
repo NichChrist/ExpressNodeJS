@@ -21,8 +21,8 @@ export default class CityService implements ICityService {
     listCity = async (query) => {
         try {
             const { pagination, page, row } = query;
-            let provinceData = await this.cityDao.list(['withoutTimestamp'], pagination, page, row);
-            return responseHandler.returnSuccess(httpStatus.OK, 'Successfully Fetched All City', provinceData);
+            let cityData = await this.cityDao.list(['withoutTimestamp'], pagination, page, row);
+            return responseHandler.returnSuccess(httpStatus.OK, 'Successfully Fetched All City', cityData);
         } catch (e) {
             logger.error(e);
             return responseHandler.returnError(httpStatus.BAD_GATEWAY, responseMessageConstant.HTTP_502_BAD_GATEWAY);
@@ -31,8 +31,8 @@ export default class CityService implements ICityService {
 
     dropdownCity = async () => {
         try {
-            let provinceData = await this.cityDao.list(['dropdown'], 'false', null!, null!);
-            return responseHandler.returnSuccess(httpStatus.OK, 'Successfully Fetched All City', provinceData);
+            let cityData = await this.cityDao.list(['dropdown'], 'false', null!, null!);
+            return responseHandler.returnSuccess(httpStatus.OK, 'Successfully Fetched All City', cityData);
         } catch (e) {
             logger.error(e);
             return responseHandler.returnError(httpStatus.BAD_GATEWAY, responseMessageConstant.HTTP_502_BAD_GATEWAY);
@@ -41,11 +41,11 @@ export default class CityService implements ICityService {
 
     getCityById = async (id: string) => {
         try {
-            let userData = await this.cityDao.getById(['withoutTimestamp'], id)
-            if (!userData) {
+            let data = await this.cityDao.getById(['withoutTimestamp'], id)
+            if (!data) {
                 return responseHandler.returnError(httpStatus.NOT_FOUND, 'City Not Found');
             }
-            return responseHandler.returnSuccess(httpStatus.OK, 'Successfully Fetched A Single City', userData);
+            return responseHandler.returnSuccess(httpStatus.OK, 'Successfully Fetched A Single City', data);
         } catch (e) {
             logger.error(e);
             return responseHandler.returnError(httpStatus.BAD_GATEWAY, responseMessageConstant.HTTP_502_BAD_GATEWAY);

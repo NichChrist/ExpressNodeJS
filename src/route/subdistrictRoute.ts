@@ -10,11 +10,13 @@ const subdistrictController = new SubdistrictController();
 
 router.get(
     '/',  
+    auth(),
     subdistrictController.list
 );
 
 router.get(
     '/dropdown', 
+    auth(),
     subdistrictController.dropdown
 );
 

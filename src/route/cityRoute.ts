@@ -6,15 +6,16 @@ import { idCheck } from '../middlewares/idCheck';
 const router = Router();
 
 const cityController = new CityController();
-// auth()
 
 router.get(
-    '/',  
+    '/', 
+    auth(), 
     cityController.list
 );
 
 router.get(
     '/dropdown', 
+    auth(),
     cityController.dropdown
 );
 
