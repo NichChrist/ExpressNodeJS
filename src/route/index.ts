@@ -12,6 +12,7 @@ import subdistrictRoute from './subdistrictRoute'
 import productCategoryRoute from './productCategoryRoute';
 import productRoute from './productRoute';
 import stockRoute from './stockRoute';
+import ingredientRoute from './ingredienteRoute'
 
 const router = Router();
 
@@ -67,6 +68,10 @@ const defaultRoutes = [
     {
         path: '/stocks',
         route: stockRoute
+    },
+    {
+        path: '/ingredients',
+        route: ingredientRoute
     },
 ];
 

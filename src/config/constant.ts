@@ -67,6 +67,13 @@ const responseMessageConstant = {
     MODEL_201_REGISTERED: 'Successfully Registered The Model',
     MODEL_404_NOT_FOUND: 'Model Not Found',
 
+    INGREDIENT_200_DELETED: 'Successfully Deleted A Single Ingredient',
+    INGREDIENT_200_FETCHED_ALL: 'Successfully Fetched All Ingredients',
+    INGREDIENT_200_FETCHED_SINGLE: 'Successfully Fetched A Single Ingredient',
+    INGREDIENT_200_UPDATED: 'Successfully Updated A Single Ingredient',
+    INGREDIENT_201_REGISTERED: 'Successfully Registered The Ingredient',
+    INGREDIENT_404_NOT_FOUND: 'Ingredient Not Found',
+
     ProductCategory_200_DELETED: 'Successfully Deleted A Single Product Category',
     ProductCategory_200_FETCHED_ALL: 'Successfully Fetched All Product Categories',
     ProductCategory_200_FETCHED_SINGLE: 'Successfully Fetched A Single Product Category',
