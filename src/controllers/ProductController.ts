@@ -38,15 +38,13 @@ export default class ProductController {
 
     getProductById = async (req: Request, res: Response) => {
         try {
-            const model = await this.productService.getProductById(req.params.id);
-            const { code, message } = model.response;
-            const data: any = model.response.data;
-
-            res.status(model.statusCode).json({
+            const data = await this.productService.getProductById(req.params.id)
+            const { code, message } = data.response;
+            const role = data.response.data;
+            res.status(data.statusCode).json({
                 code: code,
                 message: message,
-                count: data.count,
-                data: data.rows,
+                data: role,
             });
         } catch (e) {
             logger.error(e);

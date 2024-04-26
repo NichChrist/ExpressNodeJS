@@ -107,6 +107,20 @@ export default class ProductCategoryService implements IProductCategoryService {
         }
     };
 
+    getProductById = async (id: string) => {
+        try {
+            if (!(await this.productCategoryDao.isProductCategoryExists(id))) {
+                return responseHandler.returnError(httpStatus.NOT_FOUND, responseMessageConstant.OUTLET_404_NOT_FOUND);
+            }
+
+            const Outlet = await this.productCategoryDao.findById(id);
+            return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant.OUTLET_200_FETCHED_SINGLE, Outlet);
+        } catch (e) {
+            console.log(e);
+            return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.HTTP_502_BAD_GATEWAY);
+        }
+    }
+
     getProductCategoriesByBranch = async (id:string, req: Request) => {
         try {
             const pagination = req.query.pagination;

@@ -50,6 +50,12 @@ router.get(
     '/:id',
     auth(),
     parameterCheck(),
+    productCategoryController.getProductCategoriesById
+);
+router.get(
+    '/outlet/:id',
+    auth(),
+    parameterCheck(),
     productCategoryController.getProductCategoriesByBranch
 );
 router.post(
