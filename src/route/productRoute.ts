@@ -45,7 +45,7 @@ router.get(
     '/:id',
     auth(),
     parameterCheck(),
-
+    productController.getProductById
 );
 router.get(
     '/export-csv',
