@@ -49,7 +49,8 @@ export default class OutletService implements IOutletService {
                         {id: req.userInfo?.outlet_id},
                         {parent_id: req.userInfo?.outlet_id}
                     ],
-                }
+                },
+                attributes: ['id','name','code']
             };
         
             let outletData = await  Outlet.scope(['withoutTimestamp']).findAll(option);
