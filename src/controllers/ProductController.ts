@@ -36,6 +36,27 @@ export default class ProductController {
         }
     };
 
+    getProductById = async (req: Request, res: Response) => {
+        try {
+            const model = await this.productService.getProductById(req.params.id);
+            const { code, message } = model.response;
+            const data: any = model.response.data;
+
+            res.status(model.statusCode).json({
+                code: code,
+                message: message,
+                count: data.count,
+                data: data.rows,
+            });
+        } catch (e) {
+            logger.error(e);
+            res.status(httpStatus.BAD_GATEWAY).json({
+                status: httpStatus.BAD_GATEWAY,
+                message: 'Something Went Wrong',
+            });
+        }
+    };
+
     getProductByBranch = async (req: Request, res: Response) => {
         try {
             const model = await this.productService.getProductByBranch(req.params.id, req);

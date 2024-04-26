@@ -42,14 +42,21 @@ router.get(
     productController.getProduct
 );
 router.get(
-    '/export-csv',
-    productController.exportToCsv
-);
-router.get(
     '/:id',
     auth(),
     parameterCheck(),
-    productController.getProductByBranch
+
+);
+router.get(
+    '/export-csv',
+    auth(),
+    productController.exportToCsv
+);
+router.get(
+    '/outlet/:id',
+    auth(),
+    parameterCheck(),
+    productController.getProductById
 );
 router.post(
     '/',

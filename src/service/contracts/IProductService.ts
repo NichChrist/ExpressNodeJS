@@ -7,6 +7,7 @@ export default interface IProductService {
     createBulkProduct: (productBody: IProduct[], req: Request) => Promise<ApiServiceResponse>
     getProduct: (sort: any, name: any, req: Request) => Promise<ApiServiceResponse>
     getProductByBranch: (id:string, req: Request) => Promise<ApiServiceResponse>
+    getProductById: (id:string) => Promise<ApiServiceResponse>
     updateProductById: (id: string, productBody: IProduct) => Promise<ApiServiceResponse>
     deleteProductById: (id: string) => Promise<ApiServiceResponse>
 }
