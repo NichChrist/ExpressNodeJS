@@ -20,6 +20,7 @@ router.get(
 
 router.get(
     '/export-csv',
+    auth(),
     stockController.exportToCsv
 );
 

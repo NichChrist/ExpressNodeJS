@@ -6,7 +6,6 @@ import { idCheck } from '../middlewares/idCheck';
 const router = Router();
 
 const subdistrictController = new SubdistrictController();
-// auth()
 
 router.get(
     '/',  

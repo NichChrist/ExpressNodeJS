@@ -43,6 +43,7 @@ router.get(
 );
 router.get(
     '/export-csv',
+    auth(),
     productCategoryController.exportToCsv
 );
 router.get(
@@ -66,11 +67,13 @@ router.post(
 );
 router.delete(
     '/:id',
+    auth(),
     idCheck(),
     productCategoryController.deleteProductCategory
 );
 router.put(
     '/:id',
+    auth(),
     idCheck(),
     productCategoryValidator.productCategoryUpdateValidator,
     productCategoryController.updateProductCategory
