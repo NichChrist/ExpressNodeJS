@@ -160,21 +160,17 @@ export default class IngredientService implements IIngredientService {
                 outletIds.push(outlets[i].id)
             }
 
-            let isMine = 0
-
             for (let i = 0; i < outletIds.length; i++) {
-                const outletIngredientCheck = await OutletIngredient.findOne({
+                await OutletIngredient.count({
                     where:{
                         outlet_id: outletIds[i],
                         ingredient_id: req.params.id
-                    }})
-                if(outletIngredientCheck){
-                    isMine++
-                }          
-            }
-
-            if (isMine === 0){
-                return responseHandler.returnError(httpStatus.NOT_FOUND, 'ingredient Not Found');
+                    }}).then((count) =>{
+                        if (count === 0){
+                            return responseHandler.returnError(httpStatus.NOT_FOUND, 'ingredient Not Found');
+                        }   
+                    }
+                );        
             }
 
             let data = await this.ingredientDao.getById(['withoutTimestamp'], id)
@@ -207,22 +203,19 @@ export default class IngredientService implements IIngredientService {
                     outletIds.push(outlets[i].id)
                 }
     
-                let isMine = 0
-    
                 for (let i = 0; i < outletIds.length; i++) {
-                    const outletIngredientCheck = await OutletIngredient.findOne({
+                    await OutletIngredient.count({
                         where:{
                             outlet_id: outletIds[i],
                             ingredient_id: req.params.id
-                        }})
-                    if(outletIngredientCheck){
-                        isMine++
-                    }          
+                        }}).then((count) =>{
+                            if (count === 0){
+                                return responseHandler.returnError(httpStatus.NOT_FOUND, 'ingredient Not Found');
+                            }   
+                        }
+                    );        
                 }
 
-                if (isMine === 0){
-                    return responseHandler.returnError(httpStatus.NOT_FOUND, 'ingredient Not Found');
-                }
 
                 await Ingredient.destroy({where: {id : id}},{transaction: t});
                 await OutletIngredient.destroy({ where: { ingredient_id : id } }, {transaction: t})
@@ -256,7 +249,7 @@ export default class IngredientService implements IIngredientService {
             }
         })
     };
-
+    //updade byBranch and superAdmin update is available thru validator
     updateIngredientById = async (id: string, ingredientBody: IIngredient) => {
         return sequelize.transaction(async (t) =>{
             try {
