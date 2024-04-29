@@ -10,12 +10,6 @@ export default class ModelDao extends SuperDao implements IProductDao {
         super(Product);
     }
 
-    async getProductByName(name: string) {
-        return Product.findOne({
-            where: {name: name},
-        });
-    }
-
     async isProductExists(id: string) {
         return Product.count({ where: { id } }).then((count) => {
             if (count != 0) {
@@ -29,7 +23,7 @@ export default class ModelDao extends SuperDao implements IProductDao {
         return Product.count({ 
             where:{ 
                 name:{
-                    [Op.iLike]: `%${name}%`
+                    [Op.iLike]: `${name}`
                     }}}
                 ).then((count) => {
                     if (count != 0) {
@@ -63,12 +57,12 @@ export default class ModelDao extends SuperDao implements IProductDao {
         })
     }
 
-    async findProductByName(name: string) {
+    async getProductByName(name: string) {
         return Product.findAndCountAll({
             attributes: ['id','name'],
             where:{ 
                 name:{
-                    [Op.iLike]: `%${name}%`
+                    [Op.iLike]: `${name}`
             }}
         })
     }

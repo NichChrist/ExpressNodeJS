@@ -1,23 +1,25 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable @typescript-eslint/no-shadow */
 import httpStatus from 'http-status';
-import { v4 as uuid } from 'uuid';
 import { Request } from 'express';
 import responseHandler from '../../helper/responseHandler';
 import OutletDao from '../../dao/implementations/OutletDao';
+import BranchDao from '../../dao/implementations/BranchDao';
 import IOutletService from '../contracts/IOutletService';
 import { IOutlet } from '../../models/interfaces/IOutlet';
 import { responseMessageConstant } from '../../config/constant';
 import { Op } from 'sequelize';
-import models, { sequelize } from '../../models';
+import models from '../../models';
 
 const { outlet: Outlet} = models;
 
 export default class OutletService implements IOutletService {
     private outletDao: OutletDao;
+    private branchDao: BranchDao;
     
     constructor() {
         this.outletDao = new OutletDao();
+        this.branchDao = new BranchDao();
     }
 
     listOutlet = async (query) => {
@@ -29,7 +31,7 @@ export default class OutletService implements IOutletService {
             console.log(e);
             return responseHandler.returnError(httpStatus.BAD_GATEWAY, responseMessageConstant.HTTP_502_BAD_GATEWAY);
         }
-    }
+    };
 
     dropdownOutlet = async () => {
         try {
@@ -39,7 +41,7 @@ export default class OutletService implements IOutletService {
             console.log(e);
             return responseHandler.returnError(httpStatus.BAD_GATEWAY, responseMessageConstant.HTTP_502_BAD_GATEWAY);
         }
-    }
+    };
 
     dropdownOutletBranch = async (req: Request) => {
         try {
@@ -60,7 +62,7 @@ export default class OutletService implements IOutletService {
             console.log(e);
             return responseHandler.returnError(httpStatus.BAD_GATEWAY, responseMessageConstant.HTTP_502_BAD_GATEWAY);
         }
-    }
+    };
 
     createNewOutlet = async (req: Request, outletBody: IOutlet) => {
         try {
@@ -99,7 +101,6 @@ export default class OutletService implements IOutletService {
         }
     };
 
-
     getOutletDataById = async (id: string) => {
         try {
             if (!(await this.outletDao.isOutletExists(id))) {
@@ -112,7 +113,7 @@ export default class OutletService implements IOutletService {
             console.log(e);
             return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.HTTP_502_BAD_GATEWAY);
         }
-    }
+    };
 
     deleteOutletById = async (id: string) => {
         try {
@@ -126,5 +127,102 @@ export default class OutletService implements IOutletService {
             console.log(e);
             return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.HTTP_502_BAD_GATEWAY);
         }
+    };
+
+    getBranchDataByName = async (name: any, req: Request) => {
+        try {
+            if (!(await this.branchDao.isBranchNameExists(name))) {
+                return responseHandler.returnError(httpStatus.NOT_FOUND, responseMessageConstant.OUTLET_404_NOT_FOUND);
+            }
+
+            const data = await Outlet.findAndCountAll({
+                attributes: ['id','parent_id','name'],
+                where:{ 
+                    name:{
+                        [Op.iLike]: `${name}`},
+                        [Op.or]: [
+                            {id: req.userInfo?.outlet_id},
+                            {parent_id: req.userInfo?.outlet_id}
+                        ],
+                    }
+            })
+
+            return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant.OUTLET_200_FETCHED_ALL, data);
+        } catch (e) {
+            console.log(e);
+            return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.HTTP_502_BAD_GATEWAY);
+        }
+    };
+
+    deleteBranchById = async (id: string, req: Request) => {
+        try {
+            if (!(await this.branchDao.isBranchExists(id))) {
+                return responseHandler.returnError(httpStatus.NOT_FOUND, responseMessageConstant.OUTLET_404_NOT_FOUND);
+            }
+
+            const outlets = await Outlet.findAll({
+                where: {
+                    [Op.or]: [
+                        {id: id},
+                        {parent_id: id}
+                    ],
+                }
+            });
+            for (const outlet of outlets) {
+                if (outlet.parent_id === null) {
+                    if (outlet.id === req.userInfo?.outlet_id) {
+                        return responseHandler.returnError(httpStatus.UNAUTHORIZED, 'This Outlet Is Your Main Branch');
+                    }
+                } else {
+                    if (outlet.parent_id !== req.userInfo?.outlet_id) {
+                        return responseHandler.returnError(httpStatus.UNAUTHORIZED, 'This Outlet Is Not Your Branch');
+                    }
+                }
+            }
+            await this.branchDao.deleteById(id);
+            return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant. OUTLET_200_DELETED);
+        } catch (e) {
+            console.log(e);
+            return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.HTTP_502_BAD_GATEWAY);
+        }
     }
+
+    updateBranchById = async (outletBody: IOutlet, id: string, req: Request) => {
+        try {
+            let outletData = await this.outletDao.getById(id)
+            if (!outletData) {
+                return responseHandler.returnError(httpStatus.NOT_FOUND, responseMessageConstant.OUTLET_404_NOT_FOUND);
+            }
+
+            const outlets = await Outlet.findOne({
+                where: {
+                    [Op.or]: [
+                        {id: req.userInfo?.outlet_id},
+                        {parent_id: req.userInfo?.outlet_id}
+                    ],
+                }
+            });
+            if (outlets.parent_id === null){
+                if (outlets.id !== req.userInfo?.outlet_id){
+                    return responseHandler.returnError(httpStatus.UNAUTHORIZED, 'This Outlet Is Not Your Branch');
+                }
+            }else{
+                if (outlets.parent_id !== req.userInfo?.outlet_id){
+                    return responseHandler.returnError(httpStatus.UNAUTHORIZED, 'This Outlet Is Not Your Branch');
+                }
+            }
+
+            let updatedUserData = await this.outletDao.updateById(outletBody, id);
+            if (updatedUserData[0] !== 1) {
+                return responseHandler.returnError(httpStatus.BAD_GATEWAY, responseMessageConstant.HTTP_502_BAD_GATEWAY);
+            }
+
+            outletData = await this.outletDao.getById(id)
+            return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant.USER_200_UPDATED, outletData);
+        } catch (e) {
+            console.log(e)
+            return responseHandler.returnError(httpStatus.BAD_GATEWAY, responseMessageConstant.HTTP_502_BAD_GATEWAY);
+        }
+    };
+    
 }

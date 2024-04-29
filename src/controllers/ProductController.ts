@@ -16,7 +16,7 @@ export default class ProductController {
 
     getProduct = async (req: Request, res: Response) => {
         try {
-            const model = await this.productService.getProduct(req.query.order_by, req.query.name, req);
+            const model = await this.productService.getProduct(req.query.order_by, req.query.name, req.query.filter, req);
             const { code, message } = model.response;
             const data: any = model.response.data;
             

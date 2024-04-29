@@ -130,14 +130,16 @@ export default class ProductService implements IProductService {
         })
     };
 
-    getProduct = async (sort: any, name: any, req: Request) => {
+    getProduct = async (sort: any, name: any, filter: any, req: Request) => {
         try {
             const hasNameQueryParam = req.query.name !== undefined && req.query.name !== '';
-            const hasSortQueryParam = req.query.order_by !== undefined && req.query.sort !== '';
+            const hasSortQueryParam = req.query.order_by !== undefined && req.query.order_by !== '';
+            const hasFilterQueryParam = req.query.filter !== undefined && req.query.filter !== '';
+
 
             const pagination = req.query.pagination;
             let options = {
-                attributes: ['id','name','sku'],
+                attributes: ['id','name','sku','price'],
             };
             if (pagination == 'true') {
                 const row: any = req.query.row;
@@ -147,8 +149,26 @@ export default class ProductService implements IProductService {
                 options['limit'] = row;
             }
 
+            if(hasFilterQueryParam){
+                options['where'] = [{id : filter}]
+            }
+
             if(hasNameQueryParam){
-                const data = await this.productDao.findProductByName(name);
+                let options = {
+                    where:{ 
+                        name:{
+                            [Op.iLike]: `${name}`
+                    }},
+                    attributes: ['id','name','sku','price'],
+                };
+                if (pagination == 'true') {
+                    const row: any = req.query.row;
+                    const page: any = req.query.page;
+                    const offset = (page - 1) * row;
+                    options['offset'] = offset;
+                    options['limit'] = row;
+                }
+                const data = await Product.findAndCountAll(options);
 
                 return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant.Product_200_FETCHED_SINGLE, data);
             }else if(hasSortQueryParam){

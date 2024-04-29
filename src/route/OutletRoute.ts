@@ -12,11 +12,17 @@ const outletValidator = new OutletValidator();
 
 
 router.get(
-    '/',
+    '/list',
     auth(),
     parameterCheck(),
     outletController.listOutlets
 );
+
+router.get(
+    '/branches',
+    auth(),
+    outletController.getBranchDataByName
+)
 
 router.get(
     '/dropdown', 
@@ -44,8 +50,15 @@ router.post(
 );
 router.delete(
     '/:id',
+    auth(),
     idCheck(),
     outletController.deleteOutlet
+);
+router.delete(
+    '/branches/:id',
+    auth(),
+    idCheck(),
+    outletController.deleteBranch
 );
 router.put(
     '/:id',
@@ -53,6 +66,13 @@ router.put(
     idCheck(),
     outletValidator.outletUpdateValidator,
     outletController.updateOutlet
+);
+router.put(
+    '/branches/:id',
+    auth(),
+    idCheck(),
+    outletValidator.branchUpdateValidator,
+    outletController.updateBranch
 )
 
 export default router;

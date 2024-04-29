@@ -120,4 +120,59 @@ export default class OutletController {
             })
         }
     }
+
+    getBranchDataByName= async (req: Request, res: Response) => {
+        try {
+            const data = await this.outletService.getBranchDataByName(req.query.name, req)
+            const { code, message } = data.response;
+            const role = data.response.data;
+            res.status(data.statusCode).json({
+                code: code,
+                message: message,
+                data: role,
+            });
+        } catch (e) {
+            logger.error(e);
+            res.status(httpStatus.BAD_GATEWAY).json({
+                error: httpStatus.BAD_GATEWAY,
+                message: 'Something Went Wrong',
+            });
+        }
+    };
+
+    deleteBranch = async (req: Request, res: Response) => {
+        try {
+            const data = await this.outletService.deleteBranchById(req.params.id, req)
+            const { code, message } = data.response;
+            res.status(data.statusCode).json({
+                code: code,
+                message: message,
+            });
+        } catch (e) {
+            logger.error(e);
+            res.status(httpStatus.BAD_GATEWAY).json({
+                error: httpStatus.BAD_GATEWAY,
+                message: 'Something Went Wrong'
+            })
+        }
+    };
+
+    updateBranch = async (req: Request, res: Response) => {
+        try {
+            const data = await this.outletService.updateBranchById(req.body, req.params.id, req);
+            const { code, message } = data.response;
+            const Outlet = data.response.data;
+            res.status(data.statusCode).json({
+                code: code,
+                message: message,
+                data: Outlet
+            })
+        } catch (e) {
+            logger.error(e);
+            res.status(httpStatus.BAD_GATEWAY).json({
+                error: httpStatus.BAD_GATEWAY,
+                message: 'Something Went Wrong'
+            })
+        }
+    }
 }

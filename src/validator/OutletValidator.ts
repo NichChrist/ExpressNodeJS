@@ -243,6 +243,155 @@ export default class OutletValidator {
         }
     }
 
+    async branchUpdateValidator(req: Request, res: Response, next: NextFunction) {
+        const schema = Joi.object({
+            business_type_id: Joi.string().guid().allow(null, '').messages({
+                "string.guid": '"business_type_id" must be in a valid UUID format',
+            }),
+            name: Joi.string().allow(null, ''),
+            code: Joi.string().pattern(/^\S*$/).allow(null, '').messages({
+                "string.pattern.base": '"Code" must be in a valid code format (No Spaces)'
+            }),
+            phone: Joi.string().pattern(/^\S*$/).allow(null, '').messages({
+                "string.pattern.base": responseMessageConstant.PHONENUMBER_422_INVALID_FORMAT
+            }),
+            subdistrict_id: Joi.string().guid().allow(null, '').messages({
+                "string.guid": '"subdistrict_id" must be in a valid UUID format',
+            }),
+            description: Joi.string().allow(null, ''),
+            address: Joi.string().allow(null, ''),
+        });
+
+        // schema options
+        const options = {
+            abortEarly: false, // include all errors
+            allowUnknown: true, // ignore unknown props
+            stripUnknown: true, // remove unknown props
+        };
+
+        // validate request body against schema
+        const { error, value } = schema.validate(req.body, options);
+
+        if (error) {
+            // on fail return comma separated errors
+            const errorMessage = error.details
+                .map((details) => {
+                    return details.message;
+                })
+                .join(', ');
+            return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, errorMessage));
+        } else {
+            try {
+                const outlets = await Outlet.findOne({
+                    where: {
+                        id: req.params.id,
+                    }
+                });
+                if (outlets.parent_id === null){
+                    if (outlets.id !== req.userInfo?.outlet_id){
+                        return next(new ApiError(httpStatus.UNAUTHORIZED, 'This Outlet Is Not Your Branch'));
+                    }
+                }else{
+                    if (outlets.parent_id !== req.userInfo?.outlet_id){
+                        return next(new ApiError(httpStatus.UNAUTHORIZED, 'This Outlet Is Not Your Branch'));
+                    }
+                }
+                
+                //Call the data row of with the same 'id' from 'req.params.id'
+                //'req.params.id' is from the ApiDog path params
+                const outletData = await Outlet.findOne({
+                    where: {
+                        id: req.params.id,
+                    }
+                });
+
+                //business_type_id
+                //if value.business_type_id not null check does it exist
+                if (!['', null].includes(value.business_type_id)) {
+                    const businessType = await BusinessType.findByPk(value.business_type_id);
+                if (businessType === null) {
+                    return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'Business Type Not Found'));
+                }
+                }
+                //if null fill it with it own data from the DB row
+                if (['', null].includes(value.business_type_id)) {
+                    value.business_type_id = outletData.business_type_id
+                }
+
+                //name
+                //if name is null then fill it with the name of the row that is already in the DB
+                if (['', null].includes(value.name)) {
+                    value.name = outletData.name
+                }
+
+                //code
+                //UpperCase the value.code
+                value.code = value.code.toUpperCase();
+                //Find value.code in DB that is not self
+                const outletCode = await Outlet.findOne({
+                    where: {
+                        id: {
+                            [Op.ne]: req.params.id
+                        },
+                        code: value.code
+                    }
+                });
+                //if the const is true throw error
+                if (outletCode){
+                    return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'Outlet Code is Taken')); 
+                }
+                //if code is null then fill it with the code of the row that is already in the DB
+                if (['', null].includes(value.code)) {
+                    value.code = outletData.code
+                }
+
+                //phone
+                //if phone is null then fill it with the code of the row that is already in the DB
+                if (['', null].includes(value.phone)) {
+                    const outletData = await Outlet.findOne({
+                        attributes: ['phone'],
+                        where: {
+                            id: req.params.id,
+                        }
+                    });
+                    value.phone = outletData.phone
+                }
+
+                //subdistrict_id
+                //if value.subdistrict_id not null check does it exist
+                if (!['', null].includes(value.subdistrict_id)) {
+                    const subdistrict = await Subdistrict.findByPk(value.subdistrict_id);
+                    //throw error if it doesn't exist
+                    if(!subdistrict) {
+                        return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'Subdistrict Not Found'));
+                    }
+                } 
+                //if null fill it with it own data from the DB row
+                if (['', null].includes(value.subdistrict_id)) {
+                    value.subdistrict_id = outletData.subdistrict_id
+                }
+
+                //description
+                //if null fill it with it own data fromt the DB row
+                if (['',null].includes(value.description)){
+                    value.description = outletData.description
+                }
+                
+                //address
+                //if null fill it with it own data fromt the DB row
+                if (['',null].includes(value.address)){
+                    value.address = outletData.address
+                }
+                
+                req.body = value;
+                return next();
+            } catch (e) {
+                console.log(e);
+                return responseHandler.returnError(httpStatus.BAD_GATEWAY, responseMessageConstant.HTTP_502_BAD_GATEWAY);
+            }
+        }
+    }
+
 }
 
 

@@ -1,7 +1,7 @@
 /* eslint-disable class-methods-use-this */
 import { NextFunction, Request, Response } from 'express';
 import httpStatus from 'http-status';
-import Joi, { string } from 'joi';
+import Joi from 'joi';
 import ApiError from '../helper/ApiError';
 import responseHandler from '../helper/responseHandler';
 import models from '../models';
@@ -24,7 +24,7 @@ export default class ProductValidator {
                 "string.empty": '"SKU" is not allowed to be empty',
                 "string.pattern.base": '"SKU" is not allowed to have space'
             }),
-            product_category_id: Joi.string().guid().messages({
+            product_category_id: Joi.string().guid().required().messages({
                 "string.empty": '"Product Category Id" is not allowed to be empty',
                 "string.guid": '"Product Category Id" must be in a valid UUID format',
             }),
@@ -84,11 +84,11 @@ export default class ProductValidator {
                     
                     if (outlets.parent_id === null){
                         if (outlets.id !== req.userInfo?.outlet_id){
-                            return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'This Outlet Is Not Your Branch'));
+                            return next(new ApiError(httpStatus.UNAUTHORIZED, 'This Outlet Is Not Your Branch'));
                         }
                     }else{
                         if (outlets.parent_id !== req.userInfo?.outlet_id){
-                            return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'This Outlet Is Not Your Branch'));
+                            return next(new ApiError(httpStatus.UNAUTHORIZED, 'This Outlet Is Not Your Branch'));
                         }
                     }
                 }
@@ -190,7 +190,9 @@ export default class ProductValidator {
         const schema = Joi.object({
             name: Joi.string().allow(null, ''),
             order_by: Joi.string().allow(null, ''),
-            filter: Joi.string().allow(null, ''),
+            filter: Joi.string().guid().allow(null, '').messages({
+                "string.guid": '"Outlet Id" must be in a valid UUID format',
+            }),
         });
 
         const options = {
@@ -218,10 +220,10 @@ export default class ProductValidator {
                     const count = await Product.count({
                         where: {
                             name: {
-                                [Op.iLike]: `%${value.name}%`
+                                [Op.iLike]: `${value.name}`
                             }
                         }
-                    });;
+                    });
                 if (count===0) {
                     return next(new ApiError(httpStatus.NOT_FOUND,responseMessageConstant.PRODUCT_404_NOT_FOUND));
                 }}
@@ -237,6 +239,29 @@ export default class ProductValidator {
                         }
                     } else {
                         return next(new ApiError(httpStatus.BAD_REQUEST, `Column '${sortBy}' does not exist.`));
+                    }
+                }
+
+                //filter
+                if (!['', null].includes(value.filter)) {
+                    const outlets = await Outlet.findOne({
+                        where: {
+                            id: value.filter,
+                        }
+                    });
+
+                    if(!outlets){
+                        return next(new ApiError (httpStatus.NOT_FOUND, responseMessageConstant.OUTLET_404_NOT_FOUND));
+                    }
+
+                    if (outlets.parent_id === null){
+                        if (outlets.id !== req.userInfo?.outlet_id){
+                            return next(new ApiError(httpStatus.UNAUTHORIZED, 'This Outlet Is Not Your Branch'));
+                        }
+                    }else{
+                        if (outlets.parent_id !== req.userInfo?.outlet_id){
+                            return next(new ApiError(httpStatus.UNAUTHORIZED, 'This Outlet Is Not Your Branch'));
+                        }
                     }
                 }
 

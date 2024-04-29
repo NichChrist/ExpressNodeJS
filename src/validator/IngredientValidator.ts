@@ -71,11 +71,11 @@ export default class IngredientValidator {
                     
                     if (outlet.parent_id === null){
                         if (outlet.id !== req.userInfo?.outlet_id){
-                            return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'This Outlet Is Not Your Branch'));
+                            return next(new ApiError(httpStatus.UNAUTHORIZED, 'This Outlet Is Not Your Branch'));
                         }
                     }else{
                         if (outlet.parent_id !== req.userInfo?.outlet_id){
-                            return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'This Outlet Is Not Your Branch'));
+                            return next(new ApiError(httpStatus.UNAUTHORIZED, 'This Outlet Is Not Your Branch'));
                         }
                     }
                 }
@@ -159,11 +159,11 @@ export default class IngredientValidator {
                     
                     if (outlet.parent_id === null){
                         if (outlet.id !== req.userInfo?.outlet_id){
-                            return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'This Outlet Is Not Your Branch'));
+                            return next(new ApiError(httpStatus.UNAUTHORIZED, 'This Outlet Is Not Your Branch'));
                         }
                     }else{
                         if (outlet.parent_id !== req.userInfo?.outlet_id){
-                            return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'This Outlet Is Not Your Branch'));
+                            return next(new ApiError(httpStatus.UNAUTHORIZED, 'This Outlet Is Not Your Branch'));
                         }
                     }
                 }
