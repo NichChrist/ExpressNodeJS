@@ -20,8 +20,9 @@ export default class ProductValidator {
             price: Joi.number().required().messages({
                 "number.empty": '"Price" is not allowed to be empty'
             }),
-            sku: Joi.string().required().messages({
-                "string.empty": '"SKU" is not allowed to be empty'
+            sku: Joi.string().regex(/^\S+$/).required().messages({
+                "string.empty": '"SKU" is not allowed to be empty',
+                "string.pattern.base": '"SKU" is not allowed to have space'
             }),
             product_category_id: Joi.string().guid().messages({
                 "string.empty": '"Product Category Id" is not allowed to be empty',
@@ -52,8 +53,6 @@ export default class ProductValidator {
             return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, errorMessage));
         } else {
             try {
-                //product_category_id
-                //value.product_category_id check does it exist
                 const categoryCheck = await ProductCategory.findByPk(value.product_category_id);
                 if (categoryCheck === null) {
                     return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'Product Category Not Found'));
@@ -66,6 +65,7 @@ export default class ProductValidator {
                         }
                 }); 
 
+                value.sku = value.sku.toUpperCase();
                 const skuCheck = await Product.findOne({
                     where: {
                         sku: value.sku

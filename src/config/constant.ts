@@ -86,6 +86,7 @@ const responseMessageConstant = {
     Product_200_FETCHED_SINGLE: 'Successfully Fetched A Single Product',
     Product_200_UPDATED: 'Successfully Updated A Single Product',
     Product_201_REGISTERED: 'Successfully Registered The Product',
+    Product_201_BULK_REGISTERED: 'Successfully Registered Many The Product(s)',
     Product_404_NOT_FOUND: 'Product  Not Found',
 
     PRODUCT_201_CREATED: 'Successfully Created The Product',

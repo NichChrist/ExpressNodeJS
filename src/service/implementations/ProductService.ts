@@ -13,7 +13,7 @@ import { responseMessageConstant } from '../../config/constant';
 import * as csv from 'exceljs';
 import { Op } from 'sequelize';
 
-const { product: Product, outlet_product: OutletProduct, file: File, outlet: Outlet} = db;
+const { product: Product, outlet_product: OutletProduct, file: File, outlet: Outlet, product_category: ProductCategory} = db;
 
 export default class ProductService implements IProductService {
     private productDao: ProductDao;
@@ -69,9 +69,30 @@ export default class ProductService implements IProductService {
         return sequelize.transaction(async (t) =>{
             try {
 
+                await sequelize.transaction(async (t) => {
+                    const hasSpace = (str) => /\s/.test(str);
+                    const skuMap = new Map();
+                    for (let i = 0; i < productBody.length; i++) {
+                        const sku = productBody[i].sku;
+    
+                        if (skuMap.has(sku)){ 
+                            throw { ec: 400, status: httpStatus.BAD_REQUEST, message: 'SKU cannot be duplicates invalid at row: ' + (i+1)}
+                        };
+
+                        if (hasSpace(sku)){
+                            throw { ec: 400, status: httpStatus.BAD_REQUEST, message: 'SKU cannot be space(s) invalid at row: ' + (i+1)}
+                        };
+                        skuMap.set(sku, true);
+                    }
+                });
+
                 for (let i = 0; i < productBody.length; i++) {
                     if (!(await this.productCategoryDao.isProductCategoryExists(productBody[i].product_category_id))) {
                         return responseHandler.returnError(httpStatus.UNPROCESSABLE_ENTITY, 'There is invalid Product Category Id at row ' + (i+1));
+                    }
+                    productBody[i].sku = productBody[i].sku.toUpperCase();
+                    if ((await this.productDao.isProductSkuExists(productBody[i].sku))) {
+                        return responseHandler.returnError(httpStatus.UNPROCESSABLE_ENTITY, 'There is taken SKU at row ' + (i+1));
                     }
                 }
 
@@ -99,9 +120,10 @@ export default class ProductService implements IProductService {
 
                 await OutletProduct.bulkCreate(bulkOutletProducts, {transaction: t});
 
-                return responseHandler.returnSuccess(httpStatus.CREATED, responseMessageConstant.Product_201_REGISTERED, products);
-            } catch (e) {
+                return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant.Product_201_BULK_REGISTERED);
+            } catch (e:any) {
                 console.log(e);
+                if (e.ec) return responseHandler.returnError(e.status, e.message);   
                 await t.rollback();
                 return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.HTTP_502_BAD_GATEWAY);
             }
@@ -250,20 +272,30 @@ export default class ProductService implements IProductService {
 
             let options = {
                 attributes: {
-                    exclude: ['deleted_at','created_at','updated_at']
+                    exclude: ['deleted_at','created_at','updated_at'],
+                    include: [
+                        [Sequelize.literal('"product_category"."name"'), 'product_category_name']
+                    ], 
                 },
+                include: [{
+                    model:ProductCategory,
+                    attributes: [],
+                    
+                }]
             };
             const { rows: allData } = await Product.findAndCountAll(options);
-
             const productColumns = [
-                { key: 'id', header: 'ID', width: 36},
-                { key: 'product_category_id', header: 'Product Category', width: 36},
-                { key: 'name', header: 'Product Name', width: 36},
+                { key: 'id', header: 'ID'},
+                { key: 'product_category_id', header: 'Product Category'},
+                { key: 'product_category_name', header: 'Product Category Name'},
+                { key: 'name', header: 'Product Name'},
+                { key: 'sku', header: 'SKU'},
+                { key: 'price', header: 'Price'}
             ];
             worksheet.columns = productColumns;
 
             allData.forEach((rowData) => {
-            worksheet.addRow(rowData);
+            worksheet.addRow(rowData.toJSON());
             });
 
             res.setHeader(

@@ -40,6 +40,16 @@ export default class ModelDao extends SuperDao implements IProductDao {
         );
     };
 
+    async isProductSkuExists(sku: string) {
+        return Product.count({ where: { sku }}).then((count) => {
+                    if (count != 0) {
+                        return true;
+                }
+                return false;
+            }
+        );
+    };
+
     async deleteById(id: string) {
         return Product.destroy({ where: { id } });
     }

@@ -40,6 +40,10 @@ module.exports = (sequelize, DataTypes) => {
                 onUpdate: 'CASCADE',
                 hooks: true,
             });
+
+            Product.belongsTo(models.product_category,{
+                foreignKey: 'product_category_id',
+            })
         }
     }
 
