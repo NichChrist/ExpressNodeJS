@@ -54,7 +54,6 @@ export default class OutletController {
 
     updateProduct = async (req: Request, res: Response) => {
         try {
-            console.log(req.params.id)
             const data = await this.StockService.updateStockById(req.params.id, req.body);
             const { code, message } = data.response;
             const model = data.response.data;
