@@ -24,6 +24,11 @@ module.exports = (sequelize, DataTypes) => {
                 onUpdate: 'CASCADE',
                 hooks: true,
             });
+
+            Modifier.hasMany(models.modifier_detail, {
+                foreignKey: 'modifier_id',
+                hooks: true,
+            });
         }
     }
 
