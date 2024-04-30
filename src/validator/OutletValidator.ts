@@ -62,7 +62,7 @@ export default class OutletValidator {
                 const businessType = await BusinessType.findByPk(value.business_type_id);
                 //if it doesn't exist kaboom throw error
                 if (!businessType) {
-                    return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'Business Type Not Found'));
+                    return next(new ApiError(httpStatus.NOT_FOUND, 'Business Type Not Found'));
                 }
 
                 //subdistrict_id
@@ -72,7 +72,7 @@ export default class OutletValidator {
                     const subdistrict = await Subdistrict.findByPk(value.subdistrict_id);
                     //if it doesn't exist kaboom throw error
                     if(!subdistrict) {
-                        return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'Subdistrict Not Found'));
+                        return next(new ApiError(httpStatus.NOT_FOUND, 'Subdistrict Not Found'));
                     }
                 // else the value.subdistrict_id null
                 } else {
@@ -158,7 +158,7 @@ export default class OutletValidator {
                 if (!['', null].includes(value.business_type_id)) {
                     const businessType = await BusinessType.findByPk(value.business_type_id);
                 if (businessType === null) {
-                    return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'Business Type Not Found'));
+                    return next(new ApiError(httpStatus.NOT_FOUND, 'Business Type Not Found'));
                 }
                 }
                 //if null fill it with it own data from the DB row
@@ -186,7 +186,7 @@ export default class OutletValidator {
                 });
                 //if the const is true throw error
                 if (outletCode){
-                    return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'Outlet Code is Taken')); 
+                    return next(new ApiError(httpStatus.NOT_FOUND, 'Outlet Code is Taken')); 
                 }
                 //if code is null then fill it with the code of the row that is already in the DB
                 if (['', null].includes(value.code)) {
@@ -211,7 +211,7 @@ export default class OutletValidator {
                     const subdistrict = await Subdistrict.findByPk(value.subdistrict_id);
                     //throw error if it doesn't exist
                     if(!subdistrict) {
-                        return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'Subdistrict Not Found'));
+                        return next(new ApiError(httpStatus.NOT_FOUND, 'Subdistrict Not Found'));
                     }
                 } 
                 //if null fill it with it own data from the DB row
@@ -310,7 +310,7 @@ export default class OutletValidator {
                 if (!['', null].includes(value.business_type_id)) {
                     const businessType = await BusinessType.findByPk(value.business_type_id);
                 if (businessType === null) {
-                    return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'Business Type Not Found'));
+                    return next(new ApiError(httpStatus.NOT_FOUND, 'Business Type Not Found'));
                 }
                 }
                 //if null fill it with it own data from the DB row
@@ -338,7 +338,7 @@ export default class OutletValidator {
                 });
                 //if the const is true throw error
                 if (outletCode){
-                    return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'Outlet Code is Taken')); 
+                    return next(new ApiError(httpStatus.NOT_FOUND, 'Outlet Code is Taken')); 
                 }
                 //if code is null then fill it with the code of the row that is already in the DB
                 if (['', null].includes(value.code)) {
@@ -363,7 +363,7 @@ export default class OutletValidator {
                     const subdistrict = await Subdistrict.findByPk(value.subdistrict_id);
                     //throw error if it doesn't exist
                     if(!subdistrict) {
-                        return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'Subdistrict Not Found'));
+                        return next(new ApiError(httpStatus.NOT_FOUND, 'Subdistrict Not Found'));
                     }
                 } 
                 //if null fill it with it own data from the DB row

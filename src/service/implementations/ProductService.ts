@@ -76,11 +76,11 @@ export default class ProductService implements IProductService {
                         const sku = productBody[i].sku;
     
                         if (skuMap.has(sku)){ 
-                            throw { ec: 400, status: httpStatus.BAD_REQUEST, message: 'SKU cannot be duplicates invalid at row: ' + (i+1)}
+                            throw { ec: 400, status: httpStatus.NOT_ACCEPTABLE, message: 'SKU cannot be duplicates invalid at row: ' + (i+1)}
                         };
 
                         if (hasSpace(sku)){
-                            throw { ec: 400, status: httpStatus.BAD_REQUEST, message: 'SKU cannot be space(s) invalid at row: ' + (i+1)}
+                            throw { ec: 400, status: httpStatus.NOT_ACCEPTABLE, message: 'SKU cannot be space(s) invalid at row: ' + (i+1)}
                         };
                         skuMap.set(sku, true);
                     }
@@ -88,11 +88,11 @@ export default class ProductService implements IProductService {
 
                 for (let i = 0; i < productBody.length; i++) {
                     if (!(await this.productCategoryDao.isProductCategoryExists(productBody[i].product_category_id))) {
-                        return responseHandler.returnError(httpStatus.UNPROCESSABLE_ENTITY, 'There is invalid Product Category Id at row ' + (i+1));
+                        return responseHandler.returnError(httpStatus.NOT_ACCEPTABLE, 'There is invalid Product Category Id at row ' + (i+1));
                     }
                     productBody[i].sku = productBody[i].sku.toUpperCase();
                     if ((await this.productDao.isProductSkuExists(productBody[i].sku))) {
-                        return responseHandler.returnError(httpStatus.UNPROCESSABLE_ENTITY, 'There is taken SKU at row ' + (i+1));
+                        return responseHandler.returnError(httpStatus.NOT_ACCEPTABLE, 'There is taken SKU at row ' + (i+1));
                     }
                 }
 
@@ -171,10 +171,10 @@ export default class ProductService implements IProductService {
                         if (['ASC', 'DESC'].includes(sortOrder.toUpperCase())) {
                             options['order'] = [[sortBy, sortOrder.toUpperCase()]];
                         } else {
-                            return responseHandler.returnError(httpStatus.BAD_REQUEST, `Invalid sort order '${sortOrder}'.`);
+                            return responseHandler.returnError(httpStatus.NOT_ACCEPTABLE, `Invalid sort order '${sortOrder}'.`);
                         }
                     } else {
-                        return responseHandler.returnError(httpStatus.BAD_REQUEST, `Column '${sortBy}' does not exist.`);
+                        return responseHandler.returnError(httpStatus.NOT_ACCEPTABLE, `Column '${sortBy}' does not exist.`);
                     }
                 }
             }
