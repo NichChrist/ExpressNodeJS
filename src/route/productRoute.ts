@@ -55,7 +55,7 @@ router.get(
     '/outlet/:id',
     auth(),
     parameterCheck(),
-    productController.getProductById
+    productController.getProductByBranch
 );
 router.post(
     '/',

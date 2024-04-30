@@ -129,7 +129,7 @@ export default class ProductService implements IProductService {
             }
         })
     };
-
+    
     getProduct = async (sort: any, name: any, filter: any, req: Request) => {
         try {
             const hasNameQueryParam = req.query.name !== undefined && req.query.name !== '';
@@ -141,6 +141,7 @@ export default class ProductService implements IProductService {
             let options = {
                 attributes: ['id','name','sku','price'],
             };
+
             if (pagination == 'true') {
                 const row: any = req.query.row;
                 const page: any = req.query.page;
@@ -150,28 +151,20 @@ export default class ProductService implements IProductService {
             }
 
             if(hasFilterQueryParam){
-                options['where'] = [{id : filter}]
+                options['include'] = [{
+                    model: OutletProduct,
+                    where: {
+                        outlet_id : filter
+                    },
+                    attributes: [],
+                }]
             }
 
             if(hasNameQueryParam){
-                let options = {
-                    where:{ 
-                        name:{
-                            [Op.iLike]: `${name}`
-                    }},
-                    attributes: ['id','name','sku','price'],
-                };
-                if (pagination == 'true') {
-                    const row: any = req.query.row;
-                    const page: any = req.query.page;
-                    const offset = (page - 1) * row;
-                    options['offset'] = offset;
-                    options['limit'] = row;
-                }
-                const data = await Product.findAndCountAll(options);
+                options['where'] = [{ name:{[Op.iLike]: `${name}`}}];
+            }
 
-                return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant.Product_200_FETCHED_SINGLE, data);
-            }else if(hasSortQueryParam){
+            if(hasSortQueryParam){
                 if (sort) {
                     const [sortBy, sortOrder] = sort.split(':');
                     if (Object.keys(Product.rawAttributes).includes(sortBy)) {
@@ -184,14 +177,11 @@ export default class ProductService implements IProductService {
                         return responseHandler.returnError(httpStatus.BAD_REQUEST, `Column '${sortBy}' does not exist.`);
                     }
                 }
-                const allData = await Product.findAndCountAll(options)
-                
-                return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant.Product_200_FETCHED_ALL, allData);
-            }else{
-                const allData = await Product.findAndCountAll(options)
-
-                return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant.Product_200_FETCHED_ALL, allData);
             }
+
+            const allData = await Product.findAndCountAll(options)  
+            
+            return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant.Product_200_FETCHED_ALL, allData);
         } catch (e) {
             console.log(e);
             return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.HTTP_502_BAD_GATEWAY);
@@ -227,7 +217,8 @@ export default class ProductService implements IProductService {
                     attributes: {
                         include: [
                             [Sequelize.literal('"products->outlet_product"."stock"'), 'stock']
-                        ], 
+                        ],
+                        group: ['"products"."id"'], 
                         exclude: ['deleted_at','created_at','updated_at'],
                     },
                   }],
@@ -265,7 +256,6 @@ export default class ProductService implements IProductService {
         }
     }
 
-    
     updateProductById = async (id: string, productBody: IProduct) => {
         try {
             if (!(await this.productDao.isProductExists(id))) {

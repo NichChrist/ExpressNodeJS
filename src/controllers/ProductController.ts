@@ -114,7 +114,6 @@ export default class ProductController {
 
     updateProduct = async (req: Request, res: Response) => {
         try {
-            console.log(req.params.id)
             const data = await this.productService.updateProductById(req.params.id, req.body);
             const { code, message } = data.response;
             const model = data.response.data;
