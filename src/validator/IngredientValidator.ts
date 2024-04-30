@@ -1,7 +1,7 @@
 /* eslint-disable class-methods-use-this */
 import { NextFunction, Request, Response } from 'express';
 import httpStatus from 'http-status';
-import Joi, { string } from 'joi';
+import Joi from 'joi';
 import ApiError from '../helper/ApiError';
 import responseHandler from '../helper/responseHandler';
 import models from '../models';
@@ -21,8 +21,9 @@ export default class IngredientValidator {
                 "string.guid": '"UOM Id" must be in a valid UUID format',
             }),
             outlet_ingredient: Joi.array().items(Joi.object({
-                outlet_id: Joi.string().required().messages({
-                    "array.empty": '"Outlet Id" is not allowed to be empty',
+                outlet_id: Joi.string().guid().required().messages({
+                    "string.empty": '"UOM Id" is not allowed to be empty',
+                    "string.guid": '"UOM Id" must be in a valid UUID format',
                 }),
                 stock: Joi.number().required().messages({
                     "array.empty": '"stock" is not allowed to be empty',
@@ -102,8 +103,9 @@ export default class IngredientValidator {
                 "string.guid": '"UOM Id" must be in a valid UUID format',
             }),
             outlet_ingredient: Joi.array().items(Joi.object({
-                outlet_id: Joi.string().required().messages({
-                    "array.empty": '"Outlet Id" is not allowed to be empty',
+                outlet_id: Joi.string().guid().required().messages({
+                    "string.empty": '"UOM Id" is not allowed to be empty',
+                    "string.guid": '"UOM Id" must be in a valid UUID format',
                 }),
                 stock: Joi.number().required().messages({
                     "array.empty": '"stock" is not allowed to be empty',
@@ -199,8 +201,9 @@ export default class IngredientValidator {
                 "string.guid": '"UOM Id" must be in a valid UUID format',
             }),
             outlet_ingredient: Joi.array().items(Joi.object({
-                outlet_id: Joi.string().required().messages({
-                    "array.empty": '"Outlet Id" is not allowed to be empty',
+                outlet_id: Joi.string().guid().required().messages({
+                    "string.empty": '"UOM Id" is not allowed to be empty',
+                    "string.guid": '"UOM Id" must be in a valid UUID format',
                 }),
                 stock: Joi.number().required().messages({
                     "array.empty": '"stock" is not allowed to be empty',

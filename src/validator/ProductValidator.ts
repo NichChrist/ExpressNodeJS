@@ -28,8 +28,9 @@ export default class ProductValidator {
                 "string.empty": '"Product Category Id" is not allowed to be empty',
                 "string.guid": '"Product Category Id" must be in a valid UUID format',
             }),
-            outlet_id: Joi.array<string>().required().messages({
-                "array.empty": '"Outlet Id" is not allowed to be empty'
+            outlet_id: Joi.array().items(Joi.string().guid()).required().messages({
+                "array.empty": '"Outlet Id" is not allowed to be empty',
+                "array.includes": 'Each item in "Outlet Id" must be a valid UUID format'
             }),
         });
 
