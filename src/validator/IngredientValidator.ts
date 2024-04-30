@@ -5,10 +5,9 @@ import Joi, { string } from 'joi';
 import ApiError from '../helper/ApiError';
 import responseHandler from '../helper/responseHandler';
 import models from '../models';
-import { Op } from 'sequelize';
 import { responseMessageConstant } from '../config/constant';
 
-const {uom: Uom, outlet: Outlet, outlet_ingredient: OutletIngredient } = models;
+const {uom: Uom, outlet: Outlet, outlet_ingredient: OutletIngredient, ingredient: Ingredient } = models;
 
 export default class IngredientValidator {
 
@@ -21,13 +20,17 @@ export default class IngredientValidator {
                 "string.empty": '"UOM Id" is not allowed to be empty',
                 "string.guid": '"UOM Id" must be in a valid UUID format',
             }),
-            outlet_id: Joi.array<string>().required().messages({
-                "array.empty": '"Outlet Id" is not allowed to be empty'
-            }),
-            stock: Joi.array().items(Joi.number()).required().messages({
-                "array.empty": '"stock" is not allowed to be empty',
-                "array.includes": 'Each item in "stock" must be a number'
-            }), 
+            outlet_ingredient: Joi.array().items(Joi.object({
+                outlet_id: Joi.string().required().messages({
+                    "array.empty": '"Outlet Id" is not allowed to be empty',
+                }),
+                stock: Joi.number().required().messages({
+                    "array.empty": '"stock" is not allowed to be empty',
+                    "array.number": '"stock" must be a number',
+                }), 
+            })).required().messages({
+                "array.empty": '"outlet_ingredient" is not allowed to be empty',
+            }) 
         });
 
         // schema options
@@ -52,30 +55,30 @@ export default class IngredientValidator {
             try {
                 const uomCheck = await Uom.findByPk(value.uom_id);
                 if (uomCheck === null) {
-                    return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'UOM Id Not Found'));
+                    return next(new ApiError(httpStatus.NOT_FOUND, 'UOM Id Not Found'));
                 }   
 
-                value.outlet_id.forEach(async (id) => {
-                    const outletIdCheck = await Outlet.findByPk(id)
+                value.outlet_ingredient.forEach(async (el) => {
+                    const outletIdCheck = await Outlet.findByPk(el.outlet_id)
                         if(outletIdCheck === null){
-                            return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'Outlet Id Not Found'));
+                            return next(new ApiError(httpStatus.NOT_FOUND, 'Outlet Id Not Found'));
                         }
                 }); 
 
-                for (let i = 0; i < value.outlet_id.length; i++) {
+                for (let i = 0; i < value.outlet_ingredient.length; i++) {
                     const outlet = await Outlet.findOne({
                         where: {
-                            id: value.outlet_id[i],
+                            id: value.outlet_ingredient[i].outlet_id,
                         }
                     });
                     
                     if (outlet.parent_id === null){
                         if (outlet.id !== req.userInfo?.outlet_id){
-                            return next(new ApiError(httpStatus.UNAUTHORIZED, 'This Outlet Is Not Your Branch'));
+                            return next(new ApiError(httpStatus.UNAUTHORIZED, 'Outlet Row ' + (i+1) + ' Is Not Your Branch'));
                         }
                     }else{
                         if (outlet.parent_id !== req.userInfo?.outlet_id){
-                            return next(new ApiError(httpStatus.UNAUTHORIZED, 'This Outlet Is Not Your Branch'));
+                            return next(new ApiError(httpStatus.UNAUTHORIZED, 'Outlet Row ' + (i+1) + ' Is Not Your Branch'));
                         }
                     }
                 }
@@ -98,13 +101,17 @@ export default class IngredientValidator {
                 "string.empty": '"UOM Id" is not allowed to be empty',
                 "string.guid": '"UOM Id" must be in a valid UUID format',
             }),
-            outlet_id: Joi.array<string>().required().messages({
-                "array.empty": '"Outlet Id" is not allowed to be empty'
-            }),
-            stock: Joi.array().items(Joi.number()).required().messages({
-                "array.empty": '"stock" is not allowed to be empty',
-                "array.includes": 'Each item in "stock" must be a number'
-            }),  
+            outlet_ingredient: Joi.array().items(Joi.object({
+                outlet_id: Joi.string().required().messages({
+                    "array.empty": '"Outlet Id" is not allowed to be empty',
+                }),
+                stock: Joi.number().required().messages({
+                    "array.empty": '"stock" is not allowed to be empty',
+                    "array.number": '"stock" must be a number',
+                }), 
+            })).required().messages({
+                "array.empty": '"outlet_ingredient" is not allowed to be empty',
+            }) 
         });
 
         // schema options
@@ -127,45 +134,50 @@ export default class IngredientValidator {
             return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, errorMessage));
         } else {
             try {
+                const ingredientCheck = await Ingredient.findByPk(req.params.id);
+                if (!ingredientCheck) {
+                    return next(new ApiError(httpStatus.NOT_FOUND, 'Ingredient Not Found'));
+                }
+
                 const uomCheck = await Uom.findByPk(value.uom_id);
                 if (!uomCheck) {
-                    return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'UOM Id Not Found'));
+                    return next(new ApiError(httpStatus.NOT_FOUND, 'UOM Id Not Found'));
                 }   
 
-                value.outlet_id.forEach(async (id) => {
-                    const outletIdCheck = await Outlet.findByPk(id)
+                value.outlet_ingredient.forEach(async (el) => {
+                    const outletIdCheck = await Outlet.findByPk(el.outlet_id)
                         if(outletIdCheck === null){
-                            return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'Outlet Id Not Found'));
+                            return next(new ApiError(httpStatus.NOT_FOUND, 'Outlet Id Not Found'));
                         }
                 });
 
-                for (let i = 0; i < value.outlet_id.length; i++) {
-                    const outletIngredientCheck = await OutletIngredient.findOne({
-                        where:{
-                            outlet_id: value.outlet_id[i],
-                            ingredient_id: req.params.id
-                        }})
-                    if(!outletIngredientCheck){
-                        return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'Outlet Row' + (i+1) + ' Do Not Have This Ingredient'));
-                    }          
-                }
-
-                for (let i = 0; i < value.outlet_id.length; i++) {
+                for (let i = 0; i < value.outlet_ingredient.length; i++) {
                     const outlet = await Outlet.findOne({
                         where: {
-                            id: value.outlet_id[i],
+                            id: value.outlet_ingredient[i].outlet_id,
                         }
                     });
                     
                     if (outlet.parent_id === null){
                         if (outlet.id !== req.userInfo?.outlet_id){
-                            return next(new ApiError(httpStatus.UNAUTHORIZED, 'This Outlet Is Not Your Branch'));
+                            return next(new ApiError(httpStatus.UNAUTHORIZED, 'Outlet Row ' + (i+1) + ' Is Not Your Branch'));
                         }
                     }else{
                         if (outlet.parent_id !== req.userInfo?.outlet_id){
-                            return next(new ApiError(httpStatus.UNAUTHORIZED, 'This Outlet Is Not Your Branch'));
+                            return next(new ApiError(httpStatus.UNAUTHORIZED, 'Outlet Row ' + (i+1) + ' Is Not Your Branch'));
                         }
                     }
+                }
+
+                for (let i = 0; i < value.outlet_ingredient.length; i++) {
+                    const outletIngredientCheck = await OutletIngredient.findOne({
+                        where:{
+                            outlet_id: value.outlet_ingredient[i].outlet_id,
+                            ingredient_id: req.params.id
+                        }})
+                    if(!outletIngredientCheck){
+                        return next(new ApiError(httpStatus.NOT_FOUND, 'Outlet Row ' + (i+1) + ' Do Not Have This Ingredient'));
+                    }          
                 }
 
                 req.body = value;
@@ -186,13 +198,17 @@ export default class IngredientValidator {
                 "string.empty": '"UOM Id" is not allowed to be empty',
                 "string.guid": '"UOM Id" must be in a valid UUID format',
             }),
-            outlet_id: Joi.array<string>().required().messages({
-                "array.empty": '"Outlet Id" is not allowed to be empty'
-            }),
-            stock: Joi.array().items(Joi.number()).required().messages({
-                "array.empty": '"stock" is not allowed to be empty',
-                "array.includes": 'Each item in "stock" must be a number'
-            }),  
+            outlet_ingredient: Joi.array().items(Joi.object({
+                outlet_id: Joi.string().required().messages({
+                    "array.empty": '"Outlet Id" is not allowed to be empty',
+                }),
+                stock: Joi.number().required().messages({
+                    "array.empty": '"stock" is not allowed to be empty',
+                    "array.number": '"stock" must be a number',
+                }), 
+            })).required().messages({
+                "array.empty": '"outlet_ingredient" is not allowed to be empty',
+            })   
         });
 
         // schema options
@@ -215,26 +231,31 @@ export default class IngredientValidator {
             return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, errorMessage));
         } else {
             try {
+                const ingredientCheck = await Ingredient.findByPk(req.params.id);
+                if (!ingredientCheck) {
+                    return next(new ApiError(httpStatus.NOT_FOUND, 'Ingredient Not Found'));
+                }
+
                 const uomCheck = await Uom.findByPk(value.uom_id);
                 if (!uomCheck) {
-                    return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'UOM Id Not Found'));
-                }   
+                    return next(new ApiError(httpStatus.NOT_FOUND, 'UOM Id Not Found'));
+                }    
 
-                value.outlet_id.forEach(async (id) => {
-                    const outletIdCheck = await Outlet.findByPk(id)
+                value.outlet_ingredient.forEach(async (el) => {
+                    const outletIdCheck = await Outlet.findByPk(el.outlet_id)
                         if(outletIdCheck === null){
-                            return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'Outlet Id Not Found'));
+                            return next(new ApiError(httpStatus.NOT_FOUND, 'Outlet Id Not Found'));
                         }
                 });
 
-                for (let i = 0; i < value.outlet_id.length; i++) {
+                for (let i = 0; i < value.outlet_ingredient.length; i++) {
                     const outletIngredientCheck = await OutletIngredient.findOne({
                         where:{
-                            outlet_id: value.outlet_id[i],
+                            outlet_id: value.outlet_ingredient[i].outlet_id,
                             ingredient_id: req.params.id
                         }})
                     if(!outletIngredientCheck){
-                        return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'Outlet Row' + (i+1) + ' Do Not Have This Ingredient'));
+                        return next(new ApiError(httpStatus.NOT_FOUND, 'Outlet Row ' + (i+1) + ' Do Not Have This Ingredient'));
                     }          
                 }
 

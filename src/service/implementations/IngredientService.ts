@@ -36,11 +36,11 @@ export default class IngredientService implements IIngredientService {
                 
                 const bulkData:Array<any> = [];
 
-                for (let i = 0; i < ingredientBody.outlet_id.length; i++) {
+                for (let i = 0; i < ingredientBody.outlet_ingredient.length; i++) {
                     bulkData.push({
-                        outlet_id: ingredientBody.outlet_id[i],
+                        outlet_id: ingredientBody.outlet_ingredient[i].outlet_id,
                         ingredient_id: data.id, 
-                        stock: ingredientBody.stock[i]
+                        stock: ingredientBody.outlet_ingredient[i].stock
                     })
                 }
                 await OutletIngredient.bulkCreate(bulkData, {transaction: t})
@@ -249,7 +249,7 @@ export default class IngredientService implements IIngredientService {
             }
         })
     };
-    //updade byBranch and superAdmin update is available thru validator
+    
     updateIngredientById = async (id: string, ingredientBody: IIngredient) => {
         return sequelize.transaction(async (t) =>{
             try {
@@ -264,20 +264,20 @@ export default class IngredientService implements IIngredientService {
 
                 const bulkData:Array<any> = [];
 
-                for (let i = 0; i < ingredientBody.outlet_id.length; i++) {
+                for (let i = 0; i < ingredientBody.outlet_ingredient.length; i++) {
                     bulkData.push({
-                        outlet_id: ingredientBody.outlet_id[i],
-                        stock: ingredientBody.stock[i]
+                        outlet_id: ingredientBody.outlet_ingredient[i].outlet_id,
+                        stock: ingredientBody.outlet_ingredient[i].stock
                     })
                 }
 
-                for (let i = 0; i < ingredientBody.outlet_id.length; i++) {
+                for (let i = 0; i < ingredientBody.outlet_ingredient.length; i++) {
                     await OutletIngredient.update(
                         bulkData[i], 
                         { 
                         where: { 
                             ingredient_id : id,
-                            outlet_id : ingredientBody.outlet_id[i]
+                            outlet_id : ingredientBody.outlet_ingredient[i].outlet_id
                         }},
                         {     
                             transaction: t 
