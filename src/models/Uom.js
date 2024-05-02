@@ -61,10 +61,22 @@ module.exports = (sequelize, DataTypes) => {
             },
             metric_code: {
                 type: DataTypes.STRING,
-                allowNull: false,
+                allowNull: true,
+            },
+            description: {
+                type: DataTypes.STRING,
+                allowNull: true,
             }
         },
         {
+            scopes: {
+                dropdown: {
+                    attributes: [
+                        'id',
+                        'name',
+                    ]
+                },
+            },
             sequelize,
             modelName: 'uom',
             underscored: true,

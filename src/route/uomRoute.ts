@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import ProductController from '../controllers/ProductController';
-import ProductValidator from '../validator/ProductValidator';
+import UomController from '../controllers/UomController';
+import UomValidator from '../validator/UomValidator';
 import path = require("path");
 import fs from 'fs';
 import { auth } from '../middlewares/auth';
@@ -30,57 +30,47 @@ const upload = multer({
     }
 });
 
-const productController = new ProductController();
-const productValidator = new ProductValidator();
-
+const uomController = new UomController();
+const uomValidator = new UomValidator();
 
 router.get(
     '/',
     auth(),
     parameterCheck(),
-    productValidator.productGetValidator,
-    productController.getProduct
+    uomController.listUom
+);
+router.get(
+    '/dropdown',
+    auth(),
+    uomController.dropdownUom       
 );
 router.get(
     '/export-csv',
-    auth(),
-    productController.exportToCsv
-);
-router.get(
-    '/:id',
-    auth(),
-    parameterCheck(),
-    productController.getProductById
-);
-router.get(
-    '/outlet/:id',
-    auth(),
-    parameterCheck(),
-    productController.getProductByBranch
+    uomController.exportToCsv
 );
 router.post(
     '/',
-    auth(),
-    productValidator.productCreateValidator,
-    productController.createProduct
+    uomValidator.uomCreateValidator,
+    uomController.createUom
 );
 router.post(
     '/upload-csv',
     auth(),
     upload.single('import_test'),
-    productValidator.csvValidator,
-    productController.createMultipleProduct
-);
-router.delete(
-    '/:id',
-    idCheck(),
-    productController.deleteProduct
+    uomValidator.csvValidator,
+    uomController.createBulkUom
 );
 router.put(
     '/:id',
+    auth(),
     idCheck(),
-    productValidator.productUpdateValidator,
-    productController.updateProduct
-)
-
+    uomValidator.uomUpdateValidator,
+    uomController.updateUom
+);
+router.delete(
+    '/:id',
+    auth(),
+    idCheck(),
+    uomController.deleteUom
+);
 export default router;

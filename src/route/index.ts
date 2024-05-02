@@ -14,6 +14,7 @@ import productRoute from './productRoute';
 import stockRoute from './stockRoute';
 import ingredientRoute from './ingredientRoute'
 import modifierRoute from './modifierRoute'
+import uomRoute from './uomRoute'
 
 const router = Router();
 
@@ -77,6 +78,10 @@ const defaultRoutes = [
     {
         path: '/modifiers',
         route: modifierRoute
+    },
+    {
+        path: '/uoms',
+        route: uomRoute
     },
 ];
 

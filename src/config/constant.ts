@@ -89,6 +89,14 @@ const responseMessageConstant = {
     Product_201_BULK_REGISTERED: 'Successfully Registered Many The Product(s)',
     Product_404_NOT_FOUND: 'Product  Not Found',
 
+    UOM_201_CREATED: 'Successfully Registered The UOM',
+    UOM_201_BULK_CREATED: 'Successfully Registered Many The UOM(s)',
+    UOM_200_FETCHED_ALL: 'Successfully Fetched All UOM(s)',
+    UOM_200_FETCHED_SINGLE: 'Successfully Fetched A Single UOM',
+    UOM_200_UPDATED: 'Successfully Updated A Single UOM',
+    UOM_200_DELETED: 'Successfully Deleted A Single UOM',
+    UOM_404_NOT_FOUND: 'UOM Not Found',
+
     MODIFIER_201_CREATED: 'Successfully Registered The Modifier',
     MODIFIER_201_BULK_CREATED: 'Successfully Registered Many The Modifier(s)',
     MODIFIER_200_FETCHED_ALL: 'Successfully Fetched All Modifier(s)',

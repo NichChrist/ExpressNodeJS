@@ -68,7 +68,6 @@ export default class ProductService implements IProductService {
     createBulkProduct = async (productBody: IProduct[], req: Request) => {
         return sequelize.transaction(async (t) =>{
             try {
-
                 await sequelize.transaction(async (t) => {
                     const hasSpace = (str) => /\s/.test(str);
                     const skuMap = new Map();
@@ -80,7 +79,7 @@ export default class ProductService implements IProductService {
                         };
 
                         if (hasSpace(sku)){
-                            throw { ec: 400, status: httpStatus.NOT_ACCEPTABLE, message: 'SKU cannot be space(s) invalid at row: ' + (i+1)}
+                            throw { ec: 400, status: httpStatus.NOT_ACCEPTABLE, message: 'SKU cannot have space(s) invalid at row: ' + (i+1)}
                         };
                         skuMap.set(sku, true);
                     }
