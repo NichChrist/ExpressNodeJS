@@ -89,7 +89,15 @@ const responseMessageConstant = {
     Product_201_BULK_REGISTERED: 'Successfully Registered Many The Product(s)',
     Product_404_NOT_FOUND: 'Product  Not Found',
 
-    PRODUCT_201_CREATED: 'Successfully Created The Product',
+    MODIFIER_201_CREATED: 'Successfully Registered The Modifier',
+    MODIFIER_201_BULK_CREATED: 'Successfully Registered Many The Modifier(s)',
+    MODIFIER_200_FETCHED_ALL: 'Successfully Fetched All Modifier(s)',
+    MODIFIER_200_FETCHED_SINGLE: 'Successfully Fetched A Single Modifier',
+    MODIFIER_200_UPDATED: 'Successfully Updated A Single Modifier',
+    MODIFIER_200_DELETED: 'Successfully Deleted A Single Modifier',
+    MODIFIER_404_NOT_FOUND: 'Modifier Not Found',
+
+    PRODUCT_201_CREATED: 'Successfully Registered The Product',
     PRODUCT_CODE_400_TAKEN: 'Product Code Taken',
     PRODUCT_200_FETCHED_ALL: 'Successfully Fetched All Product(s)',
     PRODUCT_200_FETCHED_SINGLE: 'Successfully Fetched A Single Product',

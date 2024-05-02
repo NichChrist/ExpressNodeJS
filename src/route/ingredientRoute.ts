@@ -20,12 +20,14 @@ router.get(
 router.get(
     '/',
     auth(),
+    parameterCheck(),
     ingredientController.list
 );
 
 router.get(
     '/dropdown',
     auth(),
+    parameterCheck(),
     ingredientController.dropdown
 );
 
