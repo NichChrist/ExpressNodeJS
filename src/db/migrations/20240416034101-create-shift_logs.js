@@ -46,7 +46,7 @@ module.exports = {
 			},
             status: {
 				allowNull: false,
-				type: Sequelize.BOOLEAN,
+				type: Sequelize.STRING,
 			},
 			created_at: {
 				allowNull: false,

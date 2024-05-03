@@ -8,7 +8,11 @@ module.exports = (sequelize, DataTypes) => {
          * The `models/index` file will call this method automatically.
          */
         static associate(models) {
-
+            ShiftLogs.hasMany(models.cashless_shift_log, {
+                foreignKey: 'shift_log_id',
+                hooks: true,
+            })
+            
         }
     }
 
@@ -50,11 +54,6 @@ module.exports = (sequelize, DataTypes) => {
                 defaultValue: 0,
                 allowNull: false,
             },
-            cashless: {
-                type: DataTypes.DECIMAL,
-                defaultValue: 0,
-                allowNull: false,
-            },  
             closing_balance: {
                 type: DataTypes.DECIMAL,
                 defaultValue: 0,
