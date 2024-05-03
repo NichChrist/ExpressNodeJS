@@ -12,7 +12,10 @@ module.exports = (sequelize, DataTypes) => {
                 foreignKey: 'shift_log_id',
                 hooks: true,
             })
-            
+            ShiftLogs.belongsTo(models.user, {
+                foreignKey: 'user_id',
+                hooks: true,
+            })
         }
     }
 

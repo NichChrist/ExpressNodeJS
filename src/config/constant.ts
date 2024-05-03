@@ -89,6 +89,13 @@ const responseMessageConstant = {
     Product_201_BULK_REGISTERED: 'Successfully Registered Many The Product(s)',
     Product_404_NOT_FOUND: 'Product  Not Found',
 
+    SHIFTLOG_201_CREATED: 'Successfully Registered The Shift Log',
+    SHIFTLOG_200_FETCHED_ALL: 'Successfully Fetched All Shift Log(s)',
+    SHIFTLOG_200_FETCHED_SINGLE: 'Successfully Fetched A Single Shift Log',
+    SHIFTLOG_200_UPDATED: 'Successfully Updated A Single Shift Log',
+    SHIFTLOG_200_DELETED: 'Successfully Deleted A Single Shift Log',
+    SHIFTLOG_404_NOT_FOUND: 'Shift Log Not Found',
+
     UOM_201_CREATED: 'Successfully Registered The UOM',
     UOM_201_BULK_CREATED: 'Successfully Registered Many The UOM(s)',
     UOM_200_FETCHED_ALL: 'Successfully Fetched All UOM(s)',
