@@ -10,8 +10,6 @@ const router = Router();
 const businessTypeController = new BusinessTypeController();
 const businessTypeValidator = new BusinessTypeValidator();
 
-// auth()
-
 router.get(
     '/',
     auth(),

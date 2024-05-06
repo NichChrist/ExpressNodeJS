@@ -73,11 +73,13 @@ router.post(
 );
 router.delete(
     '/:id',
+    auth(),
     idCheck(),
     productController.deleteProduct
 );
 router.put(
     '/:id',
+    auth(),
     idCheck(),
     productValidator.productUpdateValidator,
     productController.updateProduct

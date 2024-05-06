@@ -39,6 +39,7 @@ router.get(
 
 router.get(
     '/:id',
+    auth(),
     idCheck(),
     ingredientController.getIngredientDataById
 );

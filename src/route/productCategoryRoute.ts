@@ -33,8 +33,6 @@ const upload = multer({
 const productCategoryController = new ProductCategoryController();
 const productCategoryValidator = new ProductCategoryValidator();
 
-//auth()
-
 router.get(
     '/',
     auth(),

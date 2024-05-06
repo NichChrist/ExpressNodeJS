@@ -15,6 +15,7 @@ const stockValidator = new StockValidator();
 
 router.get(
     '/',
+    auth(),
     stockController.list
 );
 
@@ -33,6 +34,7 @@ router.get(
 
 router.put(
     '/:id',
+    auth(),
     idCheck(),
     stockValidator.StockUpdateValidator,
     stockController.updateProduct
@@ -40,6 +42,7 @@ router.put(
 
 router.delete(
     '/:id',
+    auth(),
     idCheck(),
     stockController.deleteStock
 )

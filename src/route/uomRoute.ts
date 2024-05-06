@@ -46,10 +46,12 @@ router.get(
 );
 router.get(
     '/export-csv',
+    auth(),
     uomController.exportToCsv
 );
 router.post(
     '/',
+    auth(),
     uomValidator.uomCreateValidator,
     uomController.createUom
 );
