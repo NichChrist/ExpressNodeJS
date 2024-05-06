@@ -1,6 +1,6 @@
 module.exports = {
 	up: async (queryInterface, Sequelize) => {
-		await queryInterface.createTable('cashless_shift_log', {
+		await queryInterface.createTable('cashless_shift_logs', {
 			id: {
 				allowNull: false,
 				primaryKey: true,
@@ -35,7 +35,7 @@ module.exports = {
 	},
   
 	down: async (queryInterface, Sequelize) => {
-		await queryInterface.dropTable('cashless_shift_log');
+		await queryInterface.dropTable('cashless_shift_logs');
 	},
   };
   

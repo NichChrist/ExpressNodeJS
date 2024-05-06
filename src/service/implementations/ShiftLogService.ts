@@ -8,11 +8,12 @@ import db, { Sequelize, sequelize }  from '../../models';
 import { responseMessageConstant } from '../../config/constant';
 import { IShiftLog } from '../../models/interfaces/IShiftLog';
 import { Op } from 'sequelize';
-import { initial } from 'lodash';
+import { groupBy } from 'lodash';
 
 const { shift_log: ShiftLog, cashless_shift_log: CashlessShiftLog, user: User, outlet: Outlet } = db;
 
 export default class ShiftLogService implements IShiftLogService {
+    
     openShift = async (shiftBody: IShiftLog) => {
         try{
             shiftBody.status = "open";
@@ -119,19 +120,31 @@ export default class ShiftLogService implements IShiftLogService {
                 return responseHandler.returnError(httpStatus.NOT_FOUND, responseMessageConstant.SHIFTLOG_404_NOT_FOUND);
             }
             let options = {
-                where: { id:id },
+                where: { id: id },
                 attributes: {
+                    exclude: [
+                        'created_at',
+                        'updated_at',
+                        'deleted_at',
+                    ],
                     include: [
-                        'id'
-                    ], 
+                        [sequelize.literal('(SELECT SUM("cashless_shift_logs"."price") FROM "cashless_shift_logs" WHERE "cashless_shift_logs"."shift_log_id" = "shift_log"."id")'), 'cashless']
+                    ] 
                 },
                 include: [{
                     model: CashlessShiftLog,
                     where: {
                         shift_log_id : id
                     },
-                }]
-                
+                    attributes: {
+                        exclude: [
+                            'created_at',
+                            'updated_at',
+                            'deleted_at',
+                        ],
+                    }
+                }],
+                group: ['shift_log.id', '"cashless_shift_logs"."id"']
             };
     
             let data = await ShiftLog.findOne(options);
