@@ -3,7 +3,6 @@ module.exports = {
 	  return queryInterface.changeColumn('uoms', 'metric_code', {
 		allowNull: false,
 		type: Sequelize.STRING,
-		unique: true,
 	  })
 	},
   

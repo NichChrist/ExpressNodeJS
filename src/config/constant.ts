@@ -104,6 +104,14 @@ const responseMessageConstant = {
     UOM_200_DELETED: 'Successfully Deleted A Single UOM',
     UOM_404_NOT_FOUND: 'UOM Not Found',
 
+    UOM_CONVERSION_201_CREATED: 'Successfully Registered The UOM Conversion',
+    UOM_CONVERSION_201_BULK_CREATED: 'Successfully Registered Many The UOM Conversion(s)',
+    UOM_CONVERSION_200_FETCHED_ALL: 'Successfully Fetched All UOM Conversion(s)',
+    UOM_CONVERSION_200_FETCHED_SINGLE: 'Successfully Fetched A Single UOM Conversion',
+    UOM_CONVERSION_200_UPDATED: 'Successfully Updated A Single UOM Conversion',
+    UOM_CONVERSION_200_DELETED: 'Successfully Deleted A Single UOM Conversion',
+    UOM_CONVERSION_404_NOT_FOUND: 'UOM Conversion Not Found',
+
     MODIFIER_201_CREATED: 'Successfully Registered The Modifier',
     MODIFIER_201_BULK_CREATED: 'Successfully Registered Many The Modifier(s)',
     MODIFIER_200_FETCHED_ALL: 'Successfully Fetched All Modifier(s)',

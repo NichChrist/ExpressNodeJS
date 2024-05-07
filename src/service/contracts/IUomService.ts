@@ -3,10 +3,10 @@ import { ApiServiceResponse } from '../../@types/apiServiceResponse';
 import { IUom } from '../../models/interfaces/IUom';
 
 export default interface IUomService {
-    createUom: (uomBody: IUom) => Promise<ApiServiceResponse>
-    createBulkUom: (uomBody: IUom[]) => Promise<ApiServiceResponse>
+    createUom: (uomBody: IUom, req: Request) => Promise<ApiServiceResponse>
+    createBulkUom: (uomBody: IUom[], req: Request) => Promise<ApiServiceResponse>
     listUom: (name: any, req: Request) => Promise<ApiServiceResponse>
-    dropdownUom: () => Promise<ApiServiceResponse>;
-    updateUomById: (id: string, uomBody: IUom) => Promise<ApiServiceResponse>
-    deleteUomById: (id: string) => Promise<ApiServiceResponse>
+    dropdownUom: (req: Request) => Promise<ApiServiceResponse>;
+    updateUomById: (id: string, uomBody: IUom, req: Request) => Promise<ApiServiceResponse>
+    deleteUomById: (id: string, req: Request) => Promise<ApiServiceResponse>
 }   

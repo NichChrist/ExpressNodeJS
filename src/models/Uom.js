@@ -9,14 +9,14 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
-            Uom.hasMany(models.uom_conversions, {
-                foreignKey: 'uoms_from_id',
+            Uom.hasMany(models.uom_conversion, {
+                foreignKey: 'uom_from_id',
                 sourceKey: 'id',
                 as: 'uoms_conversion_from',
             });
             
-            Uom.hasMany(models.uom_conversions, {
-                foreignKey: 'uoms_to_id',
+            Uom.hasMany(models.uom_conversion, {
+                foreignKey: 'uom_to_id',
                 sourceKey: 'id',
                 as: 'uoms_conversion_to',
             });
@@ -43,6 +43,10 @@ module.exports = (sequelize, DataTypes) => {
                 onDelete: 'CASCADE',
                 onUpdate: 'CASCADE',
                 hooks: true,
+            });
+
+            Uom.hasMany(models.outlet_uom,{
+                foreignKey: 'uom_id'
             });
         }
     }

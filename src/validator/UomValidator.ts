@@ -8,7 +8,7 @@ import models from '../models';
 import { responseMessageConstant } from '../config/constant';
 import { Op } from 'sequelize';
 
-const {uom : Uom} = models;
+const { uom : Uom, outlet_uom: OutletUom } = models;
 
 export default class ProductValidator {
 
@@ -45,6 +45,13 @@ export default class ProductValidator {
         } else {
             try {
                 const codeCheck = await Uom.findOne({
+                    include: [{
+                        model: OutletUom,
+                        attributes: [],
+                        where: {
+                            outlet_id : req.userInfo?.outlet_id
+                        }
+                    }],
                     where: {
                         metric_code: value.metric_code.toLowerCase(),
                     }
@@ -97,6 +104,13 @@ export default class ProductValidator {
             try {
 
                 const codeCheck = await Uom.findOne({
+                    include: [{
+                        model: OutletUom,
+                        attributes: [],
+                        where: {
+                            outlet_id : req.userInfo?.outlet_id
+                        }
+                    }],
                     where: {
                         id: {
                             [Op.ne]: req.params.id

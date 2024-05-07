@@ -16,7 +16,7 @@ export default class UomController {
 
     createUom = async (req: Request, res: Response) => {
         try {
-            const data = await this.uomService.createUom(req.body);
+            const data = await this.uomService.createUom(req.body, req);
             const { code, message } = data.response;
             const uom = data.response.data;
             res.status(data.statusCode).json({
@@ -56,7 +56,7 @@ export default class UomController {
                 uomBody = req.body;
                 if (!Array.isArray(req.body)) uomBody = [req.body];
             }
-            const user = await this.uomService.createBulkUom(uomBody);
+            const user = await this.uomService.createBulkUom(uomBody, req);
             const { code, message, data } = user.response;
             res.status(user.statusCode).json({
                 code: code,
@@ -90,7 +90,7 @@ export default class UomController {
 
     dropdownUom = async (req: Request, res: Response) => {
         try {
-            const data = await this.uomService.dropdownUom();
+            const data = await this.uomService.dropdownUom(req);
             const { code, message } = data.response;
             const uom = data.response.data;
             res.status(data.statusCode).json({
@@ -109,7 +109,7 @@ export default class UomController {
 
     updateUom = async (req: Request, res: Response) => {
         try {
-            const data = await this.uomService.updateUomById(req.params.id, req.body);
+            const data = await this.uomService.updateUomById(req.params.id, req.body, req);
             const { code, message } = data.response;
             const uom = data.response.data;
             res.status(data.statusCode).json({
@@ -128,7 +128,7 @@ export default class UomController {
 
     deleteUom = async (req: Request, res: Response) => {
         try {
-            const data = await this.uomService.deleteUomById(req.params.id);
+            const data = await this.uomService.deleteUomById(req.params.id, req);
             const { code, message } = data.response;
             const uom = data.response.data;
             res.status(data.statusCode).json({
@@ -146,7 +146,7 @@ export default class UomController {
 
     exportToCsv = async (req: Request, res: Response) => {
         try {
-            return this.uomService.exportToCSV(res);
+            return this.uomService.exportToCSV(res, req);
         } catch (e) {
             logger.error(e);
             res.status(httpStatus.BAD_GATEWAY).send(e);

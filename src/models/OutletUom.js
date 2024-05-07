@@ -9,6 +9,9 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
+            OutletUom.belongsTo(models.uom, 
+                { foreignKey: 'uom_id' 
+            });
         }
     }
 
