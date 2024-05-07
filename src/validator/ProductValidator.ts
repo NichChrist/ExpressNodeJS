@@ -85,11 +85,11 @@ export default class ProductValidator {
                     
                     if (outlets.parent_id === null){
                         if (outlets.id !== req.userInfo?.outlet_id){
-                            return next(new ApiError(httpStatus.UNAUTHORIZED, 'This Outlet Is Not Your Branch'));
+                            return next(new ApiError(httpStatus.NOT_FOUND, 'Outlet Is Not Found'));
                         }
                     }else{
                         if (outlets.parent_id !== req.userInfo?.outlet_id){
-                            return next(new ApiError(httpStatus.UNAUTHORIZED, 'This Outlet Is Not Your Branch'));
+                            return next(new ApiError(httpStatus.NOT_FOUND, 'Outlet Is Not Found'));
                         }
                     }
                 }
@@ -257,11 +257,11 @@ export default class ProductValidator {
 
                     if (outlets.parent_id === null){
                         if (outlets.id !== req.userInfo?.outlet_id){
-                            return next(new ApiError(httpStatus.UNAUTHORIZED, 'This Outlet Is Not Your Branch'));
+                            return next(new ApiError(httpStatus.NOT_FOUND, 'Outlet Is Not Found'));
                         }
                     }else{
                         if (outlets.parent_id !== req.userInfo?.outlet_id){
-                            return next(new ApiError(httpStatus.UNAUTHORIZED, 'This Outlet Is Not Your Branch'));
+                            return next(new ApiError(httpStatus.NOT_FOUND, 'Outlet Is Not Found'));
                         }
                     }
                 }
