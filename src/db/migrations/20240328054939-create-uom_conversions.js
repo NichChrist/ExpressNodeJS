@@ -7,12 +7,12 @@ module.exports = {
 				type: Sequelize.UUID,
 				unique: true,
 			},
-			uoms_from_id: {
+			uom_from_id: {
                 allowNull: false,
                 type: Sequelize.UUID,
                 references: { model: 'uoms', key: 'id' },
             },
-			uoms_to_id: {
+			uom_to_id: {
                 allowNull: false,
                 type: Sequelize.UUID,
                 references: { model: 'uoms', key: 'id' },

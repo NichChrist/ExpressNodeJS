@@ -86,7 +86,7 @@ const responseMessageConstant = {
     Product_200_FETCHED_SINGLE: 'Successfully Fetched A Single Product',
     Product_200_UPDATED: 'Successfully Updated A Single Product',
     Product_201_REGISTERED: 'Successfully Registered The Product',
-    Product_201_BULK_REGISTERED: 'Successfully Registered Many The Product(s)',
+    Product_201_BULK_REGISTERED: 'Successfully Registered Many Product(s)',
     Product_404_NOT_FOUND: 'Product  Not Found',
 
     SHIFTLOG_201_CREATED: 'Successfully Registered The Shift Log',
@@ -97,7 +97,7 @@ const responseMessageConstant = {
     SHIFTLOG_404_NOT_FOUND: 'Shift Log Not Found',
 
     UOM_201_CREATED: 'Successfully Registered The UOM',
-    UOM_201_BULK_CREATED: 'Successfully Registered Many The UOM(s)',
+    UOM_201_BULK_CREATED: 'Successfully Registered Many UOM(s)',
     UOM_200_FETCHED_ALL: 'Successfully Fetched All UOM(s)',
     UOM_200_FETCHED_SINGLE: 'Successfully Fetched A Single UOM',
     UOM_200_UPDATED: 'Successfully Updated A Single UOM',
@@ -105,15 +105,16 @@ const responseMessageConstant = {
     UOM_404_NOT_FOUND: 'UOM Not Found',
 
     UOM_CONVERSION_201_CREATED: 'Successfully Registered The UOM Conversion',
-    UOM_CONVERSION_201_BULK_CREATED: 'Successfully Registered Many The UOM Conversion(s)',
+    UOM_CONVERSION_201_BULK_CREATED: 'Successfully Registered Many UOM Conversion(s)',
     UOM_CONVERSION_200_FETCHED_ALL: 'Successfully Fetched All UOM Conversion(s)',
     UOM_CONVERSION_200_FETCHED_SINGLE: 'Successfully Fetched A Single UOM Conversion',
     UOM_CONVERSION_200_UPDATED: 'Successfully Updated A Single UOM Conversion',
+    UOM_CONVERSION_200_BULK_UPDATED: 'Successfully Updated Many UOM Conversion',
     UOM_CONVERSION_200_DELETED: 'Successfully Deleted A Single UOM Conversion',
     UOM_CONVERSION_404_NOT_FOUND: 'UOM Conversion Not Found',
 
     MODIFIER_201_CREATED: 'Successfully Registered The Modifier',
-    MODIFIER_201_BULK_CREATED: 'Successfully Registered Many The Modifier(s)',
+    MODIFIER_201_BULK_CREATED: 'Successfully Registered Many Modifier(s)',
     MODIFIER_200_FETCHED_ALL: 'Successfully Fetched All Modifier(s)',
     MODIFIER_200_FETCHED_SINGLE: 'Successfully Fetched A Single Modifier',
     MODIFIER_200_UPDATED: 'Successfully Updated A Single Modifier',

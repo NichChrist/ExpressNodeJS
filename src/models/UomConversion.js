@@ -10,15 +10,15 @@ module.exports = (sequelize, DataTypes) => {
         static associate(models) {
             // define association here
             UomConversions.belongsTo(models.uom, {
-                foreignKey: 'uoms_from_id',
+                foreignKey: 'uom_from_id',
                 targetKey: 'id',
-                as: 'uoms_from',
+                as: 'uom_from',
             });
             
             UomConversions.belongsTo(models.uom, {
-                foreignKey: 'uoms_to_id',
+                foreignKey: 'uom_to_id',
                 targetKey: 'id',
-                as: 'uoms_to',
+                as: 'uom_to',
             });
         }
     }
@@ -31,11 +31,11 @@ module.exports = (sequelize, DataTypes) => {
                 primaryKey: true,
                 allowNull: false,
             },
-            uoms_from_id: {
+            uom_from_id: {
                 type: DataTypes.UUID,
                 allowNull: false,
             },
-            uoms_to_id: {
+            uom_to_id: {
                 type: DataTypes.UUID,
                 allowNull: false,
             },
@@ -46,7 +46,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         {
             sequelize,
-            modelName: 'uom_conversions',
+            modelName: 'uom_conversion',
             underscored: true,
             paranoid: true,
             createdAt: 'created_at',

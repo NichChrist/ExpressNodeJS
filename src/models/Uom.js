@@ -12,13 +12,13 @@ module.exports = (sequelize, DataTypes) => {
             Uom.hasMany(models.uom_conversion, {
                 foreignKey: 'uom_from_id',
                 sourceKey: 'id',
-                as: 'uoms_conversion_from',
+                as: 'uom_conversion_from',
             });
             
             Uom.hasMany(models.uom_conversion, {
                 foreignKey: 'uom_to_id',
                 sourceKey: 'id',
-                as: 'uoms_conversion_to',
+                as: 'uom_conversion_to',
             });
 
             Uom.belongsToMany(models.outlet, {
