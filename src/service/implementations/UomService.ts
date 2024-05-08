@@ -10,8 +10,11 @@ import db, { sequelize } from '../../models';
 import { responseMessageConstant } from '../../config/constant';
 import * as csv from 'exceljs';
 import { Op } from 'sequelize';
+import { ParamsDictionary } from 'express-serve-static-core';
+import { ParsedQs } from 'qs';
+import { ApiServiceResponse } from '../../@types/apiServiceResponse';
 
-const { uom: Uom, outlet_uom: OutletUom } = db;
+const { uom: Uom, outlet_uom: OutletUom, outlet: Outlet } = db;
 
 export default class UomService implements IUomService {
     private uomDao: UomDao;
@@ -114,11 +117,25 @@ export default class UomService implements IUomService {
                 include: [{
                     model: OutletUom,
                     attributes: [],
-                    where: {
-                        outlet_id : req.userInfo?.outlet_id
-                    }
+                    where: {}
                 }]
             };
+
+            const outlets = await Outlet.findOne({
+                where: {
+                    id: req.userInfo?.outlet_id
+                }
+            });
+            
+            if (outlets.parent_id === null){
+                Object.assign(options.include[0].where, {
+                    outlet_id : outlets.id 
+                });
+            }else{
+                Object.assign(options.include[0].where, {
+                    outlet_id : outlets.parent_id
+                });
+            }
 
             if (pagination == 'true') {
                 const row: any = req.query.row;
@@ -146,16 +163,71 @@ export default class UomService implements IUomService {
                 include: [{
                     model: OutletUom,
                     attributes: [],
-                    where: {
-                        outlet_id : req.userInfo?.outlet_id
-                    }
+                    where: {}
                 }]
             };
+            const outlets = await Outlet.findOne({
+                where: {
+                    id: req.userInfo?.outlet_id
+                }
+            });
+            
+            if (outlets.parent_id === null){
+                Object.assign(options.include[0].where, {
+                    outlet_id : outlets.id 
+                });
+            }else{
+                Object.assign(options.include[0].where, {
+                    outlet_id : outlets.parent_id
+                });
+            }
+
             let districtData = await Uom.scope(['dropdown']).findAll(options);
             return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant.UOM_200_FETCHED_ALL, districtData);
         } catch (e) {
             console.error(e);
             return responseHandler.returnError(httpStatus.BAD_GATEWAY, responseMessageConstant.HTTP_502_BAD_GATEWAY);
+        }
+    }
+
+    getUomById = async (id: string, req: Request) => {
+        try {
+            if (!(await this.uomDao.isUomExists(id))) {
+                return responseHandler.returnError(httpStatus.NOT_FOUND, responseMessageConstant.UOM_404_NOT_FOUND);
+            }
+            let uom:any
+            const outlets = await Outlet.findOne({
+                where: {
+                    id: req.userInfo?.outlet_id
+                }
+            });
+            
+            if (outlets.parent_id === null){
+                uom = await OutletUom.findOne({
+                    where: {
+                        outlet_id: outlets.id,
+                        uom_id: id
+                    }
+                });
+            }else{
+                uom = await OutletUom.findOne({
+                    where: {
+                        outlet_id: outlets.parent_id,
+                        uom_id: id
+                    }
+                });
+            }
+
+
+            if(!uom) {
+                return responseHandler.returnError(httpStatus.NOT_FOUND, responseMessageConstant.UOM_404_NOT_FOUND);
+            }
+
+            const data = await this.uomDao.findById(id);
+            return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant.OUTLET_200_FETCHED_SINGLE, data);
+        } catch (e) {
+            console.log(e);
+            return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.HTTP_502_BAD_GATEWAY);
         }
     }
 
@@ -165,12 +237,28 @@ export default class UomService implements IUomService {
                 return responseHandler.returnError(httpStatus.NOT_FOUND, responseMessageConstant.UOM_404_NOT_FOUND)
             }
 
-            const uom = await OutletUom.findOne({
+            let uom:any
+            const outlets = await Outlet.findOne({
                 where: {
-                    outlet_id: req.userInfo?.outlet_id,
-                    uom_id: id
+                    id: req.userInfo?.outlet_id
                 }
             });
+            
+            if (outlets.parent_id === null){
+                uom = await OutletUom.findOne({
+                    where: {
+                        outlet_id: outlets.id,
+                        uom_id: id
+                    }
+                });
+            }else{
+                uom = await OutletUom.findOne({
+                    where: {
+                        outlet_id: outlets.parent_id,
+                        uom_id: id
+                    }
+                });
+            }
 
             if (!uom) {
                 return responseHandler.returnError(httpStatus.NOT_FOUND, responseMessageConstant.UOM_404_NOT_FOUND)
@@ -195,12 +283,29 @@ export default class UomService implements IUomService {
             if (!(await this.uomDao.isUomExists(id))) {
                 return responseHandler.returnError(httpStatus.NOT_FOUND, responseMessageConstant.UOM_404_NOT_FOUND)
             }
-            const uom = await OutletUom.findOne({
+            let uom:any
+            const outlets = await Outlet.findOne({
                 where: {
-                    outlet_id: req.userInfo?.outlet_id,
-                    uom_id: id
+                    id: req.userInfo?.outlet_id
                 }
             });
+            
+            if (outlets.parent_id === null){
+                uom = await OutletUom.findOne({
+                    where: {
+                        outlet_id: outlets.id,
+                        uom_id: id
+                    }
+                });
+            }else{
+                uom = await OutletUom.findOne({
+                    where: {
+                        outlet_id: outlets.parent_id,
+                        uom_id: id
+                    }
+                });
+            }
+
             if (!uom) {
                 return responseHandler.returnError(httpStatus.NOT_FOUND, responseMessageConstant.UOM_404_NOT_FOUND)
             }
@@ -225,16 +330,32 @@ export default class UomService implements IUomService {
                 include: [{
                     model: OutletUom,
                     attributes: [],
-                    where: {
-                        outlet_id : req.userInfo?.outlet_id
-                    }
+                    where: {}
                 }]
             };
+            
+            const outlets = await Outlet.findOne({
+                where: {
+                    id: req.userInfo?.outlet_id
+                }
+            });
+            
+            if (outlets.parent_id === null){
+                Object.assign(options.include[0].where, {
+                    outlet_id : outlets.id 
+                });
+            }else{
+                Object.assign(options.include[0].where, {
+                    outlet_id : outlets.parent_id
+                });
+            }
+
             const { rows: allData } = await Uom.findAndCountAll(options);
             const productColumns = [
                 { key: 'id', header: 'ID'},
                 { key: 'name', header: 'Name'},
                 { key: 'metric_code', header: 'Metric Code'},
+                { key: 'description', header: 'Description'},
             ];
             worksheet.columns = productColumns;
 

@@ -15,6 +15,7 @@ import stockRoute from './stockRoute';
 import ingredientRoute from './ingredientRoute'
 import modifierRoute from './modifierRoute'
 import uomRoute from './uomRoute'
+import uomConversionRoute from './uomConversionRoute'
 import shiftLogRoute from './shiftLogRoute'
 
 const router = Router();
@@ -83,6 +84,10 @@ const defaultRoutes = [
     {
         path: '/uoms',
         route: uomRoute
+    },
+    {
+        path: '/uom-conversions',
+        route: uomConversionRoute
     },
     {
         path: '/shift-logs',
