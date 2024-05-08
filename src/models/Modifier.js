@@ -29,6 +29,11 @@ module.exports = (sequelize, DataTypes) => {
                 foreignKey: 'modifier_id',
                 hooks: true,
             });
+
+            Modifier.hasMany(models.outlet_modifier,{
+                foreignKey: 'modifier_id',
+                hooks: true,
+            });
         }
     }
 
@@ -54,6 +59,14 @@ module.exports = (sequelize, DataTypes) => {
             },           
         },
         {
+            scopes: {
+                dropdown: {
+                    attributes: [
+                        'id',
+                        'name'
+                    ]
+                }
+            },
             sequelize,
             modelName: 'modifier',
             underscored: true,

@@ -9,11 +9,26 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
+            OutletModifier.belongsTo(models.modifier, 
+                { foreignKey: 'modifier_id' 
+            });
+            
         }
     }
 
     OutletModifier.init(
-        {},
+        {
+            outlet_id: {
+                type: DataTypes.UUID,
+                primaryKey: true,
+                allowNull: false,
+            },
+            modifier_id: {
+                type: DataTypes.UUID,
+                primaryKey: true,
+                allowNull: false,
+            },
+        },
         {
             sequelize,
             modelName: 'outlet_modifier',

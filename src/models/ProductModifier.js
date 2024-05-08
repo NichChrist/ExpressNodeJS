@@ -13,7 +13,18 @@ module.exports = (sequelize, DataTypes) => {
     }
 
     ProductModifier.init(
-        {},
+        {
+            product_id: {
+                type: DataTypes.UUID,
+                primaryKey: true,
+                allowNull: false,
+            },
+            modifier_id: {
+                type: DataTypes.UUID,
+                primaryKey: true,
+                allowNull: false,
+            },
+        },
         {
             sequelize,
             modelName: 'product_modifier',
