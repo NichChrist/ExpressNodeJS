@@ -1,7 +1,7 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-    class OutletProduct extends Model {
+    class OutletProductState extends Model {
         /**
          * Helper method for defining associations.
          * This method is not a part of Sequelize lifecycle.
@@ -9,18 +9,13 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
-            OutletProduct.belongsTo(models.product, 
-                { foreignKey: 'product_id' 
-            });
-
-            OutletProduct.hasMany(models.outlet_product_state, 
+            OutletProductState.belongsTo(models.outlet_product, 
                 { foreignKey: 'outlet_product_id' 
             });
-
         }
     }
 
-    OutletProduct.init(
+    OutletProductState.init(
         {
             id: {
                 type: DataTypes.UUID,
@@ -28,24 +23,30 @@ module.exports = (sequelize, DataTypes) => {
                 primaryKey: true,
                 allowNull: false,
             },
-            stock: {
-                type: DataTypes.DECIMAL,
-                allowNull: false,
-                defaultValue: 0,
-            },
-            is_active: {
+			shift_log_id: {
+                type: DataTypes.UUID,
+				allowNull: false,
+			},
+			day: {
+                type: DataTypes.STRING,
+				allowNull:false,
+			},
+			is_custom: {
                 type: DataTypes.BOOLEAN,
-                defaultValue: false,
-            },
+				allowNull: false,
+			},
+			start_time: {
+                type: DataTypes.TIME,
+				allowNull: false,
+			},
+			end_time: {
+                type: DataTypes.TIME,
+				allowNull: false,
+			}
         },
         {
-            scopes: {
-                withoutTimestamp: {
-                    attributes: { exclude: ['created_at', 'updated_at', 'deleted_at'] },
-                },
-            },
             sequelize,
-            modelName: 'outlet_product',
+            modelName: 'outlet_product_state',
             underscored: true,
             paranoid: true,
             createdAt: 'created_at',
@@ -53,5 +54,5 @@ module.exports = (sequelize, DataTypes) => {
             deletedAt: 'deleted_at',
         }
     );
-    return OutletProduct;
+    return OutletProductState;
 };
