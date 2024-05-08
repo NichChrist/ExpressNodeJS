@@ -178,23 +178,23 @@ export default class ProductValidator {
 
                 //filter
                 if (!['', null].includes(value.filter)) {
-                    const outlets = await Outlet.findOne({
+                    const outlet = await Outlet.findOne({
                         where: {
                             id: value.filter,
                         }
                     });
 
-                    if(!outlets){
+                    if(!outlet){
                         return next(new ApiError (httpStatus.NOT_FOUND, responseMessageConstant.OUTLET_404_NOT_FOUND));
                     }
 
-                    if (outlets.parent_id === null){
-                        if (outlets.id !== req.userInfo?.outlet_id){
-                            return next(new ApiError(httpStatus.NOT_FOUND, 'Outlet Is Not Found'));
+                    if (outlet.parent_id === null){
+                        if (outlet.id !== req.userInfo?.outlet_id){
+                            return next(new ApiError(httpStatus.NOT_FOUND, 'Outlet Not Found'));
                         }
                     }else{
-                        if (outlets.parent_id !== req.userInfo?.outlet_id){
-                            return next(new ApiError(httpStatus.NOT_FOUND, 'Outlet Is Not Found'));
+                        if (outlet.parent_id !== req.userInfo?.outlet_id){
+                            return next(new ApiError(httpStatus.NOT_FOUND, 'Outlet Not Found'));
                         }
                     }
                 }

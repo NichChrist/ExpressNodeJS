@@ -77,19 +77,19 @@ export default class ProductValidator {
                 }
 
                 for (let i = 0; i < value.outlet_id.length; i++) {
-                    const outlets = await Outlet.findOne({
+                    const outlet = await Outlet.findOne({
                         where: {
                             id: value.outlet_id[i],
                         }
                     });
                     
-                    if (outlets.parent_id === null){
-                        if (outlets.id !== req.userInfo?.outlet_id){
-                            return next(new ApiError(httpStatus.NOT_FOUND, 'Outlet Is Not Found'));
+                    if (outlet.parent_id === null){
+                        if (outlet.id !== req.userInfo?.outlet_id){
+                            return next(new ApiError(httpStatus.NOT_FOUND, 'Outlet Not Found'));
                         }
                     }else{
-                        if (outlets.parent_id !== req.userInfo?.outlet_id){
-                            return next(new ApiError(httpStatus.NOT_FOUND, 'Outlet Is Not Found'));
+                        if (outlet.parent_id !== req.userInfo?.outlet_id){
+                            return next(new ApiError(httpStatus.NOT_FOUND, 'Outlet Not Found'));
                         }
                     }
                 }
@@ -257,11 +257,11 @@ export default class ProductValidator {
 
                     if (outlets.parent_id === null){
                         if (outlets.id !== req.userInfo?.outlet_id){
-                            return next(new ApiError(httpStatus.NOT_FOUND, 'Outlet Is Not Found'));
+                            return next(new ApiError(httpStatus.NOT_FOUND, 'Outlet Not Found'));
                         }
                     }else{
                         if (outlets.parent_id !== req.userInfo?.outlet_id){
-                            return next(new ApiError(httpStatus.NOT_FOUND, 'Outlet Is Not Found'));
+                            return next(new ApiError(httpStatus.NOT_FOUND, 'Outlet Not Found'));
                         }
                     }
                 }

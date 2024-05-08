@@ -175,7 +175,7 @@ export default class OutletService implements IOutletService {
                     }
                 } else {
                     if (outlet.parent_id !== req.userInfo?.outlet_id) {
-                        return responseHandler.returnError(httpStatus.NOT_FOUND, 'Outlet Is Not Found');
+                        return responseHandler.returnError(httpStatus.NOT_FOUND, 'Outlet Not Found');
                     }
                 }
             }
@@ -204,11 +204,11 @@ export default class OutletService implements IOutletService {
             });
             if (outlets.parent_id === null){
                 if (outlets.id !== req.userInfo?.outlet_id){
-                    return responseHandler.returnError(httpStatus.NOT_FOUND, 'Outlet Is Not Found');
+                    return responseHandler.returnError(httpStatus.NOT_FOUND, 'Outlet Not Found');
                 }
             }else{
                 if (outlets.parent_id !== req.userInfo?.outlet_id){
-                    return responseHandler.returnError(httpStatus.NOT_FOUND, 'Outlet Is Not Found');
+                    return responseHandler.returnError(httpStatus.NOT_FOUND, 'Outlet Not Found');
                 }
             }
 

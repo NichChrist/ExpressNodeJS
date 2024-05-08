@@ -282,18 +282,18 @@ export default class OutletValidator {
             return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, errorMessage));
         } else {
             try {
-                const outlets = await Outlet.findOne({
+                const outlet = await Outlet.findOne({
                     where: {
                         id: req.params.id,
                     }
                 });
-                if (outlets.parent_id === null){
-                    if (outlets.id !== req.userInfo?.outlet_id){
-                        return next(new ApiError(httpStatus.NOT_FOUND, 'Outlet Is Not Found'));
+                if (outlet.parent_id === null){
+                    if (outlet.id !== req.userInfo?.outlet_id){
+                        return next(new ApiError(httpStatus.NOT_FOUND, 'Outlet Not Found'));
                     }
                 }else{
-                    if (outlets.parent_id !== req.userInfo?.outlet_id){
-                        return next(new ApiError(httpStatus.NOT_FOUND, 'Outlet Is Not Found'));
+                    if (outlet.parent_id !== req.userInfo?.outlet_id){
+                        return next(new ApiError(httpStatus.NOT_FOUND, 'Outlet Not Found'));
                     }
                 }
                 
