@@ -58,14 +58,18 @@ export default class ModifierService implements IModifierService {
 
             const pagination = req.query.pagination;
             let options:any = {
-                attributes: ['id', 'name'],
+                attributes: [
+                    'id',
+                    'name',
+                    [sequelize.literal('(SELECT COUNT(*) FROM "modifier_details" WHERE "modifier"."id" = "modifier_details"."modifier_id")'), 'quantity']
+                ],
                 include: [{
                     model: OutletModifier,
                     attributes: [],
                     where: {}
                 },{
                     model: ModifierDetail,
-                    attributes: ['id','name','price']
+                    attributes: []
                 }],
             };
             const outlets = await Outlet.findOne({
