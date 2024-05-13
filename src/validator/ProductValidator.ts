@@ -8,7 +8,7 @@ import models from '../models';
 import { Op } from 'sequelize';
 import { responseMessageConstant } from '../config/constant';
 
-const {product_category: ProductCategory, product: Product, outlet: Outlet} = models;
+const {product_category: ProductCategory, product: Product, outlet: Outlet, modifier: Modifier, outlet_modifier: OutletModifier} = models;
 
 export default class ProductValidator {
 
@@ -31,6 +31,9 @@ export default class ProductValidator {
             outlet_id: Joi.array().items(Joi.string().guid()).required().messages({
                 "array.empty": '"Outlet Id" is not allowed to be empty',
                 "array.includes": 'Each item in "Outlet Id" must be a valid UUID format'
+            }),
+            modifier_id: Joi.array().items(Joi.string().guid()).allow(null, '').messages({
+                "array.includes": 'Each item in "Modifier Id" must be a valid UUID format'
             }),
         });
 
@@ -56,13 +59,32 @@ export default class ProductValidator {
             try {
                 const categoryCheck = await ProductCategory.findByPk(value.product_category_id);
                 if (categoryCheck === null) {
-                    return next(new ApiError(httpStatus.NOT_FOUND, 'Product Category Not Found'));
+                    return next(new ApiError(httpStatus.NOT_FOUND, responseMessageConstant.ProductCategory_404_NOT_FOUND));
                 }   
 
                 value.outlet_id.forEach(async (id) => {
                     const outletIdCheck = await Outlet.findByPk(id)
                         if(outletIdCheck === null){
-                            return next(new ApiError(httpStatus.NOT_FOUND, 'Outlet Id Not Found'));
+                            return next(new ApiError(httpStatus.NOT_FOUND, responseMessageConstant.OUTLET_404_NOT_FOUND));
+                        }
+                }); 
+
+                value.modifier_id.forEach(async (id) => {
+                    const modifierIdCheck = await Modifier.findByPk(id)
+                        if(modifierIdCheck === null){
+                            return next(new ApiError(httpStatus.NOT_FOUND, responseMessageConstant.MODIFIER_404_NOT_FOUND));
+                        }
+                }); 
+
+                value.modifier_id.forEach(async (id) => {
+                    const modifier = await OutletModifier.findOne({
+                        where: {
+                            outlet_id: req.userInfo?.outlet_id,
+                            modifier_id: id
+                        }
+                    });
+                        if(!modifier) {
+                            return next(new ApiError(httpStatus.NOT_FOUND, responseMessageConstant.MODIFIER_404_NOT_FOUND));
                         }
                 }); 
 
@@ -85,11 +107,11 @@ export default class ProductValidator {
                     
                     if (outlet.parent_id === null){
                         if (outlet.id !== req.userInfo?.outlet_id){
-                            return next(new ApiError(httpStatus.NOT_FOUND, 'Outlet Not Found'));
+                            return next(new ApiError(httpStatus.NOT_FOUND, responseMessageConstant.OUTLET_404_NOT_FOUND));
                         }
                     }else{
                         if (outlet.parent_id !== req.userInfo?.outlet_id){
-                            return next(new ApiError(httpStatus.NOT_FOUND, 'Outlet Not Found'));
+                            return next(new ApiError(httpStatus.NOT_FOUND, responseMessageConstant.OUTLET_404_NOT_FOUND));
                         }
                     }
                 }
@@ -257,11 +279,11 @@ export default class ProductValidator {
 
                     if (outlets.parent_id === null){
                         if (outlets.id !== req.userInfo?.outlet_id){
-                            return next(new ApiError(httpStatus.NOT_FOUND, 'Outlet Not Found'));
+                            return next(new ApiError(httpStatus.NOT_FOUND, responseMessageConstant.OUTLET_404_NOT_FOUND));
                         }
                     }else{
                         if (outlets.parent_id !== req.userInfo?.outlet_id){
-                            return next(new ApiError(httpStatus.NOT_FOUND, 'Outlet Not Found'));
+                            return next(new ApiError(httpStatus.NOT_FOUND, responseMessageConstant.OUTLET_404_NOT_FOUND));
                         }
                     }
                 }

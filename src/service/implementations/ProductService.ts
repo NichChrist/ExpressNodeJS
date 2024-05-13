@@ -13,7 +13,7 @@ import { responseMessageConstant } from '../../config/constant';
 import * as csv from 'exceljs';
 import { Op } from 'sequelize';
 
-const { product: Product, outlet_product: OutletProduct, file: File, outlet: Outlet, product_category: ProductCategory} = db;
+const { product: Product, outlet_product: OutletProduct, file: File, outlet: Outlet, product_category: ProductCategory, product_modifier: ProductModifier} = db;
 
 export default class ProductService implements IProductService {
     private productDao: ProductDao;
@@ -45,16 +45,25 @@ export default class ProductService implements IProductService {
                 
                 let data = await Product.create(productBody, { transaction: t });
 
-                const bulkData:Array<any> = [];
+                const bulkModifier:Array<any> = [];
+                productBody.modifier_id.forEach((modifier) => {
+                    bulkModifier.push({
+                        modifier_id: modifier,
+                        product_id: data.id
+                    })
+                })
 
+                await ProductModifier.bulkCreate(bulkModifier, {transaction: t}); 
+
+                const bulkOutlet:Array<any> = [];
                 productBody.outlet_id.forEach((outlet) => {
-                    bulkData.push({
+                    bulkOutlet.push({
                         outlet_id: outlet,
                         product_id: data.id
                     })
                 })
 
-                await OutletProduct.bulkCreate(bulkData, {transaction: t}); 
+                await OutletProduct.bulkCreate(bulkOutlet, {transaction: t}); 
 
                 return responseHandler.returnSuccess(httpStatus.CREATED, responseMessageConstant.Product_201_REGISTERED, data);
             } catch (e) {

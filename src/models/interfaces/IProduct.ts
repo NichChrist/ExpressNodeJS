@@ -7,7 +7,6 @@ export interface IProduct {
     picture?: string;
     stock: number;
     outlet_id: string[];
-    created_at?: Date;
-    updated_at?: Date;
-    deleted_at?: Date;
+    modifier_id: string[];
+    outlet_product_state: Array<any>;
 }
