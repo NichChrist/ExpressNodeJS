@@ -72,7 +72,7 @@ export default class StockService implements IStockService {
 
             let data = await this.stockDao.getById(['withoutTimestamp'],id);
 
-            return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant.Product_200_UPDATED, data);
+            return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant.PRODUCT_200_UPDATED, data);
         } catch (e) {
             console.log(e);
             return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.HTTP_502_BAD_GATEWAY);

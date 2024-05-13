@@ -16,7 +16,7 @@ export default class ModifierController {
 
     createModifier = async (req: Request, res: Response) => {
         try {
-            const data = await this.modifierService.createModifier(req.body);
+            const data = await this.modifierService.createModifier(req.body, req);
             const { code, message } = data.response;
             const model = data.response.data;
             res.status(data.statusCode).json({
@@ -73,7 +73,7 @@ export default class ModifierController {
 
     updateModifier = async (req: Request, res: Response) => {
         try {
-            const data = await this.modifierService.updateModifierById(req.params.id, req.body, req);
+            const data = await this.modifierService.updateModifierById(req.params.id, req.body);
             const { code, message } = data.response;
             res.status(data.statusCode).json({
                 code: code,

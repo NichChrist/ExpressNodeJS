@@ -3,7 +3,7 @@ export interface IModifier {
     name: string;
     description?: string;
     option_type: string;
-    outlet_id: string[];
+    product_id: string[];
     modifier_detail:Array<any>;
     created_at?: Date;
     updated_at?: Date;

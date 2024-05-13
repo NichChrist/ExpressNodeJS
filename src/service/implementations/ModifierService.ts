@@ -10,7 +10,7 @@ import db, { sequelize } from '../../models';
 import { responseMessageConstant } from '../../config/constant';
 import { Op } from 'sequelize';
 
-const { modifier: Modifier, outlet_modifier: OutletModifier, modifier_detail: ModifierDetail, product_modifier: ProductModifer, outlet: Outlet } = db;
+const { modifier: Modifier, outlet_modifier: OutletModifier, modifier_detail: ModifierDetail, product_modifier: ProductModifier, outlet: Outlet } = db;
 
 export default class ModifierService implements IModifierService {
     private modifierDao: ModifierDao;
@@ -19,19 +19,27 @@ export default class ModifierService implements IModifierService {
         this.modifierDao = new ModifierDao()
     }
     
-    createModifier = async (modifierBody: IModifier) => {
+    createModifier = async (modifierBody: IModifier, req: Request) => {
         try {
             await Modifier.create(modifierBody).then( async (data) => {
                     await sequelize.transaction(async (t) => {
 
-                    const bulkOutlet:Array<any> = [];
-                    modifierBody.outlet_id.forEach((outlet) => {
-                        bulkOutlet.push({
-                            outlet_id: outlet,
+                    let outletData:any
+                    outletData = ({
+                        outlet_id: req.userInfo?.outlet_id,
+                        modifier_id: data.id
+                    })
+                    
+                    await OutletModifier.create(outletData, { transaction: t })    
+
+                    const bulkProduct:Array<any> = [];
+                    modifierBody.product_id.forEach((outlet) => {
+                        bulkProduct.push({
+                            product_id: outlet,
                             modifier_id: data.id
                         })
                     });
-                    await OutletModifier.bulkCreate(bulkOutlet, { transaction: t });
+                    await ProductModifier.bulkCreate(bulkProduct, { transaction: t });
     
                     const bulkDetail:Array<any> = [];
                     for (let i = 0; i < modifierBody.modifier_detail.length; i++) {
@@ -202,7 +210,7 @@ export default class ModifierService implements IModifierService {
         }
     }
 
-    updateModifierById = async (id: string, modifierBody: IModifier, req: Request) => {
+    updateModifierById = async (id: string, modifierBody: IModifier) => {
         try{
             if (!(await this.modifierDao.isModifierExists(id))) {
                 return responseHandler.returnError(httpStatus.NOT_FOUND, responseMessageConstant.MODIFIER_404_NOT_FOUND);
@@ -211,27 +219,18 @@ export default class ModifierService implements IModifierService {
             await sequelize.transaction(async (t) => {
                 await this.modifierDao.updateById(modifierBody, id)
 
-                await OutletModifier.destroy({
-                    where: { modifier_id: id },
-                    force: true
-                },{ 
-                    transaction: t 
-                });
                 await ModifierDetail.destroy({
                     where: { modifier_id: id },
                     force: true
                 },{ 
                     transaction: t 
                 });
-
-                const bulkOutlet:Array<any> = [];
-                modifierBody.outlet_id.forEach((outlet) => {
-                    bulkOutlet.push({
-                        outlet_id: outlet,
-                        modifier_id: id
-                    })
-                });
-                await OutletModifier.bulkCreate(bulkOutlet, { transaction: t });
+                await ProductModifier.destroy({
+                    where: { modifier_id: id },
+                    force: true
+                },{ 
+                    transaction: t 
+                });      
 
                 const bulkDetail:Array<any> = [];
                 for (let i = 0; i < modifierBody.modifier_detail.length; i++) {
@@ -242,6 +241,15 @@ export default class ModifierService implements IModifierService {
                     })
                 };
                 await ModifierDetail.bulkCreate(bulkDetail, { transaction: t });
+
+                const bulkProduct:Array<any> = [];
+                modifierBody.product_id.forEach((product) => {
+                    bulkProduct.push({
+                        product_id: product,
+                        modifier_id: id
+                    })
+                });
+                await ProductModifier.bulkCreate(bulkProduct, { transaction: t });
             })
 
             return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant.MODIFIER_200_UPDATED)
@@ -274,7 +282,7 @@ export default class ModifierService implements IModifierService {
                 },{ 
                     transaction: t 
                 });
-                await ProductModifer.destroy({
+                await ProductModifier.destroy({
                     where: { modifier_id: id }
                 },{ 
                     transaction: t 

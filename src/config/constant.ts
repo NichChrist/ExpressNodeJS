@@ -81,14 +81,6 @@ const responseMessageConstant = {
     ProductCategory_201_REGISTERED: 'Successfully Registered The Product Category',
     ProductCategory_404_NOT_FOUND: 'Product Category Not Found',
 
-    Product_200_DELETED: 'Successfully Deleted A Single Product',
-    Product_200_FETCHED_ALL: 'Successfully Fetched All Product(s)',
-    Product_200_FETCHED_SINGLE: 'Successfully Fetched A Single Product',
-    Product_200_UPDATED: 'Successfully Updated A Single Product',
-    Product_201_REGISTERED: 'Successfully Registered The Product',
-    Product_201_BULK_REGISTERED: 'Successfully Registered Many Product(s)',
-    Product_404_NOT_FOUND: 'Product  Not Found',
-
     SHIFTLOG_201_CREATED: 'Successfully Registered The Shift Log',
     SHIFTLOG_200_FETCHED_ALL: 'Successfully Fetched All Shift Log(s)',
     SHIFTLOG_200_FETCHED_SINGLE: 'Successfully Fetched A Single Shift Log',
@@ -122,6 +114,7 @@ const responseMessageConstant = {
     MODIFIER_404_NOT_FOUND: 'Modifier Not Found',
 
     PRODUCT_201_CREATED: 'Successfully Registered The Product',
+    PRODUCT_201_BULK_CREATED: 'Successfully Registered Many Product(s)',
     PRODUCT_CODE_400_TAKEN: 'Product Code Taken',
     PRODUCT_200_FETCHED_ALL: 'Successfully Fetched All Product(s)',
     PRODUCT_200_FETCHED_SINGLE: 'Successfully Fetched A Single Product',

@@ -22,17 +22,17 @@ export default class IngredientValidator {
                 "any.only": '"option_type" must be one of "allow_null", "required", or "required_multiple"',
                 "string.empty": '"option_type" is not allowed to be empty',
             }), 
-            outlet_id: Joi.array().items(Joi.string().guid()).required().messages({
-                "array.empty": '"Outlet Id" is not allowed to be empty',
-                "array.includes": 'Each item in "Outlet Id" must be a valid UUID format'
+            product_id: Joi.array().items(Joi.string().guid()).required().messages({
+                "array.empty": '"Product Id" is not allowed to be empty',
+                "array.includes": 'Each item in "Product Id" must be a valid UUID format'
             }),
             modifier_detail: Joi.array().items(Joi.object({
                 name: Joi.string().required().messages({
-                    "array.empty": '"Outlet Id" is not allowed to be empty',
+                    "array.empty": '"Name" is not allowed to be empty',
                 }),
                 price: Joi.number().required().messages({
-                    "array.empty": '"stock" is not allowed to be empty',
-                    "array.number": '"stock" must be a number',
+                    "array.empty": '"Price" is not allowed to be empty',
+                    "array.number": '"Price" must be a number',
                 }), 
             })).required().messages({
                 "array.empty": '"modifier details" is not allowed to be empty',
@@ -59,28 +59,21 @@ export default class IngredientValidator {
             return next(new ApiError(httpStatus.UNPROCESSABLE_ENTITY, errorMessage));
         } else {
             try {
+                value.product_id.forEach(async (id) => {
+                    const productIdCheck = await Product.findByPk(id)
+                        if(productIdCheck === null){
+                            return next(new ApiError(httpStatus.NOT_FOUND, responseMessageConstant.PRODUCT_404_NOT_FOUND));
+                        }
+                })
 
-                value.outlet_id.forEach(async (id) => {
-                    const outletIdCheck = await Outlet.findByPk(id)
-                        if(outletIdCheck === null){
-                            return next(new ApiError(httpStatus.NOT_FOUND, 'Outlet Not Found'));
-                        }
-                }); 
-
-                for (let i = 0; i < value.outlet_id.length; i++){
-                    const outlet = await Outlet.findOne({
-                        where: {
-                            id: value.outlet_id[i],
-                        }
-                    });
-                    if (outlet.parent_id === null){
-                        if (outlet.id !== req.userInfo?.outlet_id){
-                            return next(new ApiError(httpStatus.NOT_FOUND, 'Outlet Not Found'));
-                        }
-                    }else{
-                        if (outlet.parent_id !== req.userInfo?.outlet_id){
-                            return next(new ApiError(httpStatus.NOT_FOUND, 'Outlet Not Found'));
-                        }
+                for (let i = 0; i < value.product_id.length; i++) {
+                    const outletProductCheck = await OutletProduct.findOne({
+                        where:{
+                            product_id: value.product_id[i],
+                            outlet_id: req.userInfo?.outlet_id
+                        }})
+                    if(!outletProductCheck){
+                        return next(new ApiError(httpStatus.NOT_FOUND, responseMessageConstant.PRODUCT_404_NOT_FOUND));
                     }
                 }
 
@@ -103,17 +96,17 @@ export default class IngredientValidator {
                 "any.only": '"option_type" must be one of "allow_null", "required", or "required_multiple"',
                 "string.empty": '"option_type" is not allowed to be empty',
             }), 
-            outlet_id: Joi.array().items(Joi.string().guid()).required().messages({
-                "array.empty": '"Outlet Id" is not allowed to be empty',
-                "array.includes": 'Each item in "Outlet Id" must be a valid UUID format'
+            product_id: Joi.array().items(Joi.string().guid()).required().messages({
+                "array.empty": '"Product Id" is not allowed to be empty',
+                "array.includes": 'Each item in "Product Id" must be a valid UUID format'
             }),
             modifier_detail: Joi.array().items(Joi.object({
                 name: Joi.string().required().messages({
-                    "array.empty": '"Outlet Id" is not allowed to be empty',
+                    "array.empty": '"Name" is not allowed to be empty',
                 }),
                 price: Joi.number().required().messages({
-                    "array.empty": '"stock" is not allowed to be empty',
-                    "array.number": '"stock" must be a number',
+                    "array.empty": '"Price" is not allowed to be empty',
+                    "array.number": '"Price" must be a number',
                 }), 
             })).required().messages({
                 "array.empty": '"modifier details" is not allowed to be empty',
@@ -141,27 +134,21 @@ export default class IngredientValidator {
         } else {
             try {
 
-                value.outlet_id.forEach(async (id) => {
-                    const outletIdCheck = await Outlet.findByPk(id)
-                        if(outletIdCheck === null){
-                            return next(new ApiError(httpStatus.NOT_FOUND, 'Outlet Not Found'));
+                value.product_id.forEach(async (id) => {
+                    const productIdCheck = await Product.findByPk(id)
+                        if(productIdCheck === null){
+                            return next(new ApiError(httpStatus.NOT_FOUND, responseMessageConstant.PRODUCT_404_NOT_FOUND));
                         }
-                }); 
+                })
 
-                for (let i = 0; i < value.outlet_id.length; i++){
-                    const outlet = await Outlet.findOne({
-                        where: {
-                            id: value.outlet_id[i],
-                        }
-                    });
-                    if (outlet.parent_id === null){
-                        if (outlet.id !== req.userInfo?.outlet_id){
-                            return next(new ApiError(httpStatus.NOT_FOUND, 'Outlet Not Found'));
-                        }
-                    }else{
-                        if (outlet.parent_id !== req.userInfo?.outlet_id){
-                            return next(new ApiError(httpStatus.NOT_FOUND, 'Outlet Not Found'));
-                        }
+                for (let i = 0; i < value.product_id.length; i++) {
+                    const outletProductCheck = await OutletProduct.findOne({
+                        where:{
+                            product_id: value.product_id[i],
+                            outlet_id: req.userInfo?.outlet_id
+                        }})
+                    if(!outletProductCheck){
+                        return next(new ApiError(httpStatus.NOT_FOUND, responseMessageConstant.PRODUCT_404_NOT_FOUND));
                     }
                 }
 
