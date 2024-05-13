@@ -65,7 +65,7 @@ export default class ProductService implements IProductService {
 
                 await OutletProduct.bulkCreate(bulkOutlet, {transaction: t}); 
 
-                return responseHandler.returnSuccess(httpStatus.CREATED, responseMessageConstant.Product_201_REGISTERED, data);
+                return responseHandler.returnSuccess(httpStatus.CREATED, responseMessageConstant.PRODUCT_201_CREATED, data);
             } catch (e) {
                 console.log(e);
                 await t.rollback();
@@ -128,7 +128,7 @@ export default class ProductService implements IProductService {
 
                 await OutletProduct.bulkCreate(bulkOutletProducts, {transaction: t});
 
-                return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant.Product_201_BULK_REGISTERED);
+                return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant.PRODUCT_201_BULK_CREATED);
             } catch (e:any) {
                 console.log(e);
                 if (e.ec) return responseHandler.returnError(e.status, e.message);   
@@ -206,7 +206,7 @@ export default class ProductService implements IProductService {
 
             const allData = await Product.findAndCountAll(options)  
             
-            return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant.Product_200_FETCHED_ALL, allData);
+            return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant.PRODUCT_200_FETCHED_ALL, allData);
         } catch (e) {
             console.log(e);
             return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.HTTP_502_BAD_GATEWAY);
@@ -216,11 +216,11 @@ export default class ProductService implements IProductService {
     getProductById = async (id: string) => {
         try {
             if (!(await this.productDao.isProductExists(id))) {
-                return responseHandler.returnError(httpStatus.NOT_FOUND, responseMessageConstant.Product_404_NOT_FOUND);
+                return responseHandler.returnError(httpStatus.NOT_FOUND, responseMessageConstant.PRODUCT_404_NOT_FOUND);
             }
 
             const Outlet = await this.productDao.findById(id);
-            return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant.Product_200_FETCHED_SINGLE, Outlet);
+            return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant.PRODUCT_200_FETCHED_SINGLE, Outlet);
         } catch (e) {
             console.log(e);
             return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.HTTP_502_BAD_GATEWAY);
@@ -254,7 +254,7 @@ export default class ProductService implements IProductService {
         
             let data = await  Product.scope(['dropdown']).findAll(options);
             
-            return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant.Product_200_FETCHED_ALL, data);
+            return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant.PRODUCT_200_FETCHED_ALL, data);
         } catch (e) {
             console.log(e);
             return responseHandler.returnError(httpStatus.BAD_GATEWAY, responseMessageConstant.HTTP_502_BAD_GATEWAY);
@@ -293,7 +293,7 @@ export default class ProductService implements IProductService {
 
     //         const allData = await Outlet.findAndCountAll(options)
             
-    //         return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant.Product_200_FETCHED_ALL, allData);
+    //         return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant.PRODUCT_200_FETCHED_ALL, allData);
     //     } catch (e) {
     //         console.log(e);
     //         return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.HTTP_502_BAD_GATEWAY);
@@ -303,12 +303,12 @@ export default class ProductService implements IProductService {
     deleteProductById = async (id: string) => {
         try {
             if (!(await this.productDao.isProductExists(id))) {
-                return responseHandler.returnError(httpStatus.NOT_FOUND, responseMessageConstant.Product_404_NOT_FOUND);
+                return responseHandler.returnError(httpStatus.NOT_FOUND, responseMessageConstant.PRODUCT_404_NOT_FOUND);
             }
 
             await this.stockDao.deleteById(id);
             await this.productDao.deleteById(id);
-            return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant.Product_200_DELETED);
+            return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant.PRODUCT_200_DELETED);
         } catch (e) {
             console.log(e);
             return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.HTTP_502_BAD_GATEWAY);
@@ -318,7 +318,7 @@ export default class ProductService implements IProductService {
     updateProductById = async (id: string, productBody: IProduct) => {
         try {
             if (!(await this.productDao.isProductExists(id))) {
-                return responseHandler.returnError(httpStatus.NOT_FOUND, responseMessageConstant.Product_404_NOT_FOUND);
+                return responseHandler.returnError(httpStatus.NOT_FOUND, responseMessageConstant.PRODUCT_404_NOT_FOUND);
             }
 
             let updatedProductData = await this.productDao.updateById(productBody, id);
@@ -327,7 +327,7 @@ export default class ProductService implements IProductService {
             }
 
             let data = await this.productDao.findProduct(id);
-            return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant.Product_200_UPDATED, data);
+            return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant.PRODUCT_200_UPDATED, data);
         } catch (e) {
             console.log(e);
             return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.HTTP_502_BAD_GATEWAY);
