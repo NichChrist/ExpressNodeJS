@@ -62,7 +62,7 @@ export default class StockService implements IStockService {
     updateStockById = async (id: string, stockBody: IStock) => {
         try {
             if (!(await this.stockDao.isStockExists(id))) {
-                return responseHandler.returnError(httpStatus.NOT_FOUND, responseMessageConstant.Product_404_NOT_FOUND);
+                return responseHandler.returnError(httpStatus.NOT_FOUND, responseMessageConstant.PRODUCT_404_NOT_FOUND);
             }
 
             let updatedStockData = await this.stockDao.updateById(stockBody, id);

@@ -254,7 +254,7 @@ export default class IngredientService implements IIngredientService {
         return sequelize.transaction(async (t) =>{
             try {
                 if (!(await this.ingredientDao.isIngredientExists(id))) {
-                    return responseHandler.returnError(httpStatus.NOT_FOUND, responseMessageConstant.Product_404_NOT_FOUND);
+                    return responseHandler.returnError(httpStatus.NOT_FOUND, responseMessageConstant.PRODUCT_404_NOT_FOUND);
                 }
 
                 let updatedIngredientData = await Ingredient.update(ingredientBody, { where: { id: id } }, { transaction: t });
