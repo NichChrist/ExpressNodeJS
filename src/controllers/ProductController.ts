@@ -3,7 +3,7 @@ import httpStatus from 'http-status';
 import { IProduct } from '../models/interfaces/IProduct';
 import { logger } from '../config/logger';
 import ProductService from '../service/implementations/ProductService';
-const csv = require('csv-parser');
+import csv from 'csv-parser';
 import fs from 'fs';
 
 export default class ProductController {
@@ -16,11 +16,11 @@ export default class ProductController {
 
     getProduct = async (req: Request, res: Response) => {
         try {
-            const model = await this.productService.getProduct(req.query.order_by, req.query.name, req.query.filter, req);
-            const { code, message } = model.response;
-            const data: any = model.response.data;
+            const products = await this.productService.getProduct(req.query.order_by, req.query.name, req.query.filter, req);
+            const { code, message } = products.response;
+            const data: any = products.response.data;
             
-            res.status(model.statusCode).json({
+            res.status(products.statusCode).json({
                 code: code,
                 message: message,
                 count: data.count,
@@ -40,11 +40,11 @@ export default class ProductController {
         try {
             const data = await this.productService.getProductById(req.params.id)
             const { code, message } = data.response;
-            const role = data.response.data;
+            const products = data.response.data;
             res.status(data.statusCode).json({
                 code: code,
                 message: message,
-                data: role,
+                data: products,
             });
         } catch (e) {
             logger.error(e);
@@ -55,36 +55,52 @@ export default class ProductController {
         }
     };
 
-    getProductByBranch = async (req: Request, res: Response) => {
+    dropdownProduct = async (req: Request, res: Response) => {
         try {
-            const model = await this.productService.getProductByBranch(req.params.id, req);
-            const { code, message } = model.response;
-            const data: any = model.response.data;
-
-            res.status(model.statusCode).json({
+            const data = await this.productService.dropdownProduct(req)
+            const { code, message } = data.response;
+            const products = data.response.data;
+            res.status(data.statusCode).json({
                 code: code,
                 message: message,
-                count: data.count,
-                data: data.rows,
+                data: products,
             });
         } catch (e) {
             logger.error(e);
-            res.status(httpStatus.BAD_GATEWAY).json({
-                status: httpStatus.BAD_GATEWAY,
-                message: 'Something Went Wrong',
-            });
+            res.status(httpStatus.BAD_GATEWAY).send(e);
         }
     };
+
+    // getProductByBranch = async (req: Request, res: Response) => {
+    //     try {
+    //         const products = await this.productService.getProductByBranch(req.params.id, req);
+    //         const { code, message } = products.response;
+    //         const data: any = products.response.data;
+
+    //         res.status(products.statusCode).json({
+    //             code: code,
+    //             message: message,
+    //             count: data.count,
+    //             data: data.rows,
+    //         });
+    //     } catch (e) {
+    //         logger.error(e);
+    //         res.status(httpStatus.BAD_GATEWAY).json({
+    //             status: httpStatus.BAD_GATEWAY,
+    //             message: 'Something Went Wrong',
+    //         });
+    //     }
+    // };
 
     createProduct = async (req: Request, res: Response) => {
         try {
             const data = await this.productService.createProduct(req.body, req)
             const { code, message } = data.response;
-            const model = data.response.data;
+            const products = data.response.data;
             res.status(data.statusCode).json({
                 code: code,
                 message: message,
-                data: model,
+                data: products,
             });
         } catch (e) {
             logger.error(e);
@@ -116,11 +132,11 @@ export default class ProductController {
         try {
             const data = await this.productService.updateProductById(req.params.id, req.body);
             const { code, message } = data.response;
-            const model = data.response.data;
+            const products = data.response.data;
             res.status(data.statusCode).json({
                 code: code,
                 message: message,
-                data: model
+                data: products
             })
         } catch (e) {
             logger.error(e);

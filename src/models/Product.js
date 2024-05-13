@@ -81,6 +81,15 @@ module.exports = (sequelize, DataTypes) => {
             }
         },
         {
+            scopes: {
+                dropdown: {
+                    attributes: [
+                        'id',
+                        'name',
+                        'sku'
+                    ]
+                }
+            },
             sequelize,
             modelName: 'product',
             underscored: true,

@@ -42,6 +42,11 @@ router.get(
     productController.getProduct
 );
 router.get(
+    '/dropdown',
+    auth(),
+    productController.dropdownProduct
+);
+router.get(
     '/export-csv',
     auth(),
     productController.exportToCsv
@@ -52,12 +57,12 @@ router.get(
     parameterCheck(),
     productController.getProductById
 );
-router.get(
-    '/outlet/:id',
-    auth(),
-    parameterCheck(),
-    productController.getProductByBranch
-);
+// router.get(
+//     '/outlet/:id',
+//     auth(),
+//     parameterCheck(),
+//     productController.getProductByBranch
+// );
 router.post(
     '/',
     auth(),

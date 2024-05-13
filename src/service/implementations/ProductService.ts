@@ -139,7 +139,28 @@ export default class ProductService implements IProductService {
             const pagination = req.query.pagination;
             let options = {
                 attributes: ['id','name','sku','price'],
+                include: [{
+                    model: OutletProduct,
+                    attributes: [],
+                    where: {}
+                },],
             };
+
+            const outlets = await Outlet.findOne({
+                where: {
+                    id: req.userInfo?.outlet_id
+                }
+            });
+            
+            if (outlets.parent_id === null){
+                Object.assign(options.include[0].where, {
+                    outlet_id : outlets.id 
+                });
+            }else{
+                Object.assign(options.include[0].where, {
+                    outlet_id : outlets.parent_id
+                });
+            }
 
             if (pagination == 'true') {
                 const row: any = req.query.row;
@@ -150,13 +171,9 @@ export default class ProductService implements IProductService {
             }
 
             if(hasFilterQueryParam){
-                options['include'] = [{
-                    model: OutletProduct,
-                    where: {
-                        outlet_id : filter
-                    },
-                    attributes: [],
-                }]
+                Object.assign(options.include[0].where, {
+                    outlet_id : filter
+                });
             }
 
             if(hasNameQueryParam){
@@ -201,44 +218,78 @@ export default class ProductService implements IProductService {
         }
     }
 
-    getProductByBranch = async (id:string, req: Request) => {
+    dropdownProduct = async (req: Request) => {
         try {
-            const pagination = req.query.pagination;
-            let options = { 
-                where: { id },
-                attributes: ['id','business_type_id','name','code'],
+            let options = {
                 include: [{
-                    model: Product,
-                    through: { 
-                        model: OutletProduct, 
-                        attributes: [],
-                    },
-                    attributes: {
-                        include: [
-                            [Sequelize.literal('"products->outlet_product"."stock"'), 'stock']
-                        ],
-                        group: ['"products"."id"'], 
-                        exclude: ['deleted_at','created_at','updated_at'],
-                    },
-                  }],
+                    model: OutletProduct,
+                    attributes: [],
+                    where: {}
+                },],
             };
-
-            if (pagination == 'true') {
-                const row: any = req.query.row;
-                const page: any = req.query.page;
-                const offset = (page - 1) * row;
-                options['offset'] = offset;
-                options['limit'] = row;
-            }
-
-            const allData = await Outlet.findAndCountAll(options)
+            const outlets = await Outlet.findOne({
+                where: {
+                    id: req.userInfo?.outlet_id
+                }
+            });
             
-            return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant.Product_200_FETCHED_ALL, allData);
+            if (outlets.parent_id === null){
+                Object.assign(options.include[0].where, {
+                    outlet_id : outlets.id 
+                });
+            }else{
+                Object.assign(options.include[0].where, {
+                    outlet_id : outlets.parent_id
+                });
+            }
+        
+            let data = await  Product.scope(['dropdown']).findAll(options);
+            
+            return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant.Product_200_FETCHED_ALL, data);
         } catch (e) {
             console.log(e);
-            return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.HTTP_502_BAD_GATEWAY);
+            return responseHandler.returnError(httpStatus.BAD_GATEWAY, responseMessageConstant.HTTP_502_BAD_GATEWAY);
         }
     };
+
+    // getProductByBranch = async (id:string, req: Request) => {
+    //     try {
+    //         const pagination = req.query.pagination;
+    //         let options = { 
+    //             where: { id },
+    //             attributes: ['id','business_type_id','name','code'],
+    //             include: [{
+    //                 model: Product,
+    //                 through: { 
+    //                     model: OutletProduct,
+    //                     attributes: [],
+    //                 },
+    //                 attributes: {
+    //                     include: [
+    //                         [Sequelize.literal('"products->outlet_product"."stock"'), 'stock']
+    //                     ],
+    //                     group: ['"products"."id"'], 
+    //                     exclude: ['deleted_at','created_at','updated_at'],
+    //                 },
+    //               }],
+    //         };
+
+    //         if (pagination == 'true') {
+    //             const row: any = req.query.row;
+    //             const page: any = req.query.page;
+    //             const offset = (page - 1) * row;
+    //             options['offset'] = offset;
+    //             options['limit'] = row;
+    //         }
+
+    //         const allData = await Outlet.findAndCountAll(options)
+            
+    //         return responseHandler.returnSuccess(httpStatus.OK, responseMessageConstant.Product_200_FETCHED_ALL, allData);
+    //     } catch (e) {
+    //         console.log(e);
+    //         return responseHandler.returnError(httpStatus.BAD_REQUEST, responseMessageConstant.HTTP_502_BAD_GATEWAY);
+    //     }
+    // };
 
     deleteProductById = async (id: string) => {
         try {
